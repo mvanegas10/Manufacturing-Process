@@ -1,5 +1,5 @@
 Sys.setenv(LANG = "en")
-setwd("/Users/meili/Documents/TUK/ProductionLinePerformance/CalidadDatos/")
+setwd("/home/tuk/Manufacturing-Process/CalidadDatos/")
 
 data <- read.table("data/secom.data")
 
@@ -22,7 +22,8 @@ secom[secom == "NaN"] <- 0
 
 ########################################################################
 
-install.packages("caret", repos="http://cran.rstudio.com/")
+#install.packages("caret", repos="http://cran.rstudio.com/")
+#install.packages('e1071', dependencies=TRUE)
 library(caret)
 
 control <- rfeControl(functions=rfFuncs)
