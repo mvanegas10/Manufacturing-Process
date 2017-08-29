@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="description" content="Monitoring Manufacturing Process">
+		<meta name="keywords" content="Visual Analytics, Monitoring, Manufacturing Process">
+		<meta name="author" content="Meili Vanegas-Hernandez">
+		<title>Visual analytics tool for monitoring signals in a manufacturing process</title>
+
+		<!-- Thirdparty libraries -->
+		<script type="text/javascript" src="./assets/libs/jquery/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="./assets/libs/d3/d3.v3.min.js"></script>
+		<script type="text/javascript" src="./assets/libs/d3/radar.js"></script>
+		<script type="text/javascript" src="./assets/libs/d3/d3.svg.circularbrush.js"></script>
+		<script type="text/javascript" src="./assets/libs/bootstrap/bootstrap.min.js"></script>
+		<script type="text/javascript" src="./assets/libs/strad-wheel/strad-wheel.js"></script>
+
+		<!-- Stylesheets -->
+		<link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+		<link rel="stylesheet" type="text/css" href="./assets/css/bootstrap/bootstrap.css">
+		<link rel="stylesheet" type="text/css" href="./assets/css/strad-wheel/strad-wheel.css">
+
+	</head>
+	<body>
+
+		<div class="row">
+			<div class="col-md-1"></div>
+
+			<div class="col-md-8" id="timeview"></div>
+
+			<div class="col-md-2">
+
+				<div class="row">
+					<div class="col-md-12">
+						<p>Add a plotline:</p>
+						<label>Year plotline:</label>
+						<select id="add_yearplotline">
+							<option value="Year sample 2">Year sample 2</option>
+							<option value="Year sample 3">Year sample 3</option>
+						</select>
+						<button id="btn_add_yearplotline" class="btn btn-success btn-xs">
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+
+						<label>Day plotline:</label>
+						<select id="add_dayplotline">
+							<option value="Day sample 2">Day sample 2</option>
+							<option value="Day sample 3">Day sample 3</option>
+						</select>
+						<button id="btn_add_dayplotline" class="btn btn-success btn-xs">
+							<span class="glyphicon glyphicon-plus"></span>
+						</button>
+
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+
+						<p>Remove a plotline:</p>
+						<label>Year plotline:</label>
+						<select id="rm_yearplotline">
+							<option value="Year sample 1">Year sample 1</option>
+						</select>
+						<button id="btn_rm_yearplotline" class="btn btn-danger btn-xs">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+
+						<label>Day plotline:</label>
+						<select id="rm_dayplotline">
+							<option value="Day sample 1">Day sample 1</option>
+						</select>
+						<button id="btn_rm_dayplotline" class="btn btn-danger btn-xs">
+							<span class="glyphicon glyphicon-minus"></span>
+						</button>
+
+					</div>
+
+				</div>
+
+			</div>
+			
+			<div class="col-md-1"></div>
+		</div>
+
+		<div class="row">
+		    <div id="notifications2"></div>
+    		<br/><br/><br/>
+    		<div id="notifications"></div>
+		</div>
+
+		<!-- App -->
+		<script type="text/javascript" src="./assets/libs/jquery/notify.min.js"></script>
+		<script  type="text/javascript" src="./app/app.js"></script>
+
+	</body>
+</html> 
