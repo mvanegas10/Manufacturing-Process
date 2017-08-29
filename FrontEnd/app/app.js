@@ -18,8 +18,8 @@ function initialize() {
 	//populate div with the tool
 	timewheel=new StradWheel('#timeview');
 
-	timewheel.setSelectableYears([2014,2015,2016]);
-	timewheel.setYear(2015);
+	timewheel.setSelectableYears([2008]);
+	timewheel.setYear(2008);
 
 	//Register to changes:
 
@@ -56,21 +56,21 @@ function initialize() {
 }
 initialize();
 
-timewheel.addYearPlotline('Number of pieces that passed', year_passed);
-timewheel.addYearPlotline('Number of pieces that failed', year_failed);
-timewheel.addDayPlotline('Number of pieces that passed',tod_passed);
-timewheel.addDayPlotline('Number of pieces that failed', tod_failed);
+timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
+timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
+timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
+timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
 
 //choose plotlines to add/remove:
 $('#btn_add_yearplotline').click(function(){
 	var line=$('#add_yearplotline').val();
 	switch (line)
 	{
-		case 'Number of pieces that passed':
-		timewheel.addYearPlotline('Number of pieces that passed', year_passed);
+		case 'Passed Pieces':
+		timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
 		break;
-		case 'Number of pieces that failed':
-		timewheel.addYearPlotline('Number of pieces that failed', year_failed);
+		case 'Failed Pieces':
+		timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
 		break;
 	}
 	$('#add_yearplotline option[value="'+line+'"]').remove();
@@ -81,11 +81,11 @@ $('#btn_add_dayplotline').click(function(){
 	var line=$('#add_dayplotline').val();
 	switch (line)
 	{
-		case 'Number of pieces that passed':
-		timewheel.addDayPlotline('Number of pieces that passed', tod_passed);
+		case 'Passed Pieces':
+		timewheel.addDayPlotline('Passed Pieces per Hour', tod_passed);
 		break;
-		case 'Number of pieces that failed':
-		timewheel.addDayPlotline('Number of pieces that failed', tod_failed);
+		case 'Failed Pieces':
+		timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
 		break;
 	}
 	$('#add_dayplotline option[value="'+line+'"]').remove();

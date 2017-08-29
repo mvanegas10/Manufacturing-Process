@@ -24,63 +24,94 @@
 	<body>
 
 		<div class="row">
+			
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				
+				<h2 class="title">Visual analytics tool for monitoring signals in a manufacturing process</h2>
+
+			</div>
+			<div class="col-md-1"></div>
+
+		</div>
+		<div class="row">
 			<div class="col-md-1"></div>
 
 			<div class="col-md-8" id="timeview"></div>
 
-			<div class="col-md-2">
+			<div class="col-md-3">
 
 				<div class="row">
 					<div class="col-md-12">
-						<p>Add a plotline:</p>
-						<label>Year plotline:</label>
-						<select id="add_yearplotline">
-							<option value="Year sample 2">Year sample 2</option>
-							<option value="Year sample 3">Year sample 3</option>
-						</select>
-						<button id="btn_add_yearplotline" class="btn btn-success btn-xs">
-							<span class="glyphicon glyphicon-plus"></span>
-						</button>
+						<div class="row"><p>Add a plotline:</p></div>
+						<div class="row">
+							<div class="col-md-1"></div>
+							<div class="col-md-10">
+								<label>Year plotline:</label>
+								<div class="row">
+									<div class="col-md-10">
+										<select id="add_yearplotline"></select>
+									</div>
+									<div class="col-md-2">
+										<button id="btn_add_yearplotline" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+									</div>
+								</div>
 
-						<label>Day plotline:</label>
-						<select id="add_dayplotline">
-							<option value="Day sample 2">Day sample 2</option>
-							<option value="Day sample 3">Day sample 3</option>
-						</select>
-						<button id="btn_add_dayplotline" class="btn btn-success btn-xs">
-							<span class="glyphicon glyphicon-plus"></span>
-						</button>
-
+								<label>Day plotline:</label>
+								<div class="row">
+									<div class="col-md-10">
+										<select id="add_dayplotline"></select>
+									</div>
+									<div class="col-md-2">
+										<button id="btn_add_dayplotline" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
 					</div>
 				</div>
 
 				<div class="row">
 					<div class="col-md-12">
-
-						<p>Remove a plotline:</p>
-						<label>Year plotline:</label>
-						<select id="rm_yearplotline">
-							<option value="Year sample 1">Year sample 1</option>
-						</select>
-						<button id="btn_rm_yearplotline" class="btn btn-danger btn-xs">
-							<span class="glyphicon glyphicon-minus"></span>
-						</button>
-
-						<label>Day plotline:</label>
-						<select id="rm_dayplotline">
-							<option value="Day sample 1">Day sample 1</option>
-						</select>
-						<button id="btn_rm_dayplotline" class="btn btn-danger btn-xs">
-							<span class="glyphicon glyphicon-minus"></span>
-						</button>
-
+						<div class="row"><p>Remove a plotline:</p></div>
+						<div class="row">
+							<div class="col-md-1"></div>
+							<div class="col-md-10">
+								<label>Year plotline:</label>
+								<div class="row">
+									<div class="col-md-10">
+										<select id="rm_yearplotline">
+											<option value="Passed Pieces">Passed Pieces</option>
+											<option value="Failed Pieces">Failed Pieces</option>
+										</select>
+									</div>
+									<div class="col-md-2">
+										<button id="btn_rm_yearplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+									</div>
+								</div>
+								<label>Day plotline:</label>
+								<div class="row">
+									<div class="col-md-10">
+										<select id="rm_dayplotline">
+											<option value="Passed Pieces">Passed Pieces</option>
+											<option value="Failed Pieces">Failed Pieces</option>
+										</select>
+									</div>
+									<div class="col-md-2">
+										<button id="btn_rm_dayplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-1"></div>
+						</div>
 					</div>
 
 				</div>
 
 			</div>
 			
-			<div class="col-md-1"></div>
+			<!-- <div class="col-md-1"></div> -->
 		</div>
 
 		<div class="row">
