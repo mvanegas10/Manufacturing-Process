@@ -71,30 +71,18 @@ function reset() {
 */
 function changeView( view ) {
 
+	d3.select( '#timewheel' )
+		.html( '' );
+
 	d3.select( '#button-' + current_nav )
 		.attr( 'class', 'btn btn-info rigth' );
-
-	var tempParent = d3.select( '#parent-timewheel-' + current_nav );
-		
-	tempParent.selectAll( 'div' )
-		.remove( );
-
-	tempParent.append( 'div' )
-		.attr( 'class', 'col-md-1' );
-
-	tempParent.append( 'div' )
-		.attr( 'class', 'col-md-10' )
-		.attr( 'id', 'timewheel-' + current_nav );
-
-	tempParent.append( 'div' )
-		.attr( 'class', 'col-md-1' );				
 
 	current_nav = view;
 
 	d3.select( '#button-' + current_nav )
 		.attr( 'class', 'btn btn-warning rigth' );
 
-	timewheel[view] = createSTRAD( '#timewheel-' + view, imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
+	timewheel[view] = createSTRAD( '#timewheel', imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
 	
 }
 
@@ -298,7 +286,7 @@ function initialize() {
 	d3.json( './data/date_important_variables.json', function( dict ) {
 
 		imp_variables = dict;
-		timewheel.general = createSTRAD( '#timewheel-general', dict.general.passed_date, dict.general.failed_date, dict.general.passed_tod, dict.general.failed_tod );
+		timewheel.general = createSTRAD( '#timewheel', dict.general.passed_date, dict.general.failed_date, dict.general.passed_tod, dict.general.failed_tod );
 
 	} );
 
