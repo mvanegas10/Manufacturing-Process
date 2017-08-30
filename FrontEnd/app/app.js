@@ -1,4 +1,9 @@
 /*
+	View
+*/
+var current_nav = 'general';
+
+/*
 	Data
 */
 // Passed dataset
@@ -12,7 +17,15 @@ var tod_failed;
 /*
 	STRAD WHEEL
 */ 
-var timewheel;
+var imp_variables;
+var timewheel = { 
+	'general': undefined,
+	'v0': undefined,
+	'v1': undefined,
+	'v2': undefined,
+	'v3': undefined,
+	'v4': undefined
+};
 var colorArray = ["#31D66C", "#FF5E57"];
 
 /*
@@ -42,6 +55,38 @@ var group_failed;
 var charts = { 'passed':[], 'failed':[] };
 
 /*
+	Changes view
+*/
+function changeView( view ) {
+
+	d3.select( '#button-' + current_nav )
+		.attr( 'class', 'btn btn-info rigth' );
+
+	var tempParent = d3.select( '#parent-timewheel-' + current_nav );
+		
+	tempParent.selectAll( 'div' )
+		.remove( );
+
+	tempParent.append( 'div' )
+		.attr( 'class', 'col-md-1' );
+
+	tempParent.append( 'div' )
+		.attr( 'class', 'col-md-10' )
+		.attr( 'id', 'timewheel-' + current_nav );
+
+	tempParent.append( 'div' )
+		.attr( 'class', 'col-md-1' );				
+
+	current_nav = view;
+
+	d3.select( '#button-' + current_nav )
+		.attr( 'class', 'btn btn-warning rigth' );
+
+	timewheel[view] = createSTRAD( '#timewheel-' + view, imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
+	
+}
+
+/*
 	Creates a STRAD WHEEL
 */
 function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed ) {
@@ -49,14 +94,14 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 	function colorScale(n) { return colorArray[n % colorArray.length]; }
 
 	//populate div with the tool
-	timewheel = new StradWheel( selector, colorScale );
+	var temp_timewheel = new StradWheel( selector, colorScale );
 
-	timewheel.setSelectableYears( [ '2008' ] );
-	timewheel.setYear( '2008' );
+	temp_timewheel.setSelectableYears( [ '2008' ] );
+	temp_timewheel.setYear( '2008' );
 
 	//Register to changes:
 
-	timewheel.onDatesChange(function(new_datesrange){
+	temp_timewheel.onDatesChange(function(new_datesrange){
 		var filter = function( d ) { 
 			if( new_datesrange[0].valueOf( ) >= new_datesrange[1].valueOf( ) ) return ( d >= new_datesrange[0] || d <= new_datesrange[1] ); 
 			else return ( d >= new_datesrange[0] && d <= new_datesrange[1] ); 
@@ -76,7 +121,7 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 	});
 
-	timewheel.onTodChange(function(new_todrange){
+	temp_timewheel.onTodChange(function(new_todrange){
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
 			if( new_todrange[0] >= new_todrange[1] ) return ( hour >= new_todrange[0] || hour <= new_todrange[1] ); 
@@ -98,7 +143,7 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 	});
 
 
-	timewheel.onDowsChange(function(new_dows){
+	temp_timewheel.onDowsChange(function(new_dows){
 		var filter = function( d ) { 
 			var dow = new Date( d ).getDay();
 			return new_dows.indexOf( dow ) !== -1 ; 
@@ -118,10 +163,12 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 	});
 
-	timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
-	timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
-	timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
-	timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+	temp_timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
+	temp_timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
+	temp_timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
+	temp_timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+
+	return temp_timewheel;
 
 }
 
@@ -221,7 +268,7 @@ function createCharts( important_vars, data ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
-			.xUnits(function(d){ return 30; });
+			.xUnits(function(d){ return 28; });
 
 		charts.failed.push( chart );
 
@@ -236,19 +283,10 @@ function createCharts( important_vars, data ) {
 */
 function initialize() {
 
-	d3.json( './data/dict_results.json', function( dict ) {
-
-		createSTRAD( '#entireData', dict.year_passed, dict.year_failed, dict.tod_passed, dict.tod_failed );
-
-	} );
-
 	d3.json( './data/date_important_variables.json', function( dict ) {
 
-		createSTRAD( '#v0', dict.v0.passed_date, dict.v0.failed_date, dict.v0.passed_tod, dict.v0.failed_tod );
-		createSTRAD( '#v1', dict.v1.passed_date, dict.v1.failed_date, dict.v1.passed_tod, dict.v1.failed_tod );
-		createSTRAD( '#v2', dict.v2.passed_date, dict.v2.failed_date, dict.v2.passed_tod, dict.v2.failed_tod );
-		createSTRAD( '#v3', dict.v3.passed_date, dict.v3.failed_date, dict.v3.passed_tod, dict.v3.failed_tod );
-		createSTRAD( '#v4', dict.v4.passed_date, dict.v4.failed_date, dict.v4.passed_tod, dict.v4.failed_tod );
+		imp_variables = dict;
+		timewheel.general = createSTRAD( '#timewheel-general', dict.general.passed_date, dict.general.failed_date, dict.general.passed_tod, dict.general.failed_tod );
 
 	} );
 
