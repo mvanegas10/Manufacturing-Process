@@ -59,6 +59,14 @@ var charts = { 'passed':[], 'failed':[] };
 */
 function reset() {
 
+	date_dim.passed.forEach( function( filter ) {
+		filter.filterAll( );
+	} );
+
+	date_dim.failed.forEach( function( filter ) {
+		filter.filterAll( );
+	} );
+
 	dc.filterAll(); 
 	dc.redrawAll();
 
@@ -148,8 +156,8 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 			var dow = new Date( d ).getDay();
 			return new_dows.indexOf( dow ) !== -1 ; 
 		};
-		date_dim.passed[1].filter( filter );
-		date_dim.failed[1].filter( filter );
+		date_dim.passed[2].filter( filter );
+		date_dim.failed[2].filter( filter );
 		dc.redrawAll( );
 
 		d3.select( '#dowSelection' )
