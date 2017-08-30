@@ -175,11 +175,11 @@ function createCharts( important_vars, data ) {
 		filter_dimensions.passed[i].filter( function( d ) { return String( d ) === String( 1 ); } )
 
 
-		var name = 'passed_variable' + i;
-		var width = document.getElementById( name ).offsetWidth;
+		var name_passed = 'passed_variable' + i;
+		var width_passed = document.getElementById( name_passed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + name )
-			.width(width)
+		var chart = dc.barChart( '#' + name_passed )
+			.width(width_passed)
 			.height(150)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
@@ -196,11 +196,11 @@ function createCharts( important_vars, data ) {
 
 		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( -1 ); } )
 
-		var name = 'failed_variable' + i;
-		var width = document.getElementById( name ).offsetWidth;
+		var name_failed = 'failed_variable' + i;
+		var width_failed = document.getElementById( name_failed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + name )
-			.width(width)
+		var chart = dc.barChart( '#' + name_failed )
+			.width(width_failed)
 			.height(150)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
