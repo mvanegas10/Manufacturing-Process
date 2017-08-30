@@ -55,6 +55,18 @@ var group_failed;
 var charts = { 'passed':[], 'failed':[] };
 
 /*
+	Reset view
+*/
+function reset() {
+
+	dc.filterAll(); 
+	dc.redrawAll();
+
+	changeView( current_nav );
+
+}
+
+/*
 	Changes view
 */
 function changeView( view ) {
