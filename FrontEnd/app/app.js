@@ -72,13 +72,19 @@ function createSTRAD( dict ) {
 	});
 
 	timewheel.onTodChange(function(new_todrange){
-		// date_dim_passed.filterRange( new_datesrange );
-		// date_dim_failed.filterRange( new_datesrange );
-		// dc.redrawAll( );
+		console.log(new_todrange)
+		var filter = function( d ) { 
+			var hour = new Date( d ).getHours();
+			if( new_todrange[0] >= new_todrange[1] ) return ( hour >= new_todrange[0] || hour <= new_todrange[1] ); 
+			else return ( hour >= new_todrange[0] && hour <= new_todrange[1] ); 
+		};
+		date_dim_passed.filter( filter );
+		date_dim_failed.filter( filter );
+		dc.redrawAll( );
 
-		$('#notifications').notify('The selected time range is now: ['
+		$('#notifications').notify('Selected hours: '
 			
-			+new_todrange +']',{position:'bottom left',className: 'info'
+			+new_todrange[0].getHours() + ' to ' + new_todrange[1].getHours() + ,{position:'bottom left',className: 'info'
 
 		})
 	});
