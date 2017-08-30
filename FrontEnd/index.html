@@ -1,182 +1,178 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8">
-		<meta name="description" content="Monitoring Manufacturing Process">
-		<meta name="keywords" content="Visual Analytics, Monitoring, Manufacturing Process">
-		<meta name="author" content="Meili Vanegas-Hernandez">
-		<title>Monitoring signals in SECOM's manufacturing process in 2008</title>
+<head>
+	<meta charset="UTF-8">
+	<meta name="description" content="Monitoring Manufacturing Process">
+	<meta name="keywords" content="Visual Analytics, Monitoring, Manufacturing Process">
+	<meta name="author" content="Meili Vanegas-Hernandez">
+	<title>Monitoring signals in SECOM's manufacturing process in 2008</title>
 
-		<!-- Thirdparty libraries -->
-		<script type="text/javascript" src="./assets/libs/jquery/jquery-1.11.1.min.js"></script>
-		<script type="text/javascript" src="./assets/libs/d3/d3.v3.min.js"></script>
-		<script type="text/javascript" src="./assets/libs/d3/radar.js"></script>
-		<script type="text/javascript" src="./assets/libs/d3/d3.svg.circularbrush.js"></script>
-		<script type="text/javascript" src="./assets/libs/bootstrap/bootstrap.min.js"></script>
-		<script type="text/javascript" src="./assets/libs/strad-wheel/strad-wheel.js"></script>
-		<script type="text/javascript" src="./assets/libs/crossfilter/crossfilter.min.js"></script>
-		<script type="text/javascript" src="./assets/libs/dc/dc.min.js"></script>
+	<!-- Thirdparty libraries -->
+	<script type="text/javascript" src="./assets/libs/jquery/jquery-1.11.1.min.js"></script>
+	<script type="text/javascript" src="./assets/libs/d3/d3.v3.min.js"></script>
+	<script type="text/javascript" src="./assets/libs/d3/radar.js"></script>
+	<script type="text/javascript" src="./assets/libs/d3/d3.svg.circularbrush.js"></script>
+	<script type="text/javascript" src="./assets/libs/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="./assets/libs/strad-wheel/strad-wheel.js"></script>
+	<script type="text/javascript" src="./assets/libs/crossfilter/crossfilter.min.js"></script>
+	<script type="text/javascript" src="./assets/libs/dc/dc.min.js"></script>
 
-		<!-- Stylesheets -->
-		<link rel="stylesheet" type="text/css" href="./assets/css/style.css">
-		<link rel="stylesheet" type="text/css" href="./assets/css/bootstrap/bootstrap.css">
-		<link rel="stylesheet" type="text/css" href="./assets/css/dc/dc.min.css">
-		<link rel="stylesheet" type="text/css" href="./assets/css/strad-wheel/strad-wheel.css">
+	<!-- Stylesheets -->
+	<link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/bootstrap/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/dc/dc.min.css">
+	<link rel="stylesheet" type="text/css" href="./assets/css/strad-wheel/strad-wheel.css">
 
-	</head>
-	<body>
+</head>
+<body>
 
-		<div class="row">
-			
-			<div class="col-md-1"></div>
-			<div class="col-md-10">
-				
-				<h2 class="title">Monitoring signals in SECOM's manufacturing process in 2008</h2>
+	<div class="row">
 
-			</div>
-			<div class="col-md-1"></div>
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+
+			<h2 class="title">Monitoring signals in SECOM's manufacturing process in 2008</h2>
 
 		</div>
-		<div class="row">
-			<div class="col-md-1"></div>
+		<div class="col-md-1"></div>
 
-			<div class="col-md-8" id="timeview"></div>
+	</div>
 
-			<div class="col-md-3">
-
-				<div class="row">
-					<div class="col-md-12">
-						<div class="row"><p>Add a plotline:</p></div>
-						<div class="row">
-							<div class="col-md-1"></div>
-							<div class="col-md-10">
-								<label>Year plotline:</label>
-								<div class="row">
-									<div class="col-md-10">
-										<select id="add_yearplotline"></select>
-									</div>
-									<div class="col-md-2">
-										<button id="btn_add_yearplotline" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
-									</div>
-								</div>
-
-								<label>Day plotline:</label>
-								<div class="row">
-									<div class="col-md-10">
-										<select id="add_dayplotline"></select>
-									</div>
-									<div class="col-md-2">
-										<button id="btn_add_dayplotline" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button>
-									</div>
-								</div>
-							</div>
-							<div class="col-md-1"></div>
-						</div>
-					</div>
-				</div>
-
-				<div class="row">
-
-					<div class="col-md-12">
-
-						<div class="row"><p>Remove a plotline:</p></div>
-						<div class="row">
-							<div class="col-md-1"></div>
-							<div class="col-md-10">
-
-								<label>Year plotline:</label>
-								<div class="row">
-									<div class="col-md-10">
-										<select id="rm_yearplotline">
-											<option value="Passed Pieces">Passed Pieces</option>
-											<option value="Failed Pieces">Failed Pieces</option>
-										</select>
-									</div>
-									<div class="col-md-2">
-										<button id="btn_rm_yearplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-									</div>
-								</div>
-
-								<label>Day plotline:</label>
-								<div class="row">
-									<div class="col-md-10">
-										<select id="rm_dayplotline">
-											<option value="Passed Pieces">Passed Pieces</option>
-											<option value="Failed Pieces">Failed Pieces</option>
-										</select>
-									</div>
-									<div class="col-md-2">
-										<button id="btn_rm_dayplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
-									</div>
-								</div>
-
-							</div>
-							<div class="col-md-1"></div>
-
-						</div>
-
-					</div>
-
-				</div>
-
-				<div class="row">
-					<div id="notifications2"></div>
-					<br/><br/><br/>
-					<div id="notifications"></div>
-				</div>
-
+	<div data-role="page" id="pageone">
+		<div data-role="header">
+			<h1>Welcome To My Homepage</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#" class="ui-btn-active" data-icon="home">Home</a></li>
+					<li><a href="#pagetwo" data-icon="arrow-r">Page Two</a></li>
+				</ul>
 			</div>
-			
-			<!-- <div class="col-md-1"></div> -->
 		</div>
 
-		<div class="row">
-			<div class="col-md-1"></div>
-
-			<!-- Headings -->
-			<div class="col-md-10">
-				<div class="row">
-					<div class="col-md-2"></div>
-					<div class="col-md-2"><h3>Feature V66</h3></div>
-					<div class="col-md-2"><h3>Feature V17</h3></div>
-					<div class="col-md-2"><h3>Feature V26</h3></div>
-					<div class="col-md-2"><h3>Feature V60</h3></div>
-					<div class="col-md-2"><h3>Feature V65</h3></div>
-				</div>
-				<!-- Passed Chart Features -->
-				<div class="row">
-					<div class="col-md-2" id="num_passed_pieces"></div>
-					<div class="col-md-2" id="passed_variable0"></div>
-					<div class="col-md-2" id="passed_variable1"></div>
-					<div class="col-md-2" id="passed_variable2"></div>
-					<div class="col-md-2" id="passed_variable3"></div>
-					<div class="col-md-2" id="passed_variable4"></div>
-
-				</div>
-				<!-- Failed Chart Features -->
-				<div class="row">
-					<div class="col-md-2" id="num_failed_pieces"></div>
-					<div class="col-md-2" id="failed_variable0"></div>
-					<div class="col-md-2" id="failed_variable1"></div>
-					<div class="col-md-2" id="failed_variable2"></div>
-					<div class="col-md-2" id="failed_variable3"></div>
-					<div class="col-md-2" id="failed_variable4"></div>
-				</div>
-			</div>
-			<div class="col-md-1"></div>
-
-		</div>
-		<div class="row">
-			<div class="col-md-1"></div>
-			<div class="col-md-10">
-				<button type="button" class="btn btn-warning rigth" onclick="dc.filterAll(); dc.redrawAll();">RESET</button>
-			</div>
-			<div class="col-md-1"></div>
+		<div data-role="main" class="ui-content">
+			<p>With the ui-btn-active class, notice that the Home button stays highlighted (selected).</p>
+			<p>If you click on the Page Two, you will notice that none of the buttons are highlighted (selected).</p>
 		</div>
 
-		<!-- App -->
-		<script type="text/javascript" src="./assets/libs/jquery/notify.min.js"></script>
-		<script  type="text/javascript" src="./app/app.js"></script>
+		<div data-role="footer">
+			<h1>My Footer</h1>
+		</div> 
+	</div> 
 
-	</body>
+	<div data-role="page" id="pagetwo">
+		<div data-role="header">
+			<h1>Welcome To My Homepage</h1>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="#pageone" data-icon="home">Home</a></li>
+					<li><a href="#" data-icon="arrow-r">Page Two</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div data-role="main" class="ui-content">
+			<p>No buttons are pre-selected (highlighted) in this page..</p> 
+			<p>To get the selected look for each button that represents the page you are actually on, go back to our navbar tutorial and read the next step to find out how!</p>
+		</div>
+
+		<div data-role="footer">
+			<h1>My Footer</h1>
+		</div>
+	</div> 
+
+
+	<div class="row" style="visibility: none">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="entireData"></div>		
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="v0"></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="v1"></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="v2"></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="v3"></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10" id="v4"></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-2"><h3 id="dateSelection" class="alert alert-info">Date selection from: Tue Jan 01 2008 to Wed Dec 31 2008</h3></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"><h3 id="todSelection" class="alert alert-info">Hour selection from: 0h to 23h</h3></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"><h3 id="dowSelection" class="alert alert-info">Day selection: 0, 1, 2, 3, 4, 5, 6</h3></div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<!-- Headings -->
+		<div class="col-md-10">
+			<div class="row">
+				<div class="col-md-2"></div>
+				<div class="col-md-2"><h3>Feature V60</h3></div>
+				<div class="col-md-2"><h3>Feature V65</h3></div>
+				<div class="col-md-2"><h3>Feature V66</h3></div>
+				<div class="col-md-2"><h3>Feature V206</h3></div>
+				<div class="col-md-2"><h3>Feature V342</h3></div>
+			</div>
+			<!-- Passed Chart Features -->
+			<div class="row">
+				<div class="col-md-2" id="num_passed_pieces"></div>
+				<div class="col-md-2" id="passed_variable0"></div>
+				<div class="col-md-2" id="passed_variable1"></div>
+				<div class="col-md-2" id="passed_variable2"></div>
+				<div class="col-md-2" id="passed_variable3"></div>
+				<div class="col-md-2" id="passed_variable4"></div>
+
+			</div>
+			<!-- Failed Chart Features -->
+			<div class="row">
+				<div class="col-md-2" id="num_failed_pieces"></div>
+				<div class="col-md-2" id="failed_variable0"></div>
+				<div class="col-md-2" id="failed_variable1"></div>
+				<div class="col-md-2" id="failed_variable2"></div>
+				<div class="col-md-2" id="failed_variable3"></div>
+				<div class="col-md-2" id="failed_variable4"></div>
+			</div>
+		</div>
+		<div class="col-md-1"></div>
+
+	</div>
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+			<button type="button" class="btn btn-warning rigth" onclick="dc.filterAll(); dc.redrawAll();">RESET</button>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<!-- App -->
+	<script type="text/javascript" src="./assets/libs/jquery/notify.min.js"></script>
+	<script  type="text/javascript" src="./app/app.js"></script>
+
+</body>
 </html> 

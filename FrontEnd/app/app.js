@@ -13,6 +13,7 @@ var tod_failed;
 	STRAD WHEEL
 */ 
 var timewheel;
+var colorArray = ["#31D66C", "#FF5E57"];
 
 /*
 	Crossfilter variables
@@ -41,33 +42,38 @@ var group_failed;
 var charts = { 'passed':[], 'failed':[] };
 
 /*
-	Creates the STRAD WHEEL
+	Creates a STRAD WHEEL
 */
-function createSTRAD( dict ) {
+function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed ) {
 
-	year_passed = dict.year_passed;
-	tod_passed = dict.tod_passed;
-	year_failed = dict.year_failed;
-	tod_failed = dict.tod_failed;
+	function colorScale(n) { return colorArray[n % colorArray.length]; }
 
 	//populate div with the tool
-	timewheel = new StradWheel( '#timeview' );
+	timewheel = new StradWheel( selector, colorScale );
 
-	timewheel.setSelectableYears( [ 2008 ] );
-	timewheel.setYear( 2008 );
+	timewheel.setSelectableYears( [ '2008' ] );
+	timewheel.setYear( '2008' );
 
 	//Register to changes:
 
 	timewheel.onDatesChange(function(new_datesrange){
-		date_dim.passed[0].filterRange( new_datesrange );
-		date_dim.failed[0].filterRange( new_datesrange );
+		var filter = function( d ) { 
+			if( new_datesrange[0].valueOf( ) >= new_datesrange[1].valueOf( ) ) return ( d >= new_datesrange[0] || d <= new_datesrange[1] ); 
+			else return ( d >= new_datesrange[0] && d <= new_datesrange[1] ); 
+		};
+		date_dim.passed[0].filter( filter );
+		date_dim.failed[0].filter( filter );
 		dc.redrawAll( );
 
-		$('#notifications').notify('Selected days: '
+		d3.select( '#dateSelection' )
+			.text( 'Date selection from: ' + new_datesrange[0].toDateString() + ' to ' + new_datesrange[1].toDateString() )
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-warning')
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-info');
 
-			+new_datesrange[0].toDateString() + ' to ' + new_datesrange[1].toDateString(),{position:'bottom left',className: 'info'
-
-		})
 	});
 
 	timewheel.onTodChange(function(new_todrange){
@@ -80,11 +86,15 @@ function createSTRAD( dict ) {
 		date_dim.failed[1].filter( filter );
 		dc.redrawAll( );
 
-		$('#notifications').notify('Selected hours: '
-			
-			+new_todrange[0] + ' to ' + new_todrange[1],{position:'bottom left',className: 'info'
+		d3.select( '#todSelection' )
+			.text( 'Hour selection from: ' +new_todrange[0] + 'h to ' + new_todrange[1] + 'h' )
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-warning')
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-info');
 
-		})
 	});
 
 
@@ -97,11 +107,15 @@ function createSTRAD( dict ) {
 		date_dim.failed[1].filter( filter );
 		dc.redrawAll( );
 
-		$('#notifications').notify('The selected dows are now: ['
-			
-			+new_dows +']',{position:'bottom left',className: 'info'
+		d3.select( '#dowSelection' )
+			.text( 'Day selection: ' + new_dows.join( ', ' ) )
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-warning')
+			.transition( )
+			.duration( 500 )
+			.attr('class', 'alert alert-info');
 
-		})
 	});
 
 	timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
@@ -172,7 +186,7 @@ function createCharts( important_vars, data ) {
 		minimum.push( dimensions.passed[i].bottom(1)[0][important_vars[i]] );
 		maximum.push( dimensions.passed[i].top(1)[0][important_vars[i]] );		
 
-		filter_dimensions.passed[i].filter( function( d ) { return String( d ) === String( 1 ); } )
+		filter_dimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
 
 
 		var name_passed = 'passed_variable' + i;
@@ -194,7 +208,7 @@ function createCharts( important_vars, data ) {
 		filter_dimensions.failed.push( cf_failed.dimension( filter_dimension_creator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
 
-		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( -1 ); } )
+		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
 
 		var name_failed = 'failed_variable' + i;
 		var width_failed = document.getElementById( name_failed ).offsetWidth * 0.98;
@@ -224,7 +238,17 @@ function initialize() {
 
 	d3.json( './data/dict_results.json', function( dict ) {
 
-		createSTRAD( dict );
+		createSTRAD( '#entireData', dict.year_passed, dict.year_failed, dict.tod_passed, dict.tod_failed );
+
+	} );
+
+	d3.json( './data/date_important_variables.json', function( dict ) {
+
+		createSTRAD( '#v0', dict.v0.passed_date, dict.v0.failed_date, dict.v0.passed_tod, dict.v0.failed_tod );
+		createSTRAD( '#v1', dict.v1.passed_date, dict.v1.failed_date, dict.v1.passed_tod, dict.v1.failed_tod );
+		createSTRAD( '#v2', dict.v2.passed_date, dict.v2.failed_date, dict.v2.passed_tod, dict.v2.failed_tod );
+		createSTRAD( '#v3', dict.v3.passed_date, dict.v3.failed_date, dict.v3.passed_tod, dict.v3.failed_tod );
+		createSTRAD( '#v4', dict.v4.passed_date, dict.v4.failed_date, dict.v4.passed_tod, dict.v4.failed_tod );
 
 	} );
 
@@ -240,50 +264,5 @@ function initialize() {
 
 	
 }
+
 initialize();
-
-//choose plotlines to add/remove:
-$('#btn_add_yearplotline').click(function(){
-	var line=$('#add_yearplotline').val();
-	switch (line)
-	{
-		case 'Passed Pieces':
-		timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
-		break;
-		case 'Failed Pieces':
-		timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
-		break;
-	}
-	$('#add_yearplotline option[value="'+line+'"]').remove();
-	$('#rm_yearplotline').append('<option value="'+line+'">'+line+'</option>');
-});
-
-$('#btn_add_dayplotline').click(function(){
-	var line=$('#add_dayplotline').val();
-	switch (line)
-	{
-		case 'Passed Pieces':
-		timewheel.addDayPlotline('Passed Pieces per Hour', tod_passed);
-		break;
-		case 'Failed Pieces':
-		timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
-		break;
-	}
-	$('#add_dayplotline option[value="'+line+'"]').remove();
-	$('#rm_dayplotline').append('<option value="'+line+'">'+line+'</option>');
-});
-
-$('#btn_rm_yearplotline').click(function(){
-	var line=$('#rm_yearplotline').val();
-	timewheel.removeYearPlotline(line);
-	$('#rm_yearplotline option[value="'+line+'"]').remove();
-	$('#add_yearplotline').append('<option value="'+line+'">'+line+'</option>');
-});
-
-$('#btn_rm_dayplotline').click(function(){
-	var line=$('#rm_dayplotline').val();
-	timewheel.removeDayPlotline(line);
-	$('#rm_dayplotline option[value="'+line+'"').remove();
-	$('#add_dayplotline').append('<option value="'+line+'">'+line+'</option>');
-
-});

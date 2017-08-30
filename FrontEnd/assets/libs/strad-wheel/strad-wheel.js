@@ -3,9 +3,7 @@
  */
 //Here are the exposed services of our library.
 
-var StradWheel=function(parent_selector){
-
-
+var StradWheel=function(parent_selector, colorScale){
 
     //empty dayradar
     var empty_dayradar=[{"group":"","axes":[{"axis":"12m","value":0},{"axis":"11am","value":0},{"axis":"10am","value":0},{"axis":"9am","value":0},{"axis":"8am","value":0},{"axis":"7am","value":0},{"axis":"6am","value":0},{"axis":"5am","value":0},{"axis":"4am","value":0},{"axis":"3am","value":0},{"axis":"2am","value":0},{"axis":"1am","value":0},{"axis":"12am","value":0},{"axis":"11pm","value":0},{"axis":"10pm","value":0},{"axis":"9pm","value":0},{"axis":"8pm","value":0},{"axis":"7pm","value":0},{"axis":"6pm","value":0},{"axis":"5pm","value":0},{"axis":"4pm","value":0},{"axis":"3pm","value":0},{"axis":"2pm","value":0},{"axis":"1pm","value":0}]}];
@@ -103,7 +101,7 @@ var StradWheel=function(parent_selector){
         clickableAxes: true,
         rotateLabels:true,
         marginLegend:{x:-70,y:20},
-        colors: d3.scale.category20()
+        colors: colorScale
     };
     var radarConfigHours = {
         w: 240,
@@ -126,7 +124,7 @@ var StradWheel=function(parent_selector){
         innerRadius: 0.2, //percentage
         maxValue: 1,//minimum maximum-value showed
         marginLegend:{x:50,y:270},
-        colors: d3.scale.category20()
+        colors: colorScale
     };
 
 //config for dummies radars for styling
@@ -495,7 +493,7 @@ var StradWheel=function(parent_selector){
         yearRadarPlotted[m]=[datesJson(dataJ.data)];
         var radarConfigDateM = (JSON.parse(JSON.stringify(radarConfigDate)));//cloned object
         //radarConfigDateM.colors=radarConfigDate.colors;
-        radarConfigDateM.colors=d3.scale.category20();
+        radarConfigDateM.colors=colorScale;
         radarConfigDateM.rotate=(11-m)*2*Math.PI/12;
         radarConfigDateM.showLevelsLabels=(m==0)?true:false;
         radarConfigDateM.showLegend=(m==0)?true:false;
