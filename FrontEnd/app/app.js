@@ -24,6 +24,8 @@ var cf_failed;
 var dimensions = { 'passed':[], 'failed':[] };
 var dim_passed;
 var dim_failed;
+var date_dim_passed;
+var date_dim_failed;
 var filter_dimensions = { 'passed':[], 'failed':[] };
 var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = [];
@@ -58,35 +60,39 @@ function createSTRAD( dict ) {
 	//Register to changes:
 
 	timewheel.onDatesChange(function(new_datesrange){
-		$('#notifications').notify('The selected dates range is now: '
+		date_dim_passed.filterRange( new_datesrange );
+		date_dim_failed.filterRange( new_datesrange );
+		dc.redrawAll( );
 
-			+new_datesrange ,{position:'bottom left',autoHideDelay:3000, className: 'info'
+		$('#notifications').notify('Selected days: '
+
+			+new_datesrange[0].toDateString() + ' to ' + new_datesrange[1].toDateString(),{position:'bottom left',className: 'info'
 
 		})
 	});
 
 	timewheel.onTodChange(function(new_todrange){
+		// date_dim_passed.filterRange( new_datesrange );
+		// date_dim_failed.filterRange( new_datesrange );
+		// dc.redrawAll( );
+
 		$('#notifications').notify('The selected time range is now: ['
 			
-			+timewheel.getTodRange() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
+			+new_todrange +']',{position:'bottom left',className: 'info'
 
 		})
 	});
 
 
 	timewheel.onDowsChange(function(new_dows){
+		// date_dim_passed.filterRange( new_datesrange );
+		// date_dim_failed.filterRange( new_datesrange );
+		// dc.redrawAll( );
+
 		$('#notifications').notify('The selected dows are now: ['
 			
-			+timewheel.getDows() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
+			+new_dows +']',{position:'bottom left',className: 'info'
 
-		})
-	});
-
-	timewheel.onChange(function(prop){
-		$('#notifications2').notify('This has changed: '
-		
-			+prop ,{position:'bottom left',autoHideDelay:3000, className: 'success'
-		
 		})
 	});
 
@@ -117,6 +123,9 @@ function createCharts( important_vars, data ) {
 
 	dim_failed = cf_failed.dimension( function( d ) { return d.INDEX; } );
 	group_failed = dim_failed.groupAll( ).reduce( add, remove, initial );
+
+	date_dim_passed = cf_passed.dimension( function( d ) { return new Date( d.TIMESTAMP ).valueOf(); } );
+	date_dim_failed = cf_failed.dimension( function( d ) { return new Date( d.TIMESTAMP ).valueOf(); } );
 
 	dc.numberDisplay( '#num_passed_pieces' )
 		.valueAccessor( value_accesor )
@@ -219,8 +228,6 @@ function initialize() {
 	
 }
 initialize();
-
-
 
 //choose plotlines to add/remove:
 $('#btn_add_yearplotline').click(function(){
