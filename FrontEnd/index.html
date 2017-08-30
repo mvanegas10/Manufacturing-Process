@@ -36,75 +36,62 @@
 
 	</div>
 
-	<div class="navbar-collapse collapse">
+	<div class="row navbar-collapse collapse">
 		<ul class="nav navbar-nav" id="nav">
-			<li><button id="button-general" type="button" class="btn btn-warning rigth" onclick="changeView('general');">General</button></li>
-			<li><button id="button-v0" type="button" class="btn btn-info rigth" onclick="changeView('v0');">V0</button></li>
-			<li><button id="button-v1" type="button" class="btn btn-info rigth" onclick="changeView('v1');">V1</button></li>
-			<li><button id="button-v2" type="button" class="btn btn-info rigth" onclick="changeView('v2');">V2</button></li>
-			<li><button id="button-v3" type="button" class="btn btn-info rigth" onclick="changeView('v3');">V3</button></li>
-			<li><button id="button-v4" type="button" class="btn btn-info rigth" onclick="changeView('v4');">V4</button></li>
+			<li><button id="button-general" type="button" class="btn btn-warning rigth no-radius" onclick="changeView('general');">General</button></li>
+			<li><button id="button-v0" type="button" class="btn btn-info rigth no-radius" onclick="changeView('v0');">Feature V60</button></li>
+			<li><button id="button-v1" type="button" class="btn btn-info rigth no-radius" onclick="changeView('v1');">Feature V65</button></li>
+			<li><button id="button-v2" type="button" class="btn btn-info rigth no-radius" onclick="changeView('v2');">Feature V66</button></li>
+			<li><button id="button-v3" type="button" class="btn btn-info rigth no-radius" onclick="changeView('v3');">Feature V206</button></li>
+			<li><button id="button-v4" type="button" class="btn btn-info rigth no-radius" onclick="changeView('v4');">Feature V342</button></li>
 		</ul>
+		<button type="button" class="btn btn-danger rigth" onclick="reset()">Reset</button>
 	</div>
+
+<!-- 	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-2"><label id="dateSelection">Date selection from: Tue Jan 01 2008 to Wed Dec 31 2008</label></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"><label id="todSelection">Hour selection from: 0h to 23h</label></div>
+		<div class="col-md-2"></div>
+		<div class="col-md-2"><label id="dowSelection">Day selection: 0, 1, 2, 3, 4, 5, 6</label></div>
+		<div class="col-md-1"></div>
+	</div> -->
 
 
 	<div class="row" id="parent-timewheel">
-		<div class="col-md-1"></div>
-		<div class="col-md-10" id="timewheel"></div>		
-		<div class="col-md-1"></div>
-	</div>
-
-	<div class="row">
-		<div class="col-md-1"></div>
-		<div class="col-md-2"><h3 id="dateSelection" class="alert alert-info">Date selection from: Tue Jan 01 2008 to Wed Dec 31 2008</h3></div>
-		<div class="col-md-2"></div>
-		<div class="col-md-2"><h3 id="todSelection" class="alert alert-info">Hour selection from: 0h to 23h</h3></div>
-		<div class="col-md-2"></div>
-		<div class="col-md-2"><h3 id="dowSelection" class="alert alert-info">Day selection: 0, 1, 2, 3, 4, 5, 6</h3></div>
-		<div class="col-md-1"></div>
-	</div>
-
-	<div class="row">
-		<div class="col-md-1"></div>
-		<!-- Headings -->
-		<div class="col-md-10">
+		<div class="col-md-7 timewheel" id="timewheel"></div>		
+		<div class="col-md-5">
 			<div class="row">
-				<div class="col-md-2"></div>
-				<div class="col-md-2"><h3>Feature V60</h3></div>
-				<div class="col-md-2"><h3>Feature V65</h3></div>
-				<div class="col-md-2"><h3>Feature V66</h3></div>
-				<div class="col-md-2"><h3>Feature V206</h3></div>
-				<div class="col-md-2"><h3>Feature V342</h3></div>
+				<div class="col-md-6" id="num_passed_pieces"></div>
+				<div class="col-md-6" id="num_failed_pieces"></div>
 			</div>
-			<!-- Passed Chart Features -->
+			<div class="row"><p>Feature V60</p></div>
 			<div class="row">
-				<div class="col-md-2" id="num_passed_pieces"></div>
-				<div class="col-md-2" id="passed_variable0"></div>
-				<div class="col-md-2" id="passed_variable1"></div>
-				<div class="col-md-2" id="passed_variable2"></div>
-				<div class="col-md-2" id="passed_variable3"></div>
-				<div class="col-md-2" id="passed_variable4"></div>
-
+				<div class="col-md-6" id="passed_variable0"></div>
+				<div class="col-md-6" id="failed_variable0"></div>
 			</div>
-			<!-- Failed Chart Features -->
+			<div class="row"><p>Feature V65</p></div>
 			<div class="row">
-				<div class="col-md-2" id="num_failed_pieces"></div>
-				<div class="col-md-2" id="failed_variable0"></div>
-				<div class="col-md-2" id="failed_variable1"></div>
-				<div class="col-md-2" id="failed_variable2"></div>
-				<div class="col-md-2" id="failed_variable3"></div>
-				<div class="col-md-2" id="failed_variable4"></div>
+				<div class="col-md-6" id="passed_variable1"></div>
+				<div class="col-md-6" id="failed_variable1"></div>
+			</div>
+			<div class="row"><p>Feature V66</p></div>
+			<div class="row">
+				<div class="col-md-6" id="passed_variable2"></div>
+				<div class="col-md-6" id="failed_variable2"></div>
+			</div>
+			<div class="row"><p>Feature V206</p></div>
+			<div class="row">
+				<div class="col-md-6" id="passed_variable3"></div>
+				<div class="col-md-6" id="failed_variable3"></div>
+			</div>
+			<div class="row"><p>Feature V342</p></div>
+			<div class="row">
+				<div class="col-md-6" id="passed_variable4"></div>
+				<div class="col-md-6" id="failed_variable4"></div>
 			</div>
 		</div>
-		<div class="col-md-1"></div>
-
-	</div>
-	<div class="row">
-		<div class="col-md-1"></div>
-		<div class="col-md-10">
-			<button type="button" class="btn btn-warning rigth" onclick="reset()">Reset</button>
-		</div>
-		<div class="col-md-1"></div>
 	</div>
 
 	<!-- App -->

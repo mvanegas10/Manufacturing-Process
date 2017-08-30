@@ -1,16 +1,18 @@
 html {
 	width: 98%;
 }
-
 h2.title {
 	text-align: center;
-	padding: 30px 15px;
+	padding: 10px 0px;
 }
-h3 {
+div.timewheel {
+	padding-left: 1cm;
+}
+p {
 	text-align: center;
 }
 p.numberDisplay {
-	font-size: 26px;
+	font-size: 22px;
 	text-align: center;
 }
 p.passed {
@@ -21,4 +23,7 @@ p.failed {
 }
 button.rigth {
 	float:right;
+}
+button.no-radius {
+	border-radius: 0px;
 }

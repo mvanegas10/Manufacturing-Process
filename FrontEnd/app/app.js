@@ -75,12 +75,12 @@ function changeView( view ) {
 		.html( '' );
 
 	d3.select( '#button-' + current_nav )
-		.attr( 'class', 'btn btn-info rigth' );
+		.attr( 'class', 'btn btn-info rigth no-radius' );
 
 	current_nav = view;
 
 	d3.select( '#button-' + current_nav )
-		.attr( 'class', 'btn btn-warning rigth' );
+		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
 	timewheel[view] = createSTRAD( '#timewheel', imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
 	
@@ -241,7 +241,7 @@ function createCharts( important_vars, data ) {
 
 		var chart = dc.barChart( '#' + name_passed )
 			.width(width_passed)
-			.height(150)
+			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
 			.dimension( dimensions.passed[i] )
@@ -262,7 +262,7 @@ function createCharts( important_vars, data ) {
 
 		var chart = dc.barChart( '#' + name_failed )
 			.width(width_failed)
-			.height(150)
+			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
