@@ -20,100 +20,132 @@ var timewheel;
 var cf;
 
 // Dimensions
-var v0_dim;
-var v1_dim;
-var v2_dim;
-var v3_dim;
-var v4_dim;
+var dimensions = [];
+var rounds = [ -1, -1, -1, 0, 1 ];
+var minimum = [];
+var maximum = [];
 
 // Groupings
-var count_v0;
-var count_v1;
-var count_v2;
-var count_v3;
-var count_v4;
+var groups = [];
 
+/*
+	DC
+*/
+var charts = [];
+
+/*
+	Creates the STRAD WHEEL
+*/
+function createSTRAD( dict ) {
+
+	year_passed = dict.year_passed;
+	tod_passed = dict.tod_passed;
+	year_failed = dict.year_failed;
+	tod_failed = dict.tod_failed;
+
+	//populate div with the tool
+	timewheel = new StradWheel( '#timeview' );
+
+	timewheel.setSelectableYears( [ 2008 ] );
+	timewheel.setYear( 2008 );
+
+	//Register to changes:
+
+	timewheel.onDatesChange(function(new_datesrange){
+		$('#notifications').notify('The selected dates range is now: '
+
+			+new_datesrange ,{position:'bottom left',autoHideDelay:3000, className: 'info'
+
+		})
+	});
+
+	timewheel.onTodChange(function(new_todrange){
+		$('#notifications').notify('The selected time range is now: ['
+			
+			+timewheel.getTodRange() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
+
+		})
+	});
+
+
+	timewheel.onDowsChange(function(new_dows){
+		$('#notifications').notify('The selected dows are now: ['
+			
+			+timewheel.getDows() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
+
+		})
+	});
+
+	timewheel.onChange(function(prop){
+		$('#notifications2').notify('This has changed: '
+		
+			+prop ,{position:'bottom left',autoHideDelay:3000, className: 'success'
+		
+		})
+	});
+
+	timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
+	timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
+	timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
+	timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+
+}
+
+/*
+	Creates the charts
+*/
+function createCharts( important_vars, data ) {
+
+	cf = crossfilter( data );
+	console.log( important_vars );
+
+	for ( var i = 0; i < important_vars.length; i++ ) {
+
+		dimensions.push( cf.dimension( function( d ) { return +d3.round(d[important_vars[i]], rounds[i]); } ) );
+		groups.push( dimensions[i].group( ).reduceCount( ) );
+
+		console.log( groups[i].top( Infinity ) );
+
+		minimum.push( dimensions[i].bottom(1)[0][important_vars[i]] );
+		maximum.push( dimensions[i].top(1)[0][important_vars[i]] );
+
+		var name = 'variable' + i;
+		console.log( name );
+		var width = document.getElementById( name ).offsetWidth * 0.9;
+
+		var chart = dc.barChart( '#' + name )
+			.width(width)
+			.height(200)
+			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.dimension( dimensions[i] )
+			.group( groups[i] );
+
+
+		charts.push( chart );		
+
+	}
+	dc.renderAll( );
+
+}
+
+/*
+	Initialized the application
+*/
 function initialize() {
 
 	d3.json( './data/dict_results.json', function( dict ) {
 
-		year_passed = dict.year_passed;
-		tod_passed = dict.tod_passed;
-		year_failed = dict.year_failed;
-		tod_failed = dict.tod_failed;
-
-		//populate div with the tool
-		timewheel = new StradWheel( '#timeview' );
-
-		timewheel.setSelectableYears( [2008] );
-		timewheel.setYear( 2008 );
-
-		//Register to changes:
-
-		timewheel.onDatesChange(function(new_datesrange){
-			$('#notifications').notify('The selected dates range is now: '
-
-				+new_datesrange ,{position:'bottom left',autoHideDelay:3000, className: 'info'
-
-			})
-		});
-
-		timewheel.onTodChange(function(new_todrange){
-			$('#notifications').notify('The selected time range is now: ['
-				
-				+timewheel.getTodRange() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
-
-			})
-		});
-
-
-		timewheel.onDowsChange(function(new_dows){
-			$('#notifications').notify('The selected dows are now: ['
-				
-				+timewheel.getDows() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
-
-			})
-		});
-
-		timewheel.onChange(function(prop){
-			$('#notifications2').notify('This has changed: '
-			
-				+prop ,{position:'bottom left',autoHideDelay:3000, className: 'success'
-			
-			})
-		});
-
-		timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
-		timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
-		timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
-		timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+		createSTRAD( dict );
 
 	} );
 
 	d3.csv( './data/data_join_imp_variables.csv', function( data ) {
 
-		cf = crossfilter( data );
+		d3.csv( './data/var_importance.csv', function( important_vars ) {
 
-		v0_dim = cf.dimension( function( d ) { return +d3.round(d.V66, -1); } );
-		count_v0 = v0_dim.group( ).reduceCount( );
+			createCharts( important_vars.map( function( d ) { return d.Variables; } ), data );
 
-		v1_dim = cf.dimension( function( d ) { return +d3.round(d.V17, 0); } );
-		count_v1 = v1_dim.group( ).reduceCount( );
-
-		v2_dim = cf.dimension( function( d ) { return +d3.round(d.V26, 1); } );
-		count_v2 = v2_dim.group( ).reduceCount( );
-
-		v3_dim = cf.dimension( function( d ) { return +d3.round(d.V60, -1); } );
-		count_v3 = v3_dim.group( ).reduceCount( );
-
-		v4_dim = cf.dimension( function( d ) { return +d3.round(d.V65, -1); } );
-		count_v4 = v4_dim.group( ).reduceCount( );
-
-		console.log( count_v0.top( Infinity ) );
-		console.log( count_v1.top( Infinity ) );
-		console.log( count_v2.top( Infinity ) );
-		console.log( count_v3.top( Infinity ) );
-		console.log( count_v4.top( Infinity ) );
+		} );
 
 	} );
 

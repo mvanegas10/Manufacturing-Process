@@ -76,11 +76,14 @@
 				</div>
 
 				<div class="row">
+
 					<div class="col-md-12">
+
 						<div class="row"><p>Remove a plotline:</p></div>
 						<div class="row">
 							<div class="col-md-1"></div>
 							<div class="col-md-10">
+
 								<label>Year plotline:</label>
 								<div class="row">
 									<div class="col-md-10">
@@ -93,6 +96,7 @@
 										<button id="btn_rm_yearplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
 									</div>
 								</div>
+
 								<label>Day plotline:</label>
 								<div class="row">
 									<div class="col-md-10">
@@ -105,11 +109,20 @@
 										<button id="btn_rm_dayplotline" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button>
 									</div>
 								</div>
+
 							</div>
 							<div class="col-md-1"></div>
+
 						</div>
+
 					</div>
 
+				</div>
+
+				<div class="row">
+					<div id="notifications2"></div>
+					<br/><br/><br/>
+					<div id="notifications"></div>
 				</div>
 
 			</div>
@@ -118,12 +131,31 @@
 		</div>
 
 		<div class="row">
-		    <div id="notifications2"></div>
-    		<br/><br/><br/>
-    		<div id="notifications"></div>
+			<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<button type="button" onclick="dc.filterAll(); dc.redrawAll();">RESET</button>
+			</div>
+			<div class="col-md-1"></div>
 		</div>
-
 		<div class="row">
+			<div class="col-md-1"></div>
+
+			<!-- Variable 0 -->
+			<div class="col-md-2" id="variable0"></div>
+
+			<!-- Variable 1 -->
+			<div class="col-md-2" id="variable1"></div>
+
+			<!-- Variable 2 -->
+			<div class="col-md-2" id="variable2"></div>
+
+			<!-- Variable 3 -->
+			<div class="col-md-2" id="variable3"></div>
+
+			<!-- Variable 4 -->
+			<div class="col-md-2" id="variable4"></div>
+
+			<div class="col-md-1"></div>
 
 		</div>
 
