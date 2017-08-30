@@ -24,8 +24,7 @@ var cf_failed;
 var dimensions = { 'passed':[], 'failed':[] };
 var dim_passed;
 var dim_failed;
-var date_dim_passed;
-var date_dim_failed;
+var date_dim = { 'passed':[], 'failed':[] };
 var filter_dimensions = { 'passed':[], 'failed':[] };
 var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = [];
@@ -60,8 +59,8 @@ function createSTRAD( dict ) {
 	//Register to changes:
 
 	timewheel.onDatesChange(function(new_datesrange){
-		date_dim_passed.filterRange( new_datesrange );
-		date_dim_failed.filterRange( new_datesrange );
+		date_dim.passed[0].filterRange( new_datesrange );
+		date_dim.failed[0].filterRange( new_datesrange );
 		dc.redrawAll( );
 
 		$('#notifications').notify('Selected days: '
@@ -72,14 +71,13 @@ function createSTRAD( dict ) {
 	});
 
 	timewheel.onTodChange(function(new_todrange){
-		console.log(new_todrange)
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
 			if( new_todrange[0] >= new_todrange[1] ) return ( hour >= new_todrange[0] || hour <= new_todrange[1] ); 
 			else return ( hour >= new_todrange[0] && hour <= new_todrange[1] ); 
 		};
-		date_dim_passed.filter( filter );
-		date_dim_failed.filter( filter );
+		date_dim.passed[1].filter( filter );
+		date_dim.failed[1].filter( filter );
 		dc.redrawAll( );
 
 		$('#notifications').notify('Selected hours: '
@@ -91,9 +89,13 @@ function createSTRAD( dict ) {
 
 
 	timewheel.onDowsChange(function(new_dows){
-		// date_dim_passed.filterRange( new_datesrange );
-		// date_dim_failed.filterRange( new_datesrange );
-		// dc.redrawAll( );
+		var filter = function( d ) { 
+			var dow = new Date( d ).getDay();
+			return new_dows.indexOf( dow ) !== -1 ; 
+		};
+		date_dim.passed[1].filter( filter );
+		date_dim.failed[1].filter( filter );
+		dc.redrawAll( );
 
 		$('#notifications').notify('The selected dows are now: ['
 			
@@ -122,6 +124,7 @@ function createCharts( important_vars, data ) {
 	var initial = function (p, v) { return 0; };
 
 	var value_accesor = function(d) { return d; };
+	var date_accesor = function( d ) { return new Date( d.TIMESTAMP ).valueOf(); };
 	var format_number = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
 
 	dim_passed = cf_passed.dimension( function( d ) { return d.INDEX; } );
@@ -130,8 +133,12 @@ function createCharts( important_vars, data ) {
 	dim_failed = cf_failed.dimension( function( d ) { return d.INDEX; } );
 	group_failed = dim_failed.groupAll( ).reduce( add, remove, initial );
 
-	date_dim_passed = cf_passed.dimension( function( d ) { return new Date( d.TIMESTAMP ).valueOf(); } );
-	date_dim_failed = cf_failed.dimension( function( d ) { return new Date( d.TIMESTAMP ).valueOf(); } );
+	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
+	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
+	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
+	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
+	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
+	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
 
 	dc.numberDisplay( '#num_passed_pieces' )
 		.valueAccessor( value_accesor )
