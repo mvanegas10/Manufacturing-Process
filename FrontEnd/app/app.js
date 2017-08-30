@@ -1,65 +1,127 @@
-/**
-* Created by carol on 1/08/16.
+/*
+	Data
 */
+// Passed dataset
+var year_passed;
+var tod_passed;
+
+// Failed dataset
+var year_failed;
+var tod_failed;
+
+/*
+	STRAD WHEEL
+*/ 
 var timewheel;
 
-//sample data:
+/*
+	Crossfilter variables
+*/
+var cf;
 
-var year_passed=[{'m': 0, 'd': 1, 'v': 1}, {'m': 0, 'd': 2, 'v': 1}, {'m': 0, 'd': 3, 'v': 1}, {'m': 1, 'd': 6, 'v': 5}, {'m': 2, 'd': 6, 'v': 1}, {'m': 3, 'd': 1, 'v': 2}, {'m': 3, 'd': 3, 'v': 1}, {'m': 4, 'd': 3, 'v': 1}, {'m': 4, 'd': 5, 'v': 6}, {'m': 5, 'd': 1, 'v': 5}, {'m': 5, 'd': 6, 'v': 1}, {'m': 6, 'd': 0, 'v': 3}, {'m': 6, 'd': 1, 'v': 5}, {'m': 6, 'd': 2, 'v': 2}, {'m': 6, 'd': 3, 'v': 2}, {'m': 6, 'd': 4, 'v': 1}, {'m': 6, 'd': 5, 'v': 3}, {'m': 7, 'd': 0, 'v': 5}, {'m': 7, 'd': 1, 'v': 3}, {'m': 7, 'd': 2, 'v': 6}, {'m': 7, 'd': 3, 'v': 4}, {'m': 7, 'd': 4, 'v': 7}, {'m': 7, 'd': 5, 'v': 5}, {'m': 7, 'd': 6, 'v': 8}, {'m': 8, 'd': 0, 'v': 3}, {'m': 8, 'd': 1, 'v': 2}, {'m': 8, 'd': 2, 'v': 4}, {'m': 8, 'd': 4, 'v': 4}, {'m': 8, 'd': 5, 'v': 2}, {'m': 8, 'd': 6, 'v': 2}, {'m': 9, 'd': 2, 'v': 6}, {'m': 10, 'd': 6, 'v': 2}];
+// Dimensions
+var v0_dim;
+var v1_dim;
+var v2_dim;
+var v3_dim;
+var v4_dim;
 
-var tod_passed=[{'h': 0, 'v': 3}, {'h': 1, 'v': 3}, {'h': 2, 'v': 3}, {'h': 3, 'v': 5}, {'h': 4, 'v': 6}, {'h': 5, 'v': 4}, {'h': 6, 'v': 5}, {'h': 7, 'v': 3}, {'h': 8, 'v': 3}, {'h': 9, 'v': 6}, {'h': 10, 'v': 1}, {'h': 11, 'v': 5}, {'h': 12, 'v': 3}, {'h': 13, 'v': 5}, {'h': 14, 'v': 3}, {'h': 15, 'v': 11}, {'h': 16, 'v': 4}, {'h': 17, 'v': 2}, {'h': 18, 'v': 3}, {'h': 19, 'v': 4}, {'h': 20, 'v': 6}, {'h': 21, 'v': 7}, {'h': 22, 'v': 4}, {'h': 23, 'v': 5}];
-
-var year_failed=[{'m': 0, 'd': 1, 'v': 7}, {'m': 0, 'd': 2, 'v': 25}, {'m': 0, 'd': 3, 'v': 16}, {'m': 1, 'd': 4, 'v': 1}, {'m': 1, 'd': 5, 'v': 62}, {'m': 1, 'd': 6, 'v': 30}, {'m': 2, 'd': 0, 'v': 25}, {'m': 2, 'd': 5, 'v': 10}, {'m': 2, 'd': 6, 'v': 14}, {'m': 3, 'd': 1, 'v': 16}, {'m': 3, 'd': 2, 'v': 13}, {'m': 3, 'd': 3, 'v': 17}, {'m': 4, 'd': 3, 'v': 27}, {'m': 4, 'd': 4, 'v': 2}, {'m': 4, 'd': 5, 'v': 26}, {'m': 5, 'd': 1, 'v': 43}, {'m': 5, 'd': 6, 'v': 18}, {'m': 6, 'd': 0, 'v': 7}, {'m': 6, 'd': 1, 'v': 21}, {'m': 6, 'd': 2, 'v': 20}, {'m': 6, 'd': 3, 'v': 30}, {'m': 6, 'd': 5, 'v': 9}, {'m': 6, 'd': 6, 'v': 11}, {'m': 7, 'd': 0, 'v': 36}, {'m': 7, 'd': 1, 'v': 33}, {'m': 7, 'd': 2, 'v': 31}, {'m': 7, 'd': 3, 'v': 83}, {'m': 7, 'd': 4, 'v': 103}, {'m': 7, 'd': 5, 'v': 87}, {'m': 7, 'd': 6, 'v': 60}, {'m': 8, 'd': 0, 'v': 66}, {'m': 8, 'd': 1, 'v': 58}, {'m': 8, 'd': 2, 'v': 32}, {'m': 8, 'd': 3, 'v': 43}, {'m': 8, 'd': 4, 'v': 57}, {'m': 8, 'd': 5, 'v': 72}, {'m': 8, 'd': 6, 'v': 68}, {'m': 9, 'd': 0, 'v': 22}, {'m': 9, 'd': 1, 'v': 16}, {'m': 9, 'd': 2, 'v': 40}, {'m': 9, 'd': 3, 'v': 26}, {'m': 9, 'd': 4, 'v': 13}, {'m': 10, 'd': 0, 'v': 11}, {'m': 10, 'd': 5, 'v': 5}, {'m': 10, 'd': 6, 'v': 17}, {'m': 11, 'd': 0, 'v': 5}, {'m': 11, 'd': 1, 'v': 22}, {'m': 11, 'd': 2, 'v': 7}];
-
-var tod_failed=[{'h': 0, 'v': 62}, {'h': 1, 'v': 39}, {'h': 2, 'v': 57}, {'h': 3, 'v': 65}, {'h': 4, 'v': 59}, {'h': 5, 'v': 70}, {'h': 6, 'v': 57}, {'h': 7, 'v': 70}, {'h': 8, 'v': 61}, {'h': 9, 'v': 49}, {'h': 10, 'v': 52}, {'h': 11, 'v': 63}, {'h': 12, 'v': 64}, {'h': 13, 'v': 45}, {'h': 14, 'v': 74}, {'h': 15, 'v': 88}, {'h': 16, 'v': 54}, {'h': 17, 'v': 56}, {'h': 18, 'v': 60}, {'h': 19, 'v': 59}, {'h': 20, 'v': 73}, {'h': 21, 'v': 64}, {'h': 22, 'v': 52}, {'h': 23, 'v': 70}];
+// Groupings
+var count_v0;
+var count_v1;
+var count_v2;
+var count_v3;
+var count_v4;
 
 function initialize() {
 
-	//populate div with the tool
-	timewheel=new StradWheel('#timeview');
+	d3.json( './data/dict_results.json', function( dict ) {
 
-	timewheel.setSelectableYears([2008]);
-	timewheel.setYear(2008);
+		year_passed = dict.year_passed;
+		tod_passed = dict.tod_passed;
+		year_failed = dict.year_failed;
+		tod_failed = dict.tod_failed;
 
-	//Register to changes:
+		//populate div with the tool
+		timewheel = new StradWheel( '#timeview' );
 
-	timewheel.onDatesChange(function(new_datesrange){
-		$('#notifications').notify('The selected dates range is now: '
-			+new_datesrange
-	//Could also be:
-	//+timewheel.getDatesRange()
-	,{position:'bottom left',autoHideDelay:3000, className: 'info'})
-	});
+		timewheel.setSelectableYears( [2008] );
+		timewheel.setYear( 2008 );
 
-	timewheel.onTodChange(function(new_todrange){
-		$('#notifications').notify('The selected time range is now: ['
-			+timewheel.getTodRange()
-	//Could also be:
-	//+new_todrange
-	+']',{position:'bottom left',autoHideDelay:3000, className: 'info'})
-	});
+		//Register to changes:
+
+		timewheel.onDatesChange(function(new_datesrange){
+			$('#notifications').notify('The selected dates range is now: '
+
+				+new_datesrange ,{position:'bottom left',autoHideDelay:3000, className: 'info'
+
+			})
+		});
+
+		timewheel.onTodChange(function(new_todrange){
+			$('#notifications').notify('The selected time range is now: ['
+				
+				+timewheel.getTodRange() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
+
+			})
+		});
 
 
-	timewheel.onDowsChange(function(new_dows){
-		$('#notifications').notify('The selected dows are now: ['
-			+timewheel.getDows()
-	//Could also be:
-	//+new_dows
-	+']',{position:'bottom left',autoHideDelay:3000, className: 'info'})
-	});
+		timewheel.onDowsChange(function(new_dows){
+			$('#notifications').notify('The selected dows are now: ['
+				
+				+timewheel.getDows() +']',{position:'bottom left',autoHideDelay:3000, className: 'info'
 
-	timewheel.onChange(function(prop){
-		$('#notifications2').notify('This has changed: '
-			+prop
-			,{position:'bottom left',autoHideDelay:3000, className: 'success'})
-	});
+			})
+		});
+
+		timewheel.onChange(function(prop){
+			$('#notifications2').notify('This has changed: '
+			
+				+prop ,{position:'bottom left',autoHideDelay:3000, className: 'success'
+			
+			})
+		});
+
+		timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
+		timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
+		timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
+		timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+
+	} );
+
+	d3.csv( './data/data_join_imp_variables.csv', function( data ) {
+
+		cf = crossfilter( data );
+
+		v0_dim = cf.dimension( function( d ) { return +d3.round(d.V66, -1); } );
+		count_v0 = v0_dim.group( ).reduceCount( );
+
+		v1_dim = cf.dimension( function( d ) { return +d3.round(d.V17, 0); } );
+		count_v1 = v1_dim.group( ).reduceCount( );
+
+		v2_dim = cf.dimension( function( d ) { return +d3.round(d.V26, 1); } );
+		count_v2 = v2_dim.group( ).reduceCount( );
+
+		v3_dim = cf.dimension( function( d ) { return +d3.round(d.V60, -1); } );
+		count_v3 = v3_dim.group( ).reduceCount( );
+
+		v4_dim = cf.dimension( function( d ) { return +d3.round(d.V65, -1); } );
+		count_v4 = v4_dim.group( ).reduceCount( );
+
+		console.log( count_v0.top( Infinity ) );
+		console.log( count_v1.top( Infinity ) );
+		console.log( count_v2.top( Infinity ) );
+		console.log( count_v3.top( Infinity ) );
+		console.log( count_v4.top( Infinity ) );
+
+	} );
+
+	
 }
 initialize();
 
-timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
-timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
-timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
-timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+
 
 //choose plotlines to add/remove:
 $('#btn_add_yearplotline').click(function(){

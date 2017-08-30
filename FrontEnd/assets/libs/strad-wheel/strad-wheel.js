@@ -443,7 +443,6 @@ var StradWheel=function(parent_selector){
         for(var i in d)
         {
             var r=d[i];
-            console.log(r)
             returned[r.h].v=r.v;
         }
         return returned;
