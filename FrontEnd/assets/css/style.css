@@ -6,3 +6,16 @@ h2.title {
 	text-align: center;
 	padding: 30px 15px;
 }
+h3 {
+	text-align: center;
+}
+p.numberDisplay {
+	font-size: 26px;
+	text-align: center;
+}
+p.passed {
+	color:#31D66C;
+}
+p.failed {
+	color:#FF5E57;
+}

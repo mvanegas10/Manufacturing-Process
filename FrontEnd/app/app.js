@@ -17,21 +17,27 @@ var timewheel;
 /*
 	Crossfilter variables
 */
-var cf;
+var cf_passed;
+var cf_failed;
 
 // Dimensions
-var dimensions = [];
+var dimensions = { 'passed':[], 'failed':[] };
+var dim_passed;
+var dim_failed;
+var filter_dimensions = { 'passed':[], 'failed':[] };
 var rounds = [ -1, -1, -1, 0, 1 ];
 var minimum = [];
 var maximum = [];
 
 // Groupings
-var groups = [];
+var groups = { 'passed':[], 'failed':[] };
+var group_passed;
+var group_failed;
 
 /*
 	DC
 */
-var charts = [];
+var charts = { 'passed':[], 'failed':[] };
 
 /*
 	Creates the STRAD WHEEL
@@ -96,34 +102,95 @@ function createSTRAD( dict ) {
 */
 function createCharts( important_vars, data ) {
 
-	cf = crossfilter( data );
-	console.log( important_vars );
+	cf_passed = crossfilter( data );
+	cf_failed = crossfilter( data );
+
+	var add = function (p, v) { return p + 1; };
+	var remove = function (p, v) { return p - 1; };
+	var initial = function (p, v) { return 0; };
+
+	var value_accesor = function(d) { return d; };
+	var format_number = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
+
+	dim_passed = cf_passed.dimension( function( d ) { return d.INDEX; } );
+	group_passed = dim_passed.groupAll( ).reduce( add, remove, initial );
+
+	dim_failed = cf_failed.dimension( function( d ) { return d.INDEX; } );
+	group_failed = dim_failed.groupAll( ).reduce( add, remove, initial );
+
+	dc.numberDisplay( '#num_passed_pieces' )
+		.valueAccessor( value_accesor )
+		.formatNumber( format_number )
+		.group(group_passed)
+		.html({
+			one:'<p class="numberDisplay passed"> %number passed <br>piece </p>',
+			some:'<p class="numberDisplay passed"> %number passed <br>pieces </p>',
+			none:'<p class="numberDisplay passed"> No passed <br>pieces</p>'
+		});
+
+	dc.numberDisplay( '#num_failed_pieces' )
+		.valueAccessor( value_accesor )
+		.formatNumber( format_number )
+		.group(group_failed)
+		.html({
+			one:'<p class="numberDisplay failed"> %number failed <br>piece </p>',
+			some:'<p class="numberDisplay failed"> %number failed <br>pieces </p>',
+			none:'<p class="numberDisplay failed"> No failed <br>pieces</p>'
+		});
 
 	for ( var i = 0; i < important_vars.length; i++ ) {
 
-		dimensions.push( cf.dimension( function( d ) { return +d3.round(d[important_vars[i]], rounds[i]); } ) );
-		groups.push( dimensions[i].group( ).reduceCount( ) );
+		var dimension_creator = function( d ) { return +d3.round(d[important_vars[i]], rounds[i]); };
+		var filter_dimension_creator = function( d ) { return d.RESULTS? String( d.RESULTS ): 0; };
 
-		console.log( groups[i].top( Infinity ) );
+		dimensions.passed.push( cf_passed.dimension( dimension_creator ) );
+		filter_dimensions.passed.push( cf_passed.dimension( filter_dimension_creator ) );
+		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		minimum.push( dimensions[i].bottom(1)[0][important_vars[i]] );
-		maximum.push( dimensions[i].top(1)[0][important_vars[i]] );
+		minimum.push( dimensions.passed[i].bottom(1)[0][important_vars[i]] );
+		maximum.push( dimensions.passed[i].top(1)[0][important_vars[i]] );		
 
-		var name = 'variable' + i;
-		console.log( name );
+		filter_dimensions.passed[i].filter( function( d ) { return String( d ) === String( 1 ); } )
+
+
+		var name = 'passed_variable' + i;
 		var width = document.getElementById( name ).offsetWidth * 0.9;
 
 		var chart = dc.barChart( '#' + name )
 			.width(width)
-			.height(200)
+			.height(150)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
-			.dimension( dimensions[i] )
-			.group( groups[i] );
+			.elasticY(true)
+			.dimension( dimensions.passed[i] )
+			.ordinalColors( [ '#31D66C' ] )
+			.group( groups.passed[i] )
+			.xUnits(function(d){ return 18; });
 
+		charts.passed.push( chart );
 
-		charts.push( chart );		
+		dimensions.failed.push( cf_failed.dimension( dimension_creator ) );
+		filter_dimensions.failed.push( cf_failed.dimension( filter_dimension_creator ) );
+		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
+
+		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( -1 ); } )
+
+		var name = 'failed_variable' + i;
+		var width = document.getElementById( name ).offsetWidth * 0.9;
+
+		var chart = dc.barChart( '#' + name )
+			.width(width)
+			.height(150)
+			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.elasticY(true)
+			.dimension( dimensions.failed[i] )
+			.ordinalColors( [ '#FF5E57' ] )
+			.group( groups.failed[i] )
+			.xUnits(function(d){ return 18; });
+
+		charts.failed.push( chart );
 
 	}
+
 	dc.renderAll( );
 
 }

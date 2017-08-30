@@ -133,31 +133,45 @@
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-10">
-				<button type="button" onclick="dc.filterAll(); dc.redrawAll();">RESET</button>
+				<button type="button" class="btn btn-warning" onclick="dc.filterAll(); dc.redrawAll();">RESET</button>
 			</div>
 			<div class="col-md-1"></div>
 		</div>
+
 		<div class="row">
 			<div class="col-md-1"></div>
 
-			<!-- Variable 0 -->
-			<div class="col-md-2" id="variable0"></div>
+			<!-- Headings -->
+			<div class="col-md-10">
+				<div class="row">
+					<div class="col-md-2"><h3>Number of features</h3></div>
+					<div class="col-md-2"><h3>Feature V66</h3></div>
+					<div class="col-md-2"><h3>Feature V17</h3></div>
+					<div class="col-md-2"><h3>Feature V26</h3></div>
+					<div class="col-md-2"><h3>Feature V60</h3></div>
+					<div class="col-md-2"><h3>Feature V65</h3></div>
+				</div>
+				<!-- Passed Chart Features -->
+				<div class="row">
+					<div class="col-md-2" id="num_passed_pieces"></div>
+					<div class="col-md-2" id="passed_variable0"></div>
+					<div class="col-md-2" id="passed_variable1"></div>
+					<div class="col-md-2" id="passed_variable2"></div>
+					<div class="col-md-2" id="passed_variable3"></div>
+					<div class="col-md-2" id="passed_variable4"></div>
 
-			<!-- Variable 1 -->
-			<div class="col-md-2" id="variable1"></div>
-
-			<!-- Variable 2 -->
-			<div class="col-md-2" id="variable2"></div>
-
-			<!-- Variable 3 -->
-			<div class="col-md-2" id="variable3"></div>
-
-			<!-- Variable 4 -->
-			<div class="col-md-2" id="variable4"></div>
-
+				</div>
+				<!-- Failed Chart Features -->
+				<div class="row">
+					<div class="col-md-2" id="num_failed_pieces"></div>
+					<div class="col-md-2" id="failed_variable0"></div>
+					<div class="col-md-2" id="failed_variable1"></div>
+					<div class="col-md-2" id="failed_variable2"></div>
+					<div class="col-md-2" id="failed_variable3"></div>
+					<div class="col-md-2" id="failed_variable4"></div>
+				</div>
+			</div>
 			<div class="col-md-1"></div>
-
-		</div>
 
 		<!-- App -->
 		<script type="text/javascript" src="./assets/libs/jquery/notify.min.js"></script>
