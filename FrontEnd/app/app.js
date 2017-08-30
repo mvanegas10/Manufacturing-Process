@@ -84,7 +84,7 @@ function createSTRAD( dict ) {
 
 		$('#notifications').notify('Selected hours: '
 			
-			+new_todrange[0].getHours() + ' to ' + new_todrange[1].getHours() + ,{position:'bottom left',className: 'info'
+			+new_todrange[0].getHours() + ' to ' + new_todrange[1].getHours(),{position:'bottom left',className: 'info'
 
 		})
 	});
