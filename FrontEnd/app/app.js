@@ -25,7 +25,7 @@ var dimensions = { 'passed':[], 'failed':[] };
 var dim_passed;
 var dim_failed;
 var filter_dimensions = { 'passed':[], 'failed':[] };
-var rounds = [ -1, -1, -1, 0, 1 ];
+var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = [];
 var maximum = [];
 
@@ -154,7 +154,7 @@ function createCharts( important_vars, data ) {
 
 
 		var name = 'passed_variable' + i;
-		var width = document.getElementById( name ).offsetWidth * 0.9;
+		var width = document.getElementById( name ).offsetWidth;
 
 		var chart = dc.barChart( '#' + name )
 			.width(width)
@@ -164,7 +164,7 @@ function createCharts( important_vars, data ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.xUnits(function(d){ return 18; });
+			.xUnits(function(d){ return 28; });
 
 		charts.passed.push( chart );
 
@@ -175,7 +175,7 @@ function createCharts( important_vars, data ) {
 		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( -1 ); } )
 
 		var name = 'failed_variable' + i;
-		var width = document.getElementById( name ).offsetWidth * 0.9;
+		var width = document.getElementById( name ).offsetWidth;
 
 		var chart = dc.barChart( '#' + name )
 			.width(width)
@@ -185,7 +185,7 @@ function createCharts( important_vars, data ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
-			.xUnits(function(d){ return 18; });
+			.xUnits(function(d){ return 30; });
 
 		charts.failed.push( chart );
 

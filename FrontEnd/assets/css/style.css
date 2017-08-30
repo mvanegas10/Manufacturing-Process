@@ -19,3 +19,6 @@ p.passed {
 p.failed {
 	color:#FF5E57;
 }
+button.rigth {
+	float:right;
+}
