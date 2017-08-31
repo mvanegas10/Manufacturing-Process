@@ -90,7 +90,14 @@ function changeView( view ) {
 	d3.select( '#button-' + current_nav )
 		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
+
 	timewheel[view] = createSTRAD( '#timewheel', imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
+	
+	addYearPlotLine( );
+	addDayPlotLine( );
+
+	addYearPlotLine( );
+	addDayPlotLine( );
 	
 }
 
@@ -273,37 +280,44 @@ function createCharts( important_vars, data ) {
 */
 function addYearPlotLine( ) {
 	var line = $( '#add_yearplotline' ).val( );
-	switch ( line )
-	{		
-		case 'Passed Pieces per Date':
-		timewheel[current_nav].addYearPlotline( 'Passed Pieces per Date', imp_variables[current_nav].passed_date );
-		break;
-		case 'Failed Pieces per Date':
-		timewheel[current_nav].addYearPlotline( 'Failed Pieces per Date', imp_variables[current_nav].failed_date  );
-		break;
+	if( line ){
+		
+		switch ( line )
+		{		
+			case 'Passed Pieces per Date':
+			timewheel[current_nav].addYearPlotline( 'Passed Pieces per Date', imp_variables[current_nav].passed_date );
+			break;
+			case 'Failed Pieces per Date':
+			timewheel[current_nav].addYearPlotline( 'Failed Pieces per Date', imp_variables[current_nav].failed_date  );
+			break;
+		}
+		$( '#add_yearplotline option[value="' + line + '"]' ).remove( );
+		$( '#rm_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+
 	}
-	$( '#add_yearplotline option[value="' + line + '"]' ).remove( );
-	$( '#rm_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
 }
 
 function addDayPlotLine( ) {
 	var line = $( '#add_dayplotline' ).val( );
-	switch ( line )
-	{
-		case 'Passed Pieces per Hour':
-		timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav].passed_tod  );
-		break;
-		case 'Failed Pieces per Hour':
-		timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav].failed_tod  );
-		break;
+	if( line ) {
+
+		switch ( line )
+		{
+			case 'Passed Pieces per Hour':
+			timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav].passed_tod  );
+			break;
+			case 'Failed Pieces per Hour':
+			timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav].failed_tod  );
+			break;
+		}
+		$( '#add_dayplotline option[value="' + line + '"]' ).remove( );
+		$( '#rm_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+
 	}
-	$( '#add_dayplotline option[value="' + line + '"]' ).remove( );
-	$( '#rm_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
 }
 
 function rmYearPlotLine( ) {
 	var line  = $( '#rm_yearplotline' ).val( );
-	console.log(line)
 	timewheel[current_nav].removeYearPlotline( line );
 	$( '#rm_yearplotline option[value="' + line + '"]' ).remove( );
 	$( '#add_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
