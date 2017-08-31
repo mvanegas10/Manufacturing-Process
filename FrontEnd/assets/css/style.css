@@ -3,10 +3,13 @@ html {
 }
 h2.title {
 	text-align: center;
-	padding: 10px 0px;
+	padding: 0px;
 }
 div.timewheel {
 	padding-left: 0.7cm;
+}
+div.padding-bottom {
+	padding-bottom: 0.5cm;
 }
 g.radarBrush .extent {
     fill: #1f77b4 !important;

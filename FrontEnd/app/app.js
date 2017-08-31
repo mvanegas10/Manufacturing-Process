@@ -153,8 +153,8 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 	});
 
-	temp_timewheel.addYearPlotline('Passed Pieces per DoW', year_passed);
-	temp_timewheel.addYearPlotline('Failed Pieces per DoW', year_failed);
+	temp_timewheel.addYearPlotline('Passed Pieces per Date', year_passed);
+	temp_timewheel.addYearPlotline('Failed Pieces per Date', year_failed);
 	temp_timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
 	temp_timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
 
@@ -266,6 +266,54 @@ function createCharts( important_vars, data ) {
 
 	dc.renderAll( );
 
+}
+
+/*
+	Choose plotlines to add/remove
+*/
+function addYearPlotLine( ) {
+	var line = $( '#add_yearplotline' ).val( );
+	switch ( line )
+	{		
+		case 'Passed Pieces per Date':
+		timewheel[current_nav].addYearPlotline( 'Passed Pieces per Date', imp_variables[current_nav].passed_date );
+		break;
+		case 'Failed Pieces per Date':
+		timewheel[current_nav].addYearPlotline( 'Failed Pieces per Date', imp_variables[current_nav].failed_date  );
+		break;
+	}
+	$( '#add_yearplotline option[value="' + line + '"]' ).remove( );
+	$( '#rm_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+}
+
+function addDayPlotLine( ) {
+	var line = $( '#add_dayplotline' ).val( );
+	switch ( line )
+	{
+		case 'Passed Pieces per Hour':
+		timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav].passed_tod  );
+		break;
+		case 'Failed Pieces per Hour':
+		timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav].failed_tod  );
+		break;
+	}
+	$( '#add_dayplotline option[value="' + line + '"]' ).remove( );
+	$( '#rm_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+}
+
+function rmYearPlotLine( ) {
+	var line  = $( '#rm_yearplotline' ).val( );
+	console.log(line)
+	timewheel[current_nav].removeYearPlotline( line );
+	$( '#rm_yearplotline option[value="' + line + '"]' ).remove( );
+	$( '#add_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+}
+
+function rmDayPlotLine( ) {
+	var line = $( '#rm_dayplotline' ).val( );
+	timewheel[current_nav].removeDayPlotline( line );
+	$( '#rm_dayplotline option[value="' + line + '"' ).remove( );
+	$( '#add_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
 }
 
 /*
