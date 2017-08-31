@@ -152,9 +152,9 @@ var RadarChart = {
     //build visualization using the other build helper functions
     function buildVis(data) {
       // data = data.filter
-      // data.forEach( function(d) {
-      //   d.axes = d.axes.filter( function(d) { return d.value !== undefined; } );
-      // } );
+      data.forEach( function(d) {
+        d.axes = d.axes.filter( function(d) { return d.value !== undefined && d.value !== 0; } );
+      } );
       buildVisComponents();
       buildCoordinates(data);
       if (config.showLevels) buildLevels();
@@ -383,16 +383,11 @@ var RadarChart = {
         group.axes.forEach(function(d, i) {
             var origVal=parseFloat(d.value) / config.maxValue;
             var adjVal=(1-config.innerRadius)*origVal+config.innerRadius;
-            if(!i) {
-              d.coordinates = { x:undefined, y:undefined };
-            }
-            else {
               d.coordinates = { // [x, y] coordinates
                   //changed here to include inner radius (4)
                 x:  config.w / 2 * (1 - adjVal* Math.sin(i * config.radians / vis.totalAxes +config.rotate)),
                 y: config.h / 2 * (1 - adjVal  * Math.cos(i * config.radians / vis.totalAxes +config.rotate))
               };
-            }
         });
       });
     }

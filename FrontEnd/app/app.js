@@ -26,7 +26,7 @@ var timewheel = {
 	'v3': undefined,
 	'v4': undefined
 };
-var colorArray = ["#31D66C", "#FF5E57"];
+var colorArray = ['#fff', '#31D66C', '#FF5E57'];
 
 /*
 	Crossfilter variables
@@ -160,10 +160,12 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 	});
 
-	temp_timewheel.addYearPlotline('Passed Pieces per Date', year_passed);
-	temp_timewheel.addYearPlotline('Failed Pieces per Date', year_failed);
-	temp_timewheel.addDayPlotline('Passed Pieces per Hour',tod_passed);
-	temp_timewheel.addDayPlotline('Failed Pieces per Hour', tod_failed);
+	temp_timewheel.addYearPlotline( '', imp_variables.empty.date );
+	temp_timewheel.addYearPlotline( 'Passed Pieces per Date', year_passed );
+	temp_timewheel.addYearPlotline( 'Failed Pieces per Date', year_failed );
+	temp_timewheel.addDayPlotline( '', imp_variables.empty.tod );
+	temp_timewheel.addDayPlotline( 'Passed Pieces per Hour',tod_passed );
+	temp_timewheel.addDayPlotline( 'Failed Pieces per Hour', tod_failed );
 
 	return temp_timewheel;
 
