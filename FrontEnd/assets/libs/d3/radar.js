@@ -295,7 +295,7 @@ var RadarChart = {
         vis.levels
           .data([1]).enter()
           .append("svg:text").classed("level-labels", true)
-          .text((config.maxValue * (level + 1) / config.levels).toFixed(0))
+          .text(d3.round((config.maxValue * (level + 1) / config.levels), 1))
           //.attr("x", function(d) { return levelFactor * (1 - Math.sin(0)); })
           .attr("x", function(d) { return levelFactorAdj * (1 - Math.sin(0)); })
           //.attr("y", function(d) { return levelFactor * (1 - Math.cos(0)); })
