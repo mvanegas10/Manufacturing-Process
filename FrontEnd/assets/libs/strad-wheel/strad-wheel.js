@@ -460,7 +460,7 @@ var StradWheel=function(parent_selector, colorScale){
         return {
             group: legend,
             axes: dd.map(function (axis) {
-                return {axis: axis.h, value: parseFloat(axis.v)};
+                return {axis: axis.h, value: d3.round( parseFloat(axis.v), 1 )};
             })
         };
     }
@@ -477,7 +477,7 @@ var StradWheel=function(parent_selector, colorScale){
         return {
             group: legend,
             axes: dd.map(function (axis) {
-                return {axis: axis.d, value: parseInt(axis.c)};
+                return {axis: axis.d, value: d3.round( parseFloat(axis.c), 1 )};
             })
         };
     }

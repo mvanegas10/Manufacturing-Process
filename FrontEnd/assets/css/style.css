@@ -8,6 +8,9 @@ h2.title {
 div.timewheel {
 	padding-left: 0.7cm;
 }
+g.radarBrush .extent {
+    fill: #1f77b4 !important;
+}
 p {
 	text-align: center;
 }
