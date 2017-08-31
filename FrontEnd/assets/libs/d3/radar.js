@@ -151,6 +151,10 @@ var RadarChart = {
 
     //build visualization using the other build helper functions
     function buildVis(data) {
+      // data = data.filter
+      // data.forEach( function(d) {
+      //   d.axes = d.axes.filter( function(d) { return d.value !== undefined; } );
+      // } );
       buildVisComponents();
       buildCoordinates(data);
       if (config.showLevels) buildLevels();
@@ -166,6 +170,7 @@ var RadarChart = {
     // build main vis components
     function buildVisComponents() {
       // update vis parameters
+      // data[0].axes = data[0].axes.filter(function(i,j) {return i.value !== undefined;})
       vis.allAxis = data[0].axes.map(function(i, j) { return i.axis; });
       vis.totalAxes = vis.allAxis.length;
       vis.radius = Math.min(config.w / 2, config.h / 2);
@@ -374,14 +379,20 @@ var RadarChart = {
     // builds [x, y] coordinates of polygon vertices.
     function buildCoordinates(data) {
       data.forEach(function(group) {
+        group.axes = group.axes.filter( function( d ) { return d.value !== undefined; } )
         group.axes.forEach(function(d, i) {
-            var origVal=parseFloat(Math.max(d.value, 0)) / config.maxValue;
+            var origVal=parseFloat(d.value) / config.maxValue;
             var adjVal=(1-config.innerRadius)*origVal+config.innerRadius;
-          d.coordinates = { // [x, y] coordinates
-              //changed here to include inner radius (4)
-            x: config.w / 2 * (1 - adjVal* Math.sin(i * config.radians / vis.totalAxes +config.rotate)),
-            y: config.h / 2 * (1 - adjVal  * Math.cos(i * config.radians / vis.totalAxes +config.rotate))
-          };
+            if(!i) {
+              d.coordinates = { x:undefined, y:undefined };
+            }
+            else {
+              d.coordinates = { // [x, y] coordinates
+                  //changed here to include inner radius (4)
+                x:  config.w / 2 * (1 - adjVal* Math.sin(i * config.radians / vis.totalAxes +config.rotate)),
+                y: config.h / 2 * (1 - adjVal  * Math.cos(i * config.radians / vis.totalAxes +config.rotate))
+              };
+            }
         });
       });
     }
@@ -390,6 +401,7 @@ var RadarChart = {
     // builds out the polygon vertices of the dataset
     function buildVertices(data) {
       data.forEach(function(group, g) {
+        group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
         vis.vertices
           .data(group.axes).enter()
           .append("svg:circle").classed("polygon-vertices", true)
@@ -411,7 +423,10 @@ var RadarChart = {
         .append("svg:polygon").classed("polygon-areas", true)
         .attr("points", function(group) { // build verticesString for each group
           var verticesString = "";
-          group.axes.forEach(function(d) { verticesString += d.coordinates.x + "," + d.coordinates.y + " "; });
+          group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
+          group.axes.forEach(function(d) { 
+            verticesString += d.coordinates.x + "," + d.coordinates.y + " "; 
+          });
           return verticesString;
         })
         .attr("stroke-width", "2px")
@@ -448,6 +463,7 @@ var RadarChart = {
               .attr("d", function(group) { // build verticesString for each group
                   var verticesString = "";
                   var values=[];
+                  group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
                   group.axes.forEach(function(d) { values.push(d.coordinates); });
                   //group.axes.forEach(function(d) { verticesString += d.coordinates.x + "," + d.coordinates.y + " "; });
                   //return verticesString;

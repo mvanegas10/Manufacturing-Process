@@ -6,34 +6,34 @@
 var StradWheel=function(parent_selector, colorScale){
 
     //empty dayradar
-    var empty_dayradar=[{"group":"","axes":[{"axis":"12m","value":0},{"axis":"11am","value":0},{"axis":"10am","value":0},{"axis":"9am","value":0},{"axis":"8am","value":0},{"axis":"7am","value":0},{"axis":"6am","value":0},{"axis":"5am","value":0},{"axis":"4am","value":0},{"axis":"3am","value":0},{"axis":"2am","value":0},{"axis":"1am","value":0},{"axis":"12am","value":0},{"axis":"11pm","value":0},{"axis":"10pm","value":0},{"axis":"9pm","value":0},{"axis":"8pm","value":0},{"axis":"7pm","value":0},{"axis":"6pm","value":0},{"axis":"5pm","value":0},{"axis":"4pm","value":0},{"axis":"3pm","value":0},{"axis":"2pm","value":0},{"axis":"1pm","value":0}]}];
-    var empty_yearradar=[[{"group":"","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":0},{"axis":"Sat","value":0},{"axis":"Fri","value":0},{"axis":"Thu","value":0},{"axis":"Wed","value":0},{"axis":"Tue","value":0},{"axis":"Mon","value":0}]}]];
+    var empty_dayradar=[{"group":"","axes":[{"axis":"12m","value":undefined},{"axis":"11am","value":undefined},{"axis":"10am","value":undefined},{"axis":"9am","value":undefined},{"axis":"8am","value":undefined},{"axis":"7am","value":undefined},{"axis":"6am","value":undefined},{"axis":"5am","value":undefined},{"axis":"4am","value":undefined},{"axis":"3am","value":undefined},{"axis":"2am","value":undefined},{"axis":"1am","value":undefined},{"axis":"12am","value":undefined},{"axis":"11pm","value":undefined},{"axis":"10pm","value":undefined},{"axis":"9pm","value":undefined},{"axis":"8pm","value":undefined},{"axis":"7pm","value":undefined},{"axis":"6pm","value":undefined},{"axis":"5pm","value":undefined},{"axis":"4pm","value":undefined},{"axis":"3pm","value":undefined},{"axis":"2pm","value":undefined},{"axis":"1pm","value":undefined}]}];
+    var empty_yearradar=[[{"group":"","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}]];
 
     var empty_day_template=JSON.stringify([
-        {h:"12am",c:0},
-        {h:"1am",c:0},
-        {h:"2am",c:0},
-        {h:"3am",c:0},
-        {h:"4am",c:0},
-        {h:"5am",c:0},
-        {h:"6am",c:0},
-        {h:"7am",c:0},
-        {h:"8am",c:0},
-        {h:"9am",c:0},
-        {h:"10am",c:0},
-        {h:"11am",c:0},
-        {h:"12m",c:0},
-        {h:"1pm",c:0},
-        {h:"2pm",c:0},
-        {h:"3pm",c:0},
-        {h:"4pm",c:0},
-        {h:"5pm",c:0},
-        {h:"6pm",c:0},
-        {h:"7pm",c:0},
-        {h:"8pm",c:0},
-        {h:"9pm",c:0},
-        {h:"10pm",c:0},
-        {h:"11pm",c:0}
+        {h:"12am",c:undefined},
+        {h:"1am",c:undefined},
+        {h:"2am",c:undefined},
+        {h:"3am",c:undefined},
+        {h:"4am",c:undefined},
+        {h:"5am",c:undefined},
+        {h:"6am",c:undefined},
+        {h:"7am",c:undefined},
+        {h:"8am",c:undefined},
+        {h:"9am",c:undefined},
+        {h:"10am",c:undefined},
+        {h:"11am",c:undefined},
+        {h:"12m",c:undefined},
+        {h:"1pm",c:undefined},
+        {h:"2pm",c:undefined},
+        {h:"3pm",c:undefined},
+        {h:"4pm",c:undefined},
+        {h:"5pm",c:undefined},
+        {h:"6pm",c:undefined},
+        {h:"7pm",c:undefined},
+        {h:"8pm",c:undefined},
+        {h:"9pm",c:undefined},
+        {h:"10pm",c:undefined},
+        {h:"11pm",c:undefined}
     ]);
 
     this.example_yearparam=[{"m":0,"d":0,"v":2.5},{"m":0,"d":1,"v":1.2},{"m":0,"d":2,"v":10},{"m":0,"d":3,"v":7.4},{"m":0,"d":4,"v":10},{"m":0,"d":5,"v":10},{"m":0,"d":6,"v":10},{"m":1,"d":0,"v":10},{"m":1,"d":1,"v":10},{"m":1,"d":2,"v":10},{"m":1,"d":3,"v":15},{"m":1,"d":4,"v":10},{"m":1,"d":5,"v":10},{"m":1,"d":6,"v":10},{"m":2,"d":0,"v":10},{"m":2,"d":1,"v":10},{"m":2,"d":2,"v":10},{"m":2,"d":3,"v":15},{"m":2,"d":4,"v":10},{"m":2,"d":5,"v":10},{"m":2,"d":6,"v":10},{"m":3,"d":0,"v":10},{"m":3,"d":1,"v":10},{"m":3,"d":2,"v":10},{"m":3,"d":3,"v":15},{"m":3,"d":4,"v":10},{"m":3,"d":5,"v":10},{"m":3,"d":6,"v":10},{"m":4,"d":0,"v":10},{"m":4,"d":1,"v":10},{"m":4,"d":2,"v":10},{"m":4,"d":3,"v":15},{"m":4,"d":4,"v":10},{"m":4,"d":5,"v":10},{"m":4,"d":6,"v":10},{"m":5,"d":0,"v":10},{"m":5,"d":1,"v":10},{"m":5,"d":2,"v":10},{"m":5,"d":3,"v":15},{"m":5,"d":4,"v":10},{"m":5,"d":5,"v":10},{"m":5,"d":6,"v":10},{"m":6,"d":0,"v":10},{"m":6,"d":1,"v":10},{"m":6,"d":2,"v":10},{"m":6,"d":3,"v":15},{"m":6,"d":4,"v":10},{"m":6,"d":5,"v":10},{"m":6,"d":6,"v":10},{"m":7,"d":0,"v":10},{"m":7,"d":1,"v":10},{"m":7,"d":2,"v":10},{"m":7,"d":3,"v":15},{"m":7,"d":4,"v":10},{"m":7,"d":5,"v":10},{"m":7,"d":6,"v":10},{"m":8,"d":0,"v":10},{"m":8,"d":1,"v":10},{"m":8,"d":2,"v":10},{"m":8,"d":3,"v":15},{"m":8,"d":4,"v":10},{"m":8,"d":5,"v":10},{"m":8,"d":6,"v":10},{"m":9,"d":0,"v":10},{"m":9,"d":1,"v":10},{"m":9,"d":2,"v":10},{"m":9,"d":3,"v":15},{"m":9,"d":4,"v":10},{"m":9,"d":5,"v":10},{"m":9,"d":6,"v":10},{"m":10,"d":0,"v":10},{"m":10,"d":1,"v":10},{"m":10,"d":2,"v":10},{"m":10,"d":3,"v":15},{"m":10,"d":4,"v":10},{"m":10,"d":5,"v":10},{"m":10,"d":6,"v":10},{"m":11,"d":0,"v":10},{"m":11,"d":1,"v":10},{"m":11,"d":2,"v":10},{"m":11,"d":3,"v":15},{"m":11,"d":4,"v":10},{"m":11,"d":5,"v":10},{"m":11,"d":6,"v":10}];
