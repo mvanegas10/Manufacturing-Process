@@ -11,8 +11,21 @@ h4 {
 div.timewheel {
 	padding-left: 0.7cm;
 }
+div.background {
+	margin-right: 3cm;
+}
 div.padding-bottom {
 	padding-bottom: 0.5cm;
+}
+div.box {
+	margin: 0.2cm;
+}
+div.check-container {
+	margin-top: -0.05cm;
+	padding-right: 1cm;
+	border: 0.2px solid grey;
+	background-color: #fff;
+	padding: 0.18cm; 
 }
 g.radarBrush .extent {
 	fill: #1f77b4 !important;
