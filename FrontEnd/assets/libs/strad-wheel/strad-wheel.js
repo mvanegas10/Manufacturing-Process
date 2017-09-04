@@ -515,7 +515,7 @@ var StradWheel=function(parent_selector, colorScale){
 
         RadarChart.draw(parent_selector+" svg.month_"+(m), yearRadarPlotted[m], radarConfigDateM);//draw dates per upz
 
-        // updateDowColors();
+        updateDowColors();
     };
 
     function repaintDatesRadar(dataPlotted)
@@ -532,7 +532,7 @@ var StradWheel=function(parent_selector, colorScale){
             RadarChart.draw(parent_selector+" svg.month_"+(m), dataPlotted[m], radarConfigDateM);//repaint dates radar x dynamic zoom
 
         }
-        // updateDowColors();
+        updateDowColors();
         $(parent_selector + " .axis-clickable text").click(onAxisClicked);
     }
     /* Paint the year radar for the first time! */
