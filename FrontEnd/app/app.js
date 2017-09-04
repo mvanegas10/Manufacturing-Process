@@ -26,7 +26,8 @@ var timewheel = {
 	'v3': undefined,
 	'v4': undefined
 };
-var colorArray = ['#fff', '#31D66C', '#FF5E57'];
+var colorArrayPassed = ['#fff', '#31D66C', '#FF5E57'];
+var colorArrayFailed = ['#fff', '#FF5E57', '#31D66C'];
 // var colorArray = '#000';
 
 /*
@@ -107,7 +108,7 @@ function changeView( view ) {
 */
 function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed ) {
 
-	function colorScale(n) { return colorArray[n % colorArray.length]; }
+	function colorScale(n) { return colorArrayPassed[n % colorArrayPassed.length]; }
 
 	//populate div with the tool
 	var temp_timewheel = new StradWheel( selector, colorScale );
@@ -164,8 +165,8 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 	});
 
 	temp_timewheel.addYearPlotline( '', imp_variables.empty.date );
-	temp_timewheel.addYearPlotline( 'Passed Pieces per Date', year_passed );
-	temp_timewheel.addYearPlotline( 'Failed Pieces per Date', year_failed );
+	temp_timewheel.addYearPlotline( 'Passed Pieces per Day', year_passed );
+	temp_timewheel.addYearPlotline( 'Failed Pieces per Day', year_failed );
 	temp_timewheel.addDayPlotline( '', imp_variables.empty.tod );
 	temp_timewheel.addDayPlotline( 'Passed Pieces per Hour',tod_passed );
 	temp_timewheel.addDayPlotline( 'Failed Pieces per Hour', tod_failed );
@@ -249,7 +250,7 @@ function createCharts( important_vars, data ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.xUnits(function(d){ return 28; });
+			.xUnits(function(d){ return 40; });
 
 		charts.passed.push( chart );
 
@@ -270,7 +271,7 @@ function createCharts( important_vars, data ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
-			.xUnits(function(d){ return 28; });
+			.xUnits(function(d){ return 40; });
 
 		charts.failed.push( chart );
 
@@ -285,9 +286,9 @@ function createCharts( important_vars, data ) {
 */
 function updateYearPlotLine( tw, passed, failed ) {
 
-	tw.addYearPlotline( 'Passed Pieces per Date', passed );
+	tw.addYearPlotline( 'Passed Pieces per Day', passed );
 
-	tw.addYearPlotline( 'Failed Pieces per Date', failed );
+	tw.addYearPlotline( 'Failed Pieces per Day', failed );
 
 }
 
@@ -302,56 +303,23 @@ function updateDayPlotLine( tw, passed, failed ) {
 /*
 	Choose plotlines to add/remove
 */
-function addYearPlotLine( ) {
-	var line = $( '#add_yearplotline' ).val( );
-	if( line ){
-		
-		switch ( line )
-		{		
-			case 'Passed Pieces per Date':
-			timewheel[current_nav].addYearPlotline( line, imp_variables[current_nav].passed_date );
-			break;
-			case 'Failed Pieces per Date':
-			timewheel[current_nav].addYearPlotline( line, imp_variables[current_nav].failed_date  );
-			break;
-		}
-		$( '#add_yearplotline option[value="' + line + '"]' ).remove( );
-		$( '#rm_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
-
+function addPlotLine( ) {
+	var line = $( '#add_plotline' ).val( );
+	if( line ){	
+		var temp_name = line.split( ' ' )[0].toLowerCase( );
+		timewheel[current_nav].addDayPlotline( line + ' per Hour', imp_variables[current_nav][temp_name + '_tod'] );
+		timewheel[current_nav].addYearPlotline( line + ' per Day', imp_variables[current_nav][temp_name + '_date'] );
+		$( '#add_plotline option[value="' + line + '"]' ).remove( );
+		$( '#rm_plotline' ).append( '<option value="' + line + '">' + line + '</option>' );
 	}
 }
 
-function addDayPlotLine( ) {
-	var line = $( '#add_dayplotline' ).val( );
-	if( line ) {
-
-		switch ( line )
-		{
-			case 'Passed Pieces per Hour':
-			timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav].passed_tod  );
-			break;
-			case 'Failed Pieces per Hour':
-			timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav].failed_tod  );
-			break;
-		}
-		$( '#add_dayplotline option[value="' + line + '"]' ).remove( );
-		$( '#rm_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
-
-	}
-}
-
-function rmYearPlotLine( ) {
-	var line  = $( '#rm_yearplotline' ).val( );
-	timewheel[current_nav].removeYearPlotline( line );
-	$( '#rm_yearplotline option[value="' + line + '"]' ).remove( );
-	$( '#add_yearplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
-}
-
-function rmDayPlotLine( ) {
-	var line = $( '#rm_dayplotline' ).val( );
-	timewheel[current_nav].removeDayPlotline( line );
-	$( '#rm_dayplotline option[value="' + line + '"' ).remove( );
-	$( '#add_dayplotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+function rmPlotLine( ) {
+	var line = $( '#rm_plotline' ).val( );
+	timewheel[current_nav].removeDayPlotline( line + ' per Hour' );
+	timewheel[current_nav].removeYearPlotline( line + ' per Day' );
+	$( '#rm_plotline option[value="' + line + '"]' ).remove( );
+	$( '#add_plotline' ).append( '<option value="' + line + '">' + line + '</option>' );
 }
 
 /*
