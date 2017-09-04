@@ -48,43 +48,19 @@
 		<button type="button" class="btn btn-danger rigth" onclick="reset()">Reset</button>
 	</div>
 
-	<div class="row">
-		<div class="col-md-1"></div>
-		<div class="col-md-5"><h3>Add a plotline:</h3></div>
-		<div class="col-md-5"><h3>Remove a plotline:</h3></div>
-		<div class="col-md-1"></div>
-	</div>
-
 	<div class="row padding-bottom">
-		<div class="col-md-1"></div>
-		<div class="col-md-5">
-			<div class="row">
-				<div class="col-md-5">
-					<div class="row">
-						<div class="col-md-10">
-							<select id="add_plotline"></select>
-						</div>
-						<div class="col-md-2"><button onclick="addPlotLine()" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span></button></div>
-					</div>
-				</div>
+		<div class="col-md-4"></div>
+		<div class="col-md-4">
+			<div class="checkbox checkbox-success">
+				<input id="passed_checkbox" type="checkbox" onclick="updatePlotLine()" value="Passed Pieces" checked>
+				<label for="passed_checkbox">Passed Pieces</label>
+			</div>
+			<div class="checkbox checkbox-danger">
+				<input id="failed_checkbox" type="checkbox" onclick="updatePlotLine()" value="Failed Pieces" checked>
+				<label for="failed_checkbox">Failed Pieces</label>
 			</div>
 		</div>
-
-		<div class="col-md-5">
-			<div class="row">
-				<div class="col-md-5">
-					<div class="row">
-						<div class="col-md-10">
-							<select id="rm_plotline">
-								<option value="Passed Pieces">Passed Pieces</option>
-								<option value="Failed Pieces">Failed Pieces</option>
-							</select>
-						</div>
-						<div class="col-md-2"><button onclick="rmPlotLine()" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-minus"></span></button></div>
-					</div>
-				</div>				
-			</div>
-		</div>
+		<div class="col-md-4"></div>
 	</div>
 
 <!-- 	<div class="row">

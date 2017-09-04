@@ -300,23 +300,24 @@ function updateDayPlotLine( tw, passed, failed ) {
 /*
 	Choose plotlines to add/remove
 */
-function addPlotLine( ) {
-	var line = $( '#add_plotline' ).val( );
-	if( line ){	
-		var temp_name = line.split( ' ' )[0].toLowerCase( );
-		timewheel[current_nav].addDayPlotline( line + ' per Hour', imp_variables[current_nav][temp_name + '_tod'] );
-		timewheel[current_nav].addYearPlotline( line + ' per Day', imp_variables[current_nav][temp_name + '_date'] );
-		$( '#add_plotline option[value="' + line + '"]' ).remove( );
-		$( '#rm_plotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+function updatePlotLine( ) {
+	if( $( '#passed_checkbox' ).is( ':checked' ) ) {
+		timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav]['passed_tod'] );
+		timewheel[current_nav].addYearPlotline( 'Passed Pieces per Day', imp_variables[current_nav]['passed_date'] );
 	}
-}
+	else {
+		timewheel[current_nav].removeDayPlotline( 'Passed Pieces per Hour' );
+		timewheel[current_nav].removeYearPlotline( 'Passed Pieces per Day' );
+	}
 
-function rmPlotLine( ) {
-	var line = $( '#rm_plotline' ).val( );
-	timewheel[current_nav].removeDayPlotline( line + ' per Hour' );
-	timewheel[current_nav].removeYearPlotline( line + ' per Day' );
-	$( '#rm_plotline option[value="' + line + '"]' ).remove( );
-	$( '#add_plotline' ).append( '<option value="' + line + '">' + line + '</option>' );
+	if( $( '#failed_checkbox' ).is( ':checked' ) ) {
+		timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav]['failed_tod'] );
+		timewheel[current_nav].addYearPlotline( 'Failed Pieces per Day', imp_variables[current_nav]['failed_date'] );
+	}
+	else {
+		timewheel[current_nav].removeDayPlotline( 'Failed Pieces per Hour' );
+		timewheel[current_nav].removeYearPlotline( 'Failed Pieces per Day' );
+	}
 }
 
 /*
