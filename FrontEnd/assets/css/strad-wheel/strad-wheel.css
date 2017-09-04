@@ -143,7 +143,7 @@ text.level-labels{
 }
 .axis-clickable.selected{
     font-weight: 900;
-    fill: red;
+    fill: #f0ad4e;
 }
 .axis-clickable.unselected{
     fill: gray;
