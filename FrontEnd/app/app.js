@@ -95,11 +95,9 @@ function changeView( view ) {
 
 	timewheel[view] = createSTRAD( '#timewheel', imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
 	
-	addYearPlotLine( );
-	addDayPlotLine( );
-
-	addYearPlotLine( );
-	addDayPlotLine( );
+	addPlotLine( );
+	addPlotLine( );
+	addPlotLine( );
 	
 }
 
