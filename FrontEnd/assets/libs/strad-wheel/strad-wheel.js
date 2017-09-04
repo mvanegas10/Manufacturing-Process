@@ -114,7 +114,7 @@ var StradWheel=function(parent_selector, colorScale){
         showLevelsLabels: true,
         showAxesLabels: true,
         showAxes: true,
-        showLegend: true,
+        showLegend: false,
         showVertices: true,
         showPolygons: true,
         translateX: 0,
@@ -496,7 +496,7 @@ var StradWheel=function(parent_selector, colorScale){
         radarConfigDateM.colors=colorScale;
         radarConfigDateM.rotate=(11-m)*2*Math.PI/12;
         radarConfigDateM.showLevelsLabels=(m==0)?true:false;
-        radarConfigDateM.showLegend=(m==0)?true:false;
+        radarConfigDateM.showLegend=(m==0)?false:false;
         var t1=new Date().getTime();
 
         RadarChart.draw(parent_selector+" svg.month_"+(m), yearRadarPlotted[m], radarConfigDateM);//draw dates 1st time
@@ -510,7 +510,7 @@ var StradWheel=function(parent_selector, colorScale){
         radarConfigDateM.colors=radarConfigDate.colors;
         radarConfigDateM.rotate=(11-m)*2*Math.PI/12;
         radarConfigDateM.showLevelsLabels=(m==0)?true:false;
-        radarConfigDateM.showLegend=(m==0)?true:false;
+        radarConfigDateM.showLegend=(m==0)?false:false;
         var t1=new Date().getTime();
 
         RadarChart.draw(parent_selector+" svg.month_"+(m), yearRadarPlotted[m], radarConfigDateM);//draw dates per upz
@@ -527,7 +527,7 @@ var StradWheel=function(parent_selector, colorScale){
             radarConfigDateM.colors=radarConfigDate.colors;
             radarConfigDateM.rotate=(11-m)*2*Math.PI/12;
             radarConfigDateM.showLevelsLabels=(m==0)?true:false;
-            radarConfigDateM.showLegend=(m==0)?true:false;
+            radarConfigDateM.showLegend=(m==0)?false:false;
 
             RadarChart.draw(parent_selector+" svg.month_"+(m), dataPlotted[m], radarConfigDateM);//repaint dates radar x dynamic zoom
 

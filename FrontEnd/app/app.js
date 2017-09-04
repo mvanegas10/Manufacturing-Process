@@ -126,9 +126,6 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 		// updateDayPlotLine( timewheel[current_nav], temp_passed, temp_failed );
 
-		// d3.select( '#dateSelection' )
-		// 	.text( 'Date selection from: ' + new_datesrange[0].toDateString() + ' to ' + new_datesrange[1].toDateString() );
-
 	});
 
 	temp_timewheel.onTodChange( function( new_todrange ) {
@@ -141,9 +138,6 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 		date_dim.failed[1].filter( filter );
 		dc.redrawAll( );
 
-		// d3.select( '#todSelection' )
-		// 	.text( 'Hour selection from: ' +new_todrange[0] + 'h to ' + new_todrange[1] + 'h' );
-
 	});
 
 
@@ -155,9 +149,6 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 		date_dim.passed[2].filter( filter );
 		date_dim.failed[2].filter( filter );
 		dc.redrawAll( );
-
-		// d3.select( '#dowSelection' )
-		// 	.text( 'Day selection: ' + new_dows.join( ', ' ) );
 
 	});
 
