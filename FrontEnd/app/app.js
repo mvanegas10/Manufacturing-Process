@@ -27,6 +27,7 @@ var timewheel = {
 	'v4': undefined
 };
 var colorArray = ['#fff', '#31D66C', '#FF5E57'];
+// var colorArray = '#000';
 
 /*
 	Crossfilter variables
@@ -308,10 +309,10 @@ function addYearPlotLine( ) {
 		switch ( line )
 		{		
 			case 'Passed Pieces per Date':
-			timewheel[current_nav].addYearPlotline( 'Passed Pieces per Date', imp_variables[current_nav].passed_date );
+			timewheel[current_nav].addYearPlotline( line, imp_variables[current_nav].passed_date );
 			break;
 			case 'Failed Pieces per Date':
-			timewheel[current_nav].addYearPlotline( 'Failed Pieces per Date', imp_variables[current_nav].failed_date  );
+			timewheel[current_nav].addYearPlotline( line, imp_variables[current_nav].failed_date  );
 			break;
 		}
 		$( '#add_yearplotline option[value="' + line + '"]' ).remove( );

@@ -116,7 +116,8 @@ var RadarChart = {
             .attr("stroke", config.colors(i))
             .attr("fill", config.colors(i));
           vis.svg.selectAll(".polygon-vertices")
-            .attr("fill", config.colors(i));
+            .attr("fill", config.colors(i))
+            .attr("fill-opacity", 0);
           vis.svg.selectAll(".legend-tiles")
             .attr("fill", config.colors(i));
         });
@@ -401,7 +402,10 @@ var RadarChart = {
           .data(group.axes).enter()
           .append("svg:circle").classed("polygon-vertices", true)
             .attr("textContent",""+g)
-            .attr("fill-opacity",function(d) {return (d.value === 0.0001)? 0: 1;})
+            .attr("fill-opacity",function(d,i) {
+              if((d.axis.indexOf('am') !== -1 || d.axis.indexOf('pm') !== -1) && d.value === 1)
+                return 0;
+              return (d.value === 0.0001)? 0: 1;})
           .attr("r", config.polygonPointSize)
           .attr("cx", function(d, i) { return d.coordinates.x; })
           .attr("cy", function(d, i) { return d.coordinates.y; })
@@ -438,12 +442,12 @@ var RadarChart = {
           d3.select(this) // focus on active polygon
           .transition(250)
             .attr("fill-opacity", 0.7)
-            .attr("stroke-opacity", config.polygonStrokeOpacity);
+        .attr("fill-opacity", function(d) { return (d.group !== "")? config.polygonStrokeOpacity: 0; })
         })
         .on(out, function() {
           d3.selectAll(".polygon-areas")
             .transition(250)
-            .attr("fill-opacity", config.polygonAreaOpacity)
+            .attr("fill-opacity", function(d) { return (d.group !== "")? config.polygonAreaOpacity: 0; })
             .attr("stroke-opacity", 1);
         });
     }
@@ -504,21 +508,20 @@ var RadarChart = {
     // show tooltip of vertices
     function verticesTooltipShow(d) {
         var series= $(this.outerHTML).attr('textcontent');
-        if(series)
+        if(series && series !== "Total per hour")
         {
             series=data[series].group?"<span style='font-size: smaller;'>"+data[series].group+"<br></span>":undefined;
-        }
-        else{
-            series="";
-        }
-        if(series){
-          var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ d.value + "<br />" +
+            var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ d.value + "<br />" +
             (d.description==undefined?"":"<strong>Description</strong>: " + d.description );
-          vis.verticesTooltip.style("opacity", 0.8)
+            vis.verticesTooltip.style("opacity", 0.8)
             .html(str)
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY) + "px");
         }
+        else{
+            series="";
+        }
+        
     }
 
     // hide tooltip of vertices
