@@ -401,6 +401,7 @@ var RadarChart = {
           .data(group.axes).enter()
           .append("svg:circle").classed("polygon-vertices", true)
             .attr("textContent",""+g)
+            .attr("fill-opacity",function(d) {return (d.value === 0.0001)? 0: 1;})
           .attr("r", config.polygonPointSize)
           .attr("cx", function(d, i) { return d.coordinates.x; })
           .attr("cy", function(d, i) { return d.coordinates.y; })
@@ -427,7 +428,7 @@ var RadarChart = {
         .attr("stroke-width", "2px")
         .attr("stroke", function(d, i) { return config.colors(i); })
         .attr("fill", function(d, i) { return config.colors(i); })
-        .attr("fill-opacity", config.polygonAreaOpacity)
+        .attr("fill-opacity", function(d) { return (d.group !== "")? config.polygonAreaOpacity: 0; })
         .attr("stroke-opacity", config.polygonStrokeOpacity)
         .on(over, function(d) {
           vis.svg.selectAll(".polygon-areas") // fade all other polygons out
@@ -468,6 +469,7 @@ var RadarChart = {
               .attr("stroke-width", "2px")
               .attr("stroke", function(d, i) { return config.colors(i); })
               .attr("fill", function(d, i) { return config.colors(i); })
+              .attr("opacity", function(d, i) { return (d.group)? 1: 0; })
               .attr("stroke-opacity", config.polygonStrokeOpacity);
       }
 
