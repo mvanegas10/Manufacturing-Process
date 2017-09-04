@@ -504,19 +504,19 @@ var RadarChart = {
         var series= $(this.outerHTML).attr('textcontent');
         if(series)
         {
-            series="<span style='font-size: smaller;'>"+data[series].group+"<br></span>";
+            series=data[series].group?"<span style='font-size: smaller;'>"+data[series].group+"<br></span>":undefined;
         }
         else{
             series="";
         }
-
-        var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ d.value + "<br />" +
+        if(series){
+          var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ d.value + "<br />" +
             (d.description==undefined?"":"<strong>Description</strong>: " + d.description );
-
-      vis.verticesTooltip.style("opacity", 0.8)
-        .html(str)
-        .style("left", (d3.event.pageX) + "px")
-        .style("top", (d3.event.pageY) + "px");
+          vis.verticesTooltip.style("opacity", 0.8)
+            .html(str)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY) + "px");
+        }
     }
 
     // hide tooltip of vertices

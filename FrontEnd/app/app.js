@@ -116,7 +116,7 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 
 	//Register to changes:
 
-	temp_timewheel.onDatesChange(function(new_datesrange){
+	temp_timewheel.onDatesChange( function( new_datesrange ) {
 		var filter = function( d ) { 
 			if( new_datesrange[0].valueOf( ) >= new_datesrange[1].valueOf( ) ) return ( d >= new_datesrange[0] || d <= new_datesrange[1] ); 
 			else return ( d >= new_datesrange[0] && d <= new_datesrange[1] ); 
@@ -125,12 +125,14 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 		date_dim.failed[0].filter( filter );
 		dc.redrawAll( );
 
+		// updateDayPlotLine( timewheel[current_nav], temp_passed, temp_failed );
+
 		// d3.select( '#dateSelection' )
 		// 	.text( 'Date selection from: ' + new_datesrange[0].toDateString() + ' to ' + new_datesrange[1].toDateString() );
 
 	});
 
-	temp_timewheel.onTodChange(function(new_todrange){
+	temp_timewheel.onTodChange( function( new_todrange ) {
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
 			if( new_todrange[0] >= new_todrange[1] ) return ( hour >= new_todrange[0] || hour <= new_todrange[1] ); 
@@ -146,7 +148,7 @@ function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed
 	});
 
 
-	temp_timewheel.onDowsChange(function(new_dows){
+	temp_timewheel.onDowsChange( function( new_dows ) {
 		var filter = function( d ) { 
 			var dow = new Date( d ).getDay();
 			return new_dows.indexOf( dow ) !== -1 ; 
@@ -274,6 +276,25 @@ function createCharts( important_vars, data ) {
 	}
 
 	dc.renderAll( );
+
+}
+
+/*
+	Update plotlines
+*/
+function updateYearPlotLine( tw, passed, failed ) {
+
+	tw.addYearPlotline( 'Passed Pieces per Date', passed );
+
+	tw.addYearPlotline( 'Failed Pieces per Date', failed );
+
+}
+
+function updateDayPlotLine( tw, passed, failed ) {
+	
+	tw.addDayPlotline( 'Passed Pieces per Hour', passed );
+	
+	tw.addDayPlotline( 'Failed Pieces per Hour', failed );
 
 }
 
