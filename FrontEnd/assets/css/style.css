@@ -21,11 +21,25 @@ p.numberDisplay {
 	font-size: 22px;
 	text-align: center;
 }
-p.passed {
-	color:#31D66C;
+circle.invisible {
+	fill-opacity: 0 !important;
 }
-p.failed {
-	color:#FF5E57;
+circle.passed {
+	fill: #31D66C !important;
+}
+circle.failed {
+	fill: #FF5E57 !important;
+}
+.invisible {
+	opacity: 0 !important;
+}
+.passed {
+	stroke: #31D66C !important;
+	color: #31D66C !important;
+}
+.failed {
+	stroke: #FF5E57 !important;
+	color: #FF5E57 !important;
 }
 button.rigth {
 	float:right;

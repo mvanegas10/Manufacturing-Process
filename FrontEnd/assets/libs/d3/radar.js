@@ -400,10 +400,11 @@ var RadarChart = {
         group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
         vis.vertices
           .data(group.axes).enter()
-          .append("svg:circle").classed("polygon-vertices", true)
+          .append("svg:circle")
+            .attr("class",function(d) { return (group.group && group.group !== "")? "polygon-vertices " + group.group.split(' ')[0].toLowerCase(): "polygon-vertices invisible";})
             .attr("textContent",""+g)
             .attr("fill-opacity",function(d,i) {
-              if((d.axis.indexOf('am') !== -1 || d.axis.indexOf('pm') !== -1) && d.value === 1)
+              if(!group || group === "")
                 return 0;
               return (d.value === 0.0001)? 0: 1;})
           .attr("r", config.polygonPointSize)
@@ -420,7 +421,7 @@ var RadarChart = {
     function buildPolygons(data) {
       vis.vertices
         .data(data).enter()
-        .append("svg:polygon").classed("polygon-areas", true)
+        .append("svg:polygon")
         .attr("points", function(group) { // build verticesString for each group
           var verticesString = "";
           group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
@@ -429,6 +430,7 @@ var RadarChart = {
           });
           return verticesString;
         })
+        .attr("class",function(d) { return (d.group && d.group !== "")? d.group.split(' ')[0].toLowerCase(): "invisible";})
         .attr("stroke-width", "2px")
         .attr("stroke", function(d, i) { return config.colors(i); })
         .attr("fill", function(d, i) { return config.colors(i); })
@@ -460,6 +462,7 @@ var RadarChart = {
           vis.vertices
               .data(data).enter()
               .append("path").classed("line", true)
+              .attr("class",function(d) { return (d.group && d.group !== "")? "line " + d.group.split(' ')[0].toLowerCase(): "line invisible";})
               .attr("d", function(group) { // build verticesString for each group
                   var verticesString = "";
                   var values=[];
@@ -471,8 +474,6 @@ var RadarChart = {
                   return line(values);
               })
               .attr("stroke-width", "2px")
-              .attr("stroke", function(d, i) { return config.colors(i); })
-              .attr("fill", function(d, i) { return config.colors(i); })
               .attr("opacity", function(d, i) { return (d.group)? 1: 0; })
               .attr("stroke-opacity", config.polygonStrokeOpacity);
       }

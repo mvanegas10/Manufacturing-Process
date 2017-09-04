@@ -26,8 +26,7 @@ var timewheel = {
 	'v3': undefined,
 	'v4': undefined
 };
-var colorArrayPassed = ['#fff', '#31D66C', '#FF5E57'];
-var colorArrayFailed = ['#fff', '#FF5E57', '#31D66C'];
+var colorArray = ['#fff', '#31D66C', '#FF5E57'];
 // var colorArray = '#000';
 
 /*
@@ -106,7 +105,7 @@ function changeView( view ) {
 */
 function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed ) {
 
-	function colorScale(n) { return colorArrayPassed[n % colorArrayPassed.length]; }
+	function colorScale(n) { return colorArray[n % colorArray.length]; }
 
 	//populate div with the tool
 	var temp_timewheel = new StradWheel( selector, colorScale );
