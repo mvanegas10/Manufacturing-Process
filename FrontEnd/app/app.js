@@ -1,4 +1,9 @@
 /*
+	ServiceCall
+*/
+var service = './components/ServiceCall.js';
+
+/*
 	View
 */
 var current_nav = 'general';
@@ -315,6 +320,8 @@ function updatePlotLine( ) {
 	Initialized the application
 */
 function initialize() {
+
+	service.get('get_all_count_date/passed')
 
 	d3.json( './data/date_important_variables.json', function( dict ) {
 
