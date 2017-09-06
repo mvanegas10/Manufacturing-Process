@@ -1,28 +1,48 @@
 /*
-	View
+	Consumming REST
 */
+function get( path ) {
 
-(function() {
+	return new Promise(
+		function( resolve, reject ) { 
+			$.ajax({
 
-	var config = '../../assets/config/config.json';
+				type: 'GET',
+				dataType: 'json',
+				url: config.REST.URL + path,
+				success: function( result ){        
+					resolve( result );
+				},
+				error: function( status, err ) {
+					reject( error )
+				}
 
-	function get( path ) {
+			} );
+		} 
+	);
 
-		$.ajax({
-			type: 'GET',
-			dataType: 'json',
-			url: config.REST.URL + path,
-			success: function(data){        
-				alert(data);
-			}
-		});
-		
-	}
+}
 
-	return {
-		get : get,
-	};
+function post( path, data ) {
 
-} )();
+	return new Promise(
+		function( resolve, reject ) { 
+			$.ajax({
 
+				type: 'POST',
+				dataType: 'json',
+				url: config.REST.URL + path,
+				data: data,
+				success: function( result ){        
+					resolve( result );
+				},
+				error: function( status, err ) {
+					reject( error )
+				}
+
+			});
+		} 
+	);
+
+}
 

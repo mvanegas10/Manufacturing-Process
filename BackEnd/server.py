@@ -1,5 +1,6 @@
 #!venv/bin/python
 from flask import Flask
+from flask import request
 from flask import jsonify
 import MySQLdb
 
@@ -21,8 +22,11 @@ def close_connection( cursor ):
 	cursor.connection.close( )
 
 # Gets the date count for a specific status
-@app.route( '/get_all_count_date/<status>', methods = [ 'GET' ] )
-def get_all_count_date( status ):
+@app.route( '/get_count_date/<status>', methods = [ 'POST' ] )
+def get_count_date( status ):
+
+	data = request.form
+
 	# Creates cursor
 	cur = get_cursor( )
 
@@ -32,7 +36,7 @@ def get_all_count_date( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT MONTH( timestamp ) as m, DAY( timestamp ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d GROUP BY MONTH( timestamp ), DAY( timestamp )' % ( status_value )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -43,8 +47,11 @@ def get_all_count_date( status ):
 	return jsonify( result )
 
 # Gets the hour count for a specific status
-@app.route( '/get_all_count_hour/<status>', methods = [ 'GET' ] )
-def get_all_count_hour( status ):
+@app.route( '/get_count_hour/<status>', methods = [ 'POST' ] )
+def get_count_hour( status ):
+
+	data = request.form
+
 	# Creates cursor
 	cur = get_cursor( )
 
@@ -54,7 +61,163 @@ def get_all_count_hour( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d GROUP BY HOUR( timestamp )' % ( status_value )
+	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
+	
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+# Gets the date count for a specific status
+@app.route( '/get_count_date_tod/<status>', methods = [ 'POST' ] )
+def get_count_date_tod( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	query = None
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+
+	if status == 'passed':
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( HOUR, timestamp ) >= %d AND DATEPART( HOUR, timestamp ) <= %d GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+	elif status == 'failed':
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( HOUR, timestamp ) >= %d AND DATEPART( HOUR, timestamp ) <= %d GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+# Gets the hour count for a specific status
+@app.route( '/get_count_hour_tod/<status>', methods = [ 'POST' ] )
+def get_count_hour_tod( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( HOUR, timestamp ) >= %d AND DATEPART( HOUR, timestamp ) <= %d GROUP BY h' % ( status_value, data['from'], data['to'] )
+	
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+# Gets the date count for a specific status
+@app.route( '/get_count_date_dow/<status>', methods = [ 'POST' ] )
+def get_count_date_dow( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( WEEKDAY, timestamp ) >= %d AND DATEPART( WEEKDAY, timestamp ) <= %d GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+	
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+# Gets the hour count for a specific status
+@app.route( '/get_count_hour_dow/<status>', methods = [ 'POST' ] )
+def get_count_hour_dow( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( WEEKDAY, timestamp ) >= %d AND DATEPART( WEEKDAY, timestamp ) <= %d GROUP BY h' % ( status_value, data['from'], data['to'] )
+	
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+
+# Gets the date average for a specific status
+@app.route( '/get_avg_date/<status>', methods = [ 'POST' ] )
+def get_avg_date( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, AVG( %s ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['var'], status_value, data['from'], data['to'] )
+	
+	# Executes query
+	cur.execute( query )
+	result = [ dict( ( cur.description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+
+	# Returns result
+	return jsonify( result )
+
+# Gets the hour average for a specific status
+@app.route( '/get_avg_hour/<status>', methods = [ 'POST' ] )
+def get_avg_hour( status ):
+
+	data = request.form
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+	query = 'SELECT HOUR( timestamp ) as h, AVG( %s ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['var'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )

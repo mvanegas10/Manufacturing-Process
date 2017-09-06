@@ -1,28 +1,31 @@
 /*
-	ServiceCall
-*/
-var service = './components/ServiceCall.js';
-
-/*
 	View
 */
-var current_nav = 'general';
+var currentNav = 'general';
 
 /*
 	Data
 */
 // Passed dataset
-var year_passed;
-var tod_passed;
+var yearPassed;
+var todPassed;
 
 // Failed dataset
-var year_failed;
-var tod_failed;
+var yearFailed;
+var todFailed;
 
 /*
 	STRAD WHEEL
 */ 
-var imp_variables;
+var impVariables = { 
+	'empty': {},
+	'general': {},
+	'v0': {},
+	'v1': {},
+	'v2': {},
+	'v3': {},
+	'v4': {}
+};
 var timewheel = { 
 	'general': undefined,
 	'v0': undefined,
@@ -37,23 +40,23 @@ var colorArray = ['#fff', '#31D66C', '#FF5E57'];
 /*
 	Crossfilter variables
 */
-var cf_passed;
-var cf_failed;
+var cfPassed;
+var cfFailed;
 
 // Dimensions
 var dimensions = { 'passed':[], 'failed':[] };
-var dim_passed;
-var dim_failed;
-var date_dim = { 'passed':[], 'failed':[] };
-var filter_dimensions = { 'passed':[], 'failed':[] };
+var dimPassed;
+var dimFailed;
+var dateDim = { 'passed':[], 'failed':[] };
+var filterDimensions = { 'passed':[], 'failed':[] };
 var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = [];
 var maximum = [];
 
 // Groupings
 var groups = { 'passed':[], 'failed':[] };
-var group_passed;
-var group_failed;
+var groupPassed;
+var groupFailed;
 
 /*
 	DC
@@ -61,22 +64,33 @@ var group_failed;
 var charts = { 'passed':[], 'failed':[] };
 
 /*
+	Functional methods
+*/
+function formatDate( date ) {
+	return date.toISOString( ).replace( 'T', ' ' ).substring( 0, 10 );
+}
+
+function formatDateTime( date ) {
+	return date.toISOString( ).replace( 'T', ' ' ).substring( 0, 19 );
+}
+
+/*
 	Reset view
 */
 function reset() {
 
-	date_dim.passed.forEach( function( filter ) {
+	dateDim.passed.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
 
-	date_dim.failed.forEach( function( filter ) {
+	dateDim.failed.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
 
 	dc.filterAll(); 
 	dc.redrawAll();
 
-	changeView( current_nav );
+	changeView( currentNav );
 
 }
 
@@ -88,16 +102,17 @@ function changeView( view ) {
 	d3.select( '#timewheel' )
 		.html( '' );
 
-	d3.select( '#button-' + current_nav )
+	d3.select( '#button-' + currentNav )
 		.attr( 'class', 'btn btn-info rigth no-radius' );
 
-	current_nav = view;
+	currentNav = view;
 
-	d3.select( '#button-' + current_nav )
+	d3.select( '#button-' + currentNav )
 		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
 
-	timewheel[view] = createSTRAD( '#timewheel', imp_variables[view].passed_date, imp_variables[view].failed_date, imp_variables[view].passed_tod, imp_variables[view].failed_tod );
+	if( !timewheel[view] )
+	timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
 	
 	addPlotLine( );
 	addPlotLine( );
@@ -108,99 +123,103 @@ function changeView( view ) {
 /*
 	Creates a STRAD WHEEL
 */
-function createSTRAD( selector, year_passed, year_failed, tod_passed, tod_failed ) {
+function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 
 	function colorScale(n) { return colorArray[n % colorArray.length]; }
 
 	//populate div with the tool
-	var temp_timewheel = new StradWheel( selector, colorScale );
+	var tempTimewheel = new StradWheel( selector, colorScale );
 
-	temp_timewheel.setSelectableYears( [ '2008' ] );
-	temp_timewheel.setYear( '2008' );
+	tempTimewheel.setSelectableYears( [ '2008' ] );
+	tempTimewheel.setYear( '2008' );
 
 	//Register to changes:
 
-	temp_timewheel.onDatesChange( function( new_datesrange ) {
+	tempTimewheel.onDatesChange( function( newDatesRange ) {
 		var filter = function( d ) { 
-			if( new_datesrange[0].valueOf( ) >= new_datesrange[1].valueOf( ) ) return ( d >= new_datesrange[0] || d <= new_datesrange[1] ); 
-			else return ( d >= new_datesrange[0] && d <= new_datesrange[1] ); 
+			if( newDatesRange[0].valueOf( ) >= newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0] || d <= newDatesRange[1] ); 
+			else return ( d >= newDatesRange[0] && d <= newDatesRange[1] ); 
 		};
-		date_dim.passed[0].filter( filter );
-		date_dim.failed[0].filter( filter );
 		dc.redrawAll( );
 
-		// updateDayPlotLine( timewheel[current_nav], temp_passed, temp_failed );
+		changeInDates( formatDate( newDatesRange[0] ), formatDate( newDatesRange[1] ) );
 
 	});
 
-	temp_timewheel.onTodChange( function( new_todrange ) {
+	tempTimewheel.onTodChange( function( newTodrange ) {
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
-			if( new_todrange[0] >= new_todrange[1] ) return ( hour >= new_todrange[0] || hour <= new_todrange[1] ); 
-			else return ( hour >= new_todrange[0] && hour <= new_todrange[1] ); 
+			if( newTodrange[0] >= newTodrange[1] ) return ( hour >= newTodrange[0] || hour <= newTodrange[1] ); 
+			else return ( hour >= newTodrange[0] && hour <= newTodrange[1] ); 
 		};
-		date_dim.passed[1].filter( filter );
-		date_dim.failed[1].filter( filter );
+		dateDim.passed[1].filter( filter );
+		dateDim.failed[1].filter( filter );
 		dc.redrawAll( );
+
+		console.log(newTodrange)
+		// changeInToD( formatDate( newTodrange[0] ), formatDate( newTodrange[1] ) );
 
 	});
 
 
-	temp_timewheel.onDowsChange( function( new_dows ) {
+	tempTimewheel.onDowsChange( function( newDows ) {
 		var filter = function( d ) { 
 			var dow = new Date( d ).getDay();
-			return new_dows.indexOf( dow ) !== -1 ; 
+			return newDows.indexOf( dow ) !== -1 ; 
 		};
-		date_dim.passed[2].filter( filter );
-		date_dim.failed[2].filter( filter );
+		dateDim.passed[2].filter( filter );
+		dateDim.failed[2].filter( filter );
 		dc.redrawAll( );
+		
+		console.log(newDows)
+		// changeInToD( formatDate( newDows[0] ), formatDate( newDows[1] ) );
 
 	});
 
-	temp_timewheel.addYearPlotline( '', imp_variables.empty.date );
-	temp_timewheel.addYearPlotline( 'Passed Pieces per Day', year_passed );
-	temp_timewheel.addYearPlotline( 'Failed Pieces per Day', year_failed );
-	temp_timewheel.addDayPlotline( '', imp_variables.empty.tod );
-	temp_timewheel.addDayPlotline( 'Passed Pieces per Hour',tod_passed );
-	temp_timewheel.addDayPlotline( 'Failed Pieces per Hour', tod_failed );
+	tempTimewheel.addYearPlotline( '', impVariables.empty.date );
+	tempTimewheel.addYearPlotline( 'Passed Pieces per Day', yearPassed );
+	tempTimewheel.addYearPlotline( 'Failed Pieces per Day', yearFailed );
+	tempTimewheel.addDayPlotline( '', impVariables.empty.tod );
+	tempTimewheel.addDayPlotline( 'Passed Pieces per Hour',todPassed );
+	tempTimewheel.addDayPlotline( 'Failed Pieces per Hour', todFailed );
 
-	return temp_timewheel;
+	return tempTimewheel;
 
 }
 
 /*
 	Creates the charts
 */
-function createCharts( important_vars, data ) {
+function createCharts( importantVars, data ) {
 
-	cf_passed = crossfilter( data );
-	cf_failed = crossfilter( data );
+	cfPassed = crossfilter( data );
+	cfFailed = crossfilter( data );
 
 	var add = function (p, v) { return p + 1; };
 	var remove = function (p, v) { return p - 1; };
 	var initial = function (p, v) { return 0; };
 
-	var value_accesor = function(d) { return d; };
-	var date_accesor = function( d ) { return new Date( d.TIMESTAMP ).valueOf(); };
-	var format_number = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
+	var valueAccesor = function(d) { return d; };
+	var dateAccesor = function( d ) { return new Date( d.TIMESTAMP ).valueOf(); };
+	var formatNumber = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
 
-	dim_passed = cf_passed.dimension( function( d ) { return d.INDEX; } );
-	group_passed = dim_passed.groupAll( ).reduce( add, remove, initial );
+	dimPassed = cfPassed.dimension( function( d ) { return d.INDEX; } );
+	groupPassed = dimPassed.groupAll( ).reduce( add, remove, initial );
 
-	dim_failed = cf_failed.dimension( function( d ) { return d.INDEX; } );
-	group_failed = dim_failed.groupAll( ).reduce( add, remove, initial );
+	dimFailed = cfFailed.dimension( function( d ) { return d.INDEX; } );
+	groupFailed = dimFailed.groupAll( ).reduce( add, remove, initial );
 
-	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
-	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
-	date_dim.passed.push( cf_passed.dimension( date_accesor ) );
-	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
-	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
-	date_dim.failed.push( cf_failed.dimension( date_accesor ) );
+	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
+	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
+	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
+	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
+	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
+	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 
 	dc.numberDisplay( '#num_passed_pieces' )
-		.valueAccessor( value_accesor )
-		.formatNumber( format_number )
-		.group(group_passed)
+		.valueAccessor( valueAccesor )
+		.formatNumber( formatNumber )
+		.group(groupPassed)
 		.html({
 			one:'<p class="numberDisplay passed"> %number passed <br>piece </p>',
 			some:'<p class="numberDisplay passed"> %number passed <br>pieces </p>',
@@ -208,35 +227,35 @@ function createCharts( important_vars, data ) {
 		});
 
 	dc.numberDisplay( '#num_failed_pieces' )
-		.valueAccessor( value_accesor )
-		.formatNumber( format_number )
-		.group(group_failed)
+		.valueAccessor( valueAccesor )
+		.formatNumber( formatNumber )
+		.group(groupFailed)
 		.html({
 			one:'<p class="numberDisplay failed"> %number failed <br>piece </p>',
 			some:'<p class="numberDisplay failed"> %number failed <br>pieces </p>',
 			none:'<p class="numberDisplay failed"> No failed <br>pieces</p>'
 		});
 
-	for ( var i = 0; i < important_vars.length; i++ ) {
+	for ( var i = 0; i < importantVars.length; i++ ) {
 
-		var dimension_creator = function( d ) { return +d3.round(d[important_vars[i]], rounds[i]); };
-		var filter_dimension_creator = function( d ) { return d.RESULTS? String( d.RESULTS ): 0; };
+		var dimensionCreator = function( d ) { return +d3.round(d[importantVars[i]], rounds[i]); };
+		var filterDimensionCreator = function( d ) { return d.RESULTS? String( d.RESULTS ): 0; };
 
-		dimensions.passed.push( cf_passed.dimension( dimension_creator ) );
-		filter_dimensions.passed.push( cf_passed.dimension( filter_dimension_creator ) );
+		dimensions.passed.push( cfPassed.dimension( dimensionCreator ) );
+		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		minimum.push( dimensions.passed[i].bottom(1)[0][important_vars[i]] );
-		maximum.push( dimensions.passed[i].top(1)[0][important_vars[i]] );		
+		minimum.push( dimensions.passed[i].bottom(1)[0][importantVars[i]] );
+		maximum.push( dimensions.passed[i].top(1)[0][importantVars[i]] );		
 
-		filter_dimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
+		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
 
 
-		var name_passed = 'passed_variable' + i;
-		var width_passed = document.getElementById( name_passed ).offsetWidth * 0.98;
+		var namePassed = 'passed_variable' + i;
+		var widthPassed = document.getElementById( namePassed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + name_passed )
-			.width(width_passed)
+		var chart = dc.barChart( '#' + namePassed )
+			.width(widthPassed)
 			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
@@ -247,17 +266,17 @@ function createCharts( important_vars, data ) {
 
 		charts.passed.push( chart );
 
-		dimensions.failed.push( cf_failed.dimension( dimension_creator ) );
-		filter_dimensions.failed.push( cf_failed.dimension( filter_dimension_creator ) );
+		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
+		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
 
-		filter_dimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
+		filterDimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
 
-		var name_failed = 'failed_variable' + i;
-		var width_failed = document.getElementById( name_failed ).offsetWidth * 0.98;
+		var nameFailed = 'failed_variable' + i;
+		var widthFailed = document.getElementById( nameFailed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + name_failed )
-			.width(width_failed)
+		var chart = dc.barChart( '#' + nameFailed )
+			.width(widthFailed)
 			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
 			.elasticY(true)
@@ -277,11 +296,25 @@ function createCharts( important_vars, data ) {
 /*
 	Update plotlines
 */
-function updateYearPlotLine( tw, passed, failed ) {
+function changeInDates( from, to ) {
 
-	tw.addYearPlotline( 'Passed Pieces per Day', passed );
+	var tempData = {
+		'from': from,
+		'to': to
+	};
+	var passedDate = post( 'get_count_date/passed', tempData );
+	var failedDate = post( 'get_count_date/failed', tempData );
+	var passedHour = post( 'get_count_hour/passed', tempData );
+	var failedHour = post( 'get_count_hour/failed', tempData );
 
-	tw.addYearPlotline( 'Failed Pieces per Day', failed );
+	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+		
+		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
+		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
+		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
+		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
+	
+	} );
 
 }
 
@@ -298,21 +331,21 @@ function updateDayPlotLine( tw, passed, failed ) {
 */
 function updatePlotLine( ) {
 	if( $( '#passed_checkbox' ).is( ':checked' ) ) {
-		timewheel[current_nav].addDayPlotline( 'Passed Pieces per Hour', imp_variables[current_nav]['passed_tod'] );
-		timewheel[current_nav].addYearPlotline( 'Passed Pieces per Day', imp_variables[current_nav]['passed_date'] );
+		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', impVariables[currentNav]['passedToD'] );
+		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', impVariables[currentNav]['passedDoW'] );
 	}
 	else {
-		timewheel[current_nav].removeDayPlotline( 'Passed Pieces per Hour' );
-		timewheel[current_nav].removeYearPlotline( 'Passed Pieces per Day' );
+		timewheel[currentNav].removeDayPlotline( 'Passed Pieces per Hour' );
+		timewheel[currentNav].removeYearPlotline( 'Passed Pieces per Day' );
 	}
 
 	if( $( '#failed_checkbox' ).is( ':checked' ) ) {
-		timewheel[current_nav].addDayPlotline( 'Failed Pieces per Hour', imp_variables[current_nav]['failed_tod'] );
-		timewheel[current_nav].addYearPlotline( 'Failed Pieces per Day', imp_variables[current_nav]['failed_date'] );
+		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', impVariables[currentNav]['failedToD'] );
+		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', impVariables[currentNav]['failedDoW'] );
 	}
 	else {
-		timewheel[current_nav].removeDayPlotline( 'Failed Pieces per Hour' );
-		timewheel[current_nav].removeYearPlotline( 'Failed Pieces per Day' );
+		timewheel[currentNav].removeDayPlotline( 'Failed Pieces per Hour' );
+		timewheel[currentNav].removeYearPlotline( 'Failed Pieces per Day' );
 	}
 }
 
@@ -321,20 +354,40 @@ function updatePlotLine( ) {
 */
 function initialize() {
 
-	service.get('get_all_count_date/passed')
+	var tempData = {
+		'from': '2008-01-01 00:00:00',
+		'to': '2008-12-31 00:00:00'
+	};
+	var passedDate = post( 'get_count_date/passed', tempData );
+	var failedDate = post( 'get_count_date/failed', tempData );
+	var passedHour = post( 'get_count_hour/passed', tempData );
+	var failedHour = post( 'get_count_hour/failed', tempData );
 
-	d3.json( './data/date_important_variables.json', function( dict ) {
+	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+		
+		impVariables.general.passedDoW = values[0];
+		impVariables.general.failedDoW = values[1];
+		impVariables.general.passedToD = values[2];
+		impVariables.general.failedToD = values[3];
+		// timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
+	
+		d3.json( './data/date_important_variables.json', function( dict ) {
 
-		imp_variables = dict;
-		timewheel.general = createSTRAD( '#timewheel', dict.general.passed_date, dict.general.failed_date, dict.general.passed_tod, dict.general.failed_tod );
+			impVariables.empty = dict.empty;
+			console.log(dict.general)
+			console.log(impVariables.general)
+			timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 
+		} );
+	
 	} );
+
 
 	d3.csv( './data/data_join_imp_variables.csv', function( data ) {
 
-		d3.csv( './data/var_importance.csv', function( important_vars ) {
+		d3.csv( './data/var_importance.csv', function( importantVars ) {
 
-			createCharts( important_vars.map( function( d ) { return d.Variables; } ), data );
+			createCharts( importantVars.map( function( d ) { return d.Variables; } ), data );
 
 		} );
 
