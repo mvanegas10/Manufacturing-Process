@@ -70,10 +70,6 @@ function formatDate( date ) {
 	return date.toISOString( ).replace( 'T', ' ' ).substring( 0, 10 );
 }
 
-function formatDateTime( date ) {
-	return date.toISOString( ).replace( 'T', ' ' ).substring( 0, 19 );
-}
-
 /*
 	Reset view
 */
@@ -156,8 +152,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.failed[1].filter( filter );
 		dc.redrawAll( );
 
-		console.log(newTodrange)
-		// changeInToD( formatDate( newTodrange[0] ), formatDate( newTodrange[1] ) );
+		changeInToD( newTodrange[0], newTodrange[1] );
 
 	});
 
@@ -306,6 +301,28 @@ function changeInDates( from, to ) {
 	var failedDate = post( 'get_count_date/failed', tempData );
 	var passedHour = post( 'get_count_hour/passed', tempData );
 	var failedHour = post( 'get_count_hour/failed', tempData );
+
+	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+		
+		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
+		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
+		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
+		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
+	
+	} );
+
+}
+
+function changeInToD( from, to ) {
+
+	var tempData = {
+		'from': from,
+		'to': to
+	};
+	var passedDate = post( 'get_count_date_tod/passed', tempData );
+	var failedDate = post( 'get_count_date_tod/failed', tempData );
+	var passedHour = post( 'get_count_hour_tod/passed', tempData );
+	var failedHour = post( 'get_count_hour_tod/failed', tempData );
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
 		
