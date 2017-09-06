@@ -83,17 +83,16 @@ def get_count_date_tod( status ):
 	# Builds query
 	query = None
 	status_value = None
+
 	if status == 'passed':
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= \'%d\' AND HOUR( timestamp ) <= \'%d\' GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
-	elif status == 'failed':
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= \'%d\' OR HOUR( timestamp ) <= \'%d\' ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
-
-	print query
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
+	else:
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
 
 	# Executes query
 	cur.execute( query )
@@ -115,18 +114,17 @@ def get_count_hour_tod( status ):
 	# Builds query
 	query = None
 	status_value = None
+	
 	if status == 'passed':
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
 	
 	if data['from'] < data['to']:
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= \'%d\' AND HOUR( timestamp ) <= \'%d\' GROUP BY h' % ( status_value, data['from'], data['to'] ) 
-	elif status == 'failed':
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= \'%d\' OR HOUR( timestamp ) <= \'%d\' ) GROUP BY h' % ( status_value, data['from'], data['to'] ) 
+		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY h' % ( status_value, int( data['from'] ), int( data['to'] ) )
+	else:
+		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY h' % ( status_value, int( data['from'] ), int( data['to'] ) )
 	
-	print query
-
 	# Executes query
 	cur.execute( query )
 	result = [ dict( ( cur.description[i][0], value ) \
