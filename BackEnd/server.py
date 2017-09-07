@@ -2,6 +2,7 @@
 from flask import Flask
 from flask import request
 from flask import jsonify
+from flask_cors import CORS
 import MySQLdb
 
 db = MySQLdb.connect(
@@ -12,6 +13,7 @@ db = MySQLdb.connect(
 )
 
 app = Flask( __name__ )
+CORS(app)
 
 # Creates a cursor
 def get_cursor( ):
