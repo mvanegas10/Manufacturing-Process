@@ -152,9 +152,8 @@ var RadarChart = {
 
     //build visualization using the other build helper functions
     function buildVis(data) {
-      // data = data.filter
       data.forEach( function(d) {
-        d.axes = d.axes.filter( function(d) { return d.value !== undefined && d.value !== 0; } );
+        d.axes = d.axes.filter( function(d) { return d.value && !isNaN( d.value ); } );
       } );
       buildVisComponents();
       buildCoordinates(data);
@@ -380,7 +379,7 @@ var RadarChart = {
     // builds [x, y] coordinates of polygon vertices.
     function buildCoordinates(data) {
       data.forEach(function(group) {
-        group.axes = group.axes.filter( function( d ) { return d.value !== undefined; } )
+        group.axes = group.axes.filter( function( d ) { return d.value && !isNaN(d.value); } )
         group.axes.forEach(function(d, i) {
             var origVal=parseFloat(d.value) / config.maxValue;
             var adjVal=(1-config.innerRadius)*origVal+config.innerRadius;
@@ -397,7 +396,7 @@ var RadarChart = {
     // builds out the polygon vertices of the dataset
     function buildVertices(data) {
       data.forEach(function(group, g) {
-        group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
+        group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
         vis.vertices
           .data(group.axes).enter()
           .append("svg:circle")
@@ -424,7 +423,7 @@ var RadarChart = {
         .append("svg:polygon")
         .attr("points", function(group) { // build verticesString for each group
           var verticesString = "";
-          group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
+          group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
           group.axes.forEach(function(d) { 
             verticesString += d.coordinates.x + "," + d.coordinates.y + " "; 
           });
@@ -466,7 +465,7 @@ var RadarChart = {
               .attr("d", function(group) { // build verticesString for each group
                   var verticesString = "";
                   var values=[];
-                  group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && d.coordinates.y !== undefined; } )
+                  group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
                   group.axes.forEach(function(d) { values.push(d.coordinates); });
                   //group.axes.forEach(function(d) { verticesString += d.coordinates.x + "," + d.coordinates.y + " "; });
                   //return verticesString;

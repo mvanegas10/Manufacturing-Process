@@ -132,17 +132,21 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 	//Register to changes:
 
 	tempTimewheel.onDatesChange( function( newDatesRange ) {
+		
+		changeInDates( formatDate( newDatesRange[0] ), formatDate( newDatesRange[1] ) );
+		
 		var filter = function( d ) { 
 			if( newDatesRange[0].valueOf( ) >= newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0] || d <= newDatesRange[1] ); 
 			else return ( d >= newDatesRange[0] && d <= newDatesRange[1] ); 
 		};
 		dc.redrawAll( );
 
-		changeInDates( formatDate( newDatesRange[0] ), formatDate( newDatesRange[1] ) );
-
 	});
 
 	tempTimewheel.onTodChange( function( newTodrange ) {
+		
+		changeInToD( newTodrange[0], newTodrange[1] );
+		
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
 			if( newTodrange[0] >= newTodrange[1] ) return ( hour >= newTodrange[0] || hour <= newTodrange[1] ); 
@@ -152,12 +156,14 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.failed[1].filter( filter );
 		dc.redrawAll( );
 
-		changeInToD( newTodrange[0], newTodrange[1] );
-
 	});
 
 
 	tempTimewheel.onDowsChange( function( newDows ) {
+		
+		console.log(newDows)
+		// changeInDoW( newDows );
+		
 		var filter = function( d ) { 
 			var dow = new Date( d ).getDay();
 			return newDows.indexOf( dow ) !== -1 ; 
@@ -165,9 +171,6 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[2].filter( filter );
 		dateDim.failed[2].filter( filter );
 		dc.redrawAll( );
-		
-		console.log(newDows)
-		// changeInToD( formatDate( newDows[0] ), formatDate( newDows[1] ) );
 
 	});
 
@@ -326,6 +329,10 @@ function changeInToD( from, to ) {
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
 		
+		console.log('-------------------------------------------------')
+		console.log('values',values)
+		console.log('tempData',tempData)
+
 		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
 		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
 		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
@@ -335,7 +342,7 @@ function changeInToD( from, to ) {
 
 }
 
-function updateDayPlotLine( tw, passed, failed ) {
+function changeInDoW( dows ) {
 	
 	tw.addDayPlotline( 'Passed Pieces per Hour', passed );
 	
@@ -386,13 +393,10 @@ function initialize() {
 		impVariables.general.failedDoW = values[1];
 		impVariables.general.passedToD = values[2];
 		impVariables.general.failedToD = values[3];
-		// timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 	
 		d3.json( './data/date_important_variables.json', function( dict ) {
 
 			impVariables.empty = dict.empty;
-			console.log(dict.general)
-			console.log(impVariables.general)
 			timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 
 		} );

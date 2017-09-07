@@ -6,34 +6,34 @@
 var StradWheel=function(parent_selector, colorScale){
 
     //empty dayradar
-    var empty_dayradar=[{"group":"","axes":[{"axis":"12m","value":undefined},{"axis":"11am","value":undefined},{"axis":"10am","value":undefined},{"axis":"9am","value":undefined},{"axis":"8am","value":undefined},{"axis":"7am","value":undefined},{"axis":"6am","value":undefined},{"axis":"5am","value":undefined},{"axis":"4am","value":undefined},{"axis":"3am","value":undefined},{"axis":"2am","value":undefined},{"axis":"1am","value":undefined},{"axis":"12am","value":undefined},{"axis":"11pm","value":undefined},{"axis":"10pm","value":undefined},{"axis":"9pm","value":undefined},{"axis":"8pm","value":undefined},{"axis":"7pm","value":undefined},{"axis":"6pm","value":undefined},{"axis":"5pm","value":undefined},{"axis":"4pm","value":undefined},{"axis":"3pm","value":undefined},{"axis":"2pm","value":undefined},{"axis":"1pm","value":undefined}]}];
-    var empty_yearradar=[[{"group":"","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}],[{"group":"Total per day of week","axes":[{"axis":"Sun","value":undefined},{"axis":"Sat","value":undefined},{"axis":"Fri","value":undefined},{"axis":"Thu","value":undefined},{"axis":"Wed","value":undefined},{"axis":"Tue","value":undefined},{"axis":"Mon","value":undefined}]}]];
+    var empty_dayradar=[{"group":"","axes":[{"axis":"12m","value":NaN},{"axis":"11am","value":NaN},{"axis":"10am","value":NaN},{"axis":"9am","value":NaN},{"axis":"8am","value":NaN},{"axis":"7am","value":NaN},{"axis":"6am","value":NaN},{"axis":"5am","value":NaN},{"axis":"4am","value":NaN},{"axis":"3am","value":NaN},{"axis":"2am","value":NaN},{"axis":"1am","value":NaN},{"axis":"12am","value":NaN},{"axis":"11pm","value":NaN},{"axis":"10pm","value":NaN},{"axis":"9pm","value":NaN},{"axis":"8pm","value":NaN},{"axis":"7pm","value":NaN},{"axis":"6pm","value":NaN},{"axis":"5pm","value":NaN},{"axis":"4pm","value":NaN},{"axis":"3pm","value":NaN},{"axis":"2pm","value":NaN},{"axis":"1pm","value":NaN}]}];
+    var empty_yearradar=[[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}],[{"group":"","axes":[{"axis":"Sun","value":NaN},{"axis":"Sat","value":NaN},{"axis":"Fri","value":NaN},{"axis":"Thu","value":NaN},{"axis":"Wed","value":NaN},{"axis":"Tue","value":NaN},{"axis":"Mon","value":NaN}]}]];
 
     var empty_day_template=JSON.stringify([
-        {h:"12am",c:undefined},
-        {h:"1am",c:undefined},
-        {h:"2am",c:undefined},
-        {h:"3am",c:undefined},
-        {h:"4am",c:undefined},
-        {h:"5am",c:undefined},
-        {h:"6am",c:undefined},
-        {h:"7am",c:undefined},
-        {h:"8am",c:undefined},
-        {h:"9am",c:undefined},
-        {h:"10am",c:undefined},
-        {h:"11am",c:undefined},
-        {h:"12m",c:undefined},
-        {h:"1pm",c:undefined},
-        {h:"2pm",c:undefined},
-        {h:"3pm",c:undefined},
-        {h:"4pm",c:undefined},
-        {h:"5pm",c:undefined},
-        {h:"6pm",c:undefined},
-        {h:"7pm",c:undefined},
-        {h:"8pm",c:undefined},
-        {h:"9pm",c:undefined},
-        {h:"10pm",c:undefined},
-        {h:"11pm",c:undefined}
+        {h:"12am",v:NaN},
+        {h:"1am",v:NaN},
+        {h:"2am",v:NaN},
+        {h:"3am",v:NaN},
+        {h:"4am",v:NaN},
+        {h:"5am",v:NaN},
+        {h:"6am",v:NaN},
+        {h:"7am",v:NaN},
+        {h:"8am",v:NaN},
+        {h:"9am",v:NaN},
+        {h:"10am",v:NaN},
+        {h:"11am",v:NaN},
+        {h:"12m",v:NaN},
+        {h:"1pm",v:NaN},
+        {h:"2pm",v:NaN},
+        {h:"3pm",v:NaN},
+        {h:"4pm",v:NaN},
+        {h:"5pm",v:NaN},
+        {h:"6pm",v:NaN},
+        {h:"7pm",v:NaN},
+        {h:"8pm",v:NaN},
+        {h:"9pm",v:NaN},
+        {h:"10pm",v:NaN},
+        {h:"11pm",v:NaN}
     ]);
 
     this.example_yearparam=[{"m":0,"d":0,"v":2.5},{"m":0,"d":1,"v":1.2},{"m":0,"d":2,"v":10},{"m":0,"d":3,"v":7.4},{"m":0,"d":4,"v":10},{"m":0,"d":5,"v":10},{"m":0,"d":6,"v":10},{"m":1,"d":0,"v":10},{"m":1,"d":1,"v":10},{"m":1,"d":2,"v":10},{"m":1,"d":3,"v":15},{"m":1,"d":4,"v":10},{"m":1,"d":5,"v":10},{"m":1,"d":6,"v":10},{"m":2,"d":0,"v":10},{"m":2,"d":1,"v":10},{"m":2,"d":2,"v":10},{"m":2,"d":3,"v":15},{"m":2,"d":4,"v":10},{"m":2,"d":5,"v":10},{"m":2,"d":6,"v":10},{"m":3,"d":0,"v":10},{"m":3,"d":1,"v":10},{"m":3,"d":2,"v":10},{"m":3,"d":3,"v":15},{"m":3,"d":4,"v":10},{"m":3,"d":5,"v":10},{"m":3,"d":6,"v":10},{"m":4,"d":0,"v":10},{"m":4,"d":1,"v":10},{"m":4,"d":2,"v":10},{"m":4,"d":3,"v":15},{"m":4,"d":4,"v":10},{"m":4,"d":5,"v":10},{"m":4,"d":6,"v":10},{"m":5,"d":0,"v":10},{"m":5,"d":1,"v":10},{"m":5,"d":2,"v":10},{"m":5,"d":3,"v":15},{"m":5,"d":4,"v":10},{"m":5,"d":5,"v":10},{"m":5,"d":6,"v":10},{"m":6,"d":0,"v":10},{"m":6,"d":1,"v":10},{"m":6,"d":2,"v":10},{"m":6,"d":3,"v":15},{"m":6,"d":4,"v":10},{"m":6,"d":5,"v":10},{"m":6,"d":6,"v":10},{"m":7,"d":0,"v":10},{"m":7,"d":1,"v":10},{"m":7,"d":2,"v":10},{"m":7,"d":3,"v":15},{"m":7,"d":4,"v":10},{"m":7,"d":5,"v":10},{"m":7,"d":6,"v":10},{"m":8,"d":0,"v":10},{"m":8,"d":1,"v":10},{"m":8,"d":2,"v":10},{"m":8,"d":3,"v":15},{"m":8,"d":4,"v":10},{"m":8,"d":5,"v":10},{"m":8,"d":6,"v":10},{"m":9,"d":0,"v":10},{"m":9,"d":1,"v":10},{"m":9,"d":2,"v":10},{"m":9,"d":3,"v":15},{"m":9,"d":4,"v":10},{"m":9,"d":5,"v":10},{"m":9,"d":6,"v":10},{"m":10,"d":0,"v":10},{"m":10,"d":1,"v":10},{"m":10,"d":2,"v":10},{"m":10,"d":3,"v":15},{"m":10,"d":4,"v":10},{"m":10,"d":5,"v":10},{"m":10,"d":6,"v":10},{"m":11,"d":0,"v":10},{"m":11,"d":1,"v":10},{"m":11,"d":2,"v":10},{"m":11,"d":3,"v":15},{"m":11,"d":4,"v":10},{"m":11,"d":5,"v":10},{"m":11,"d":6,"v":10}];
@@ -122,7 +122,7 @@ var StradWheel=function(parent_selector, colorScale){
         paddingX: 0,
         paddingY: 0,
         innerRadius: 0.2, //percentage
-        maxValue: 1,//minimum maximum-value showed
+        maxValue: 0,//minimum maximum-value showed
         marginLegend:{x:50,y:270},
         colors: colorScale
     };
@@ -235,7 +235,7 @@ var StradWheel=function(parent_selector, colorScale){
                 {
                     axesm.push({axis:weekdays[d],value:thisday[0].v});
                 }
-                else axesm.push({axis:weekdays[d],value:0});//autocomplete (with 0 for now) fixme in radar.js to accept undefined values
+                else axesm.push({axis:weekdays[d],value:undefined});//autocomplete (with 0 for now) fixme in radar.js to accept undefined values
 
             }
             axesm=axesm.reverse();
@@ -443,6 +443,7 @@ var StradWheel=function(parent_selector, colorScale){
             var r=d[i];
             returned[r.h].v=r.v;
         }
+        console.log('!!!!!!!!!!RETURNED!!!!!!!!!!',returned)
         return returned;
     }
 
@@ -472,7 +473,7 @@ var StradWheel=function(parent_selector, colorScale){
     function datesJson(dd,legend) {
         if(!legend)
         {
-            legend="Total per day of week";
+            legend="";
         }
         return {
             group: legend,
@@ -691,7 +692,7 @@ var StradWheel=function(parent_selector, colorScale){
         for(var i = 0; i < 12; i++){
             //paint lines of days
             var radarConfigOuterDatesM = (JSON.parse(JSON.stringify(radarConfigOuterDates)));//clone object
-            var objDum={group:'dumm'};
+            var objDum={group:''};
             objDum.axes=[];
             var nD=new Date(selected_year,i,0).getDate();
             for(var j= nD; j>0;j--)
@@ -703,7 +704,7 @@ var StradWheel=function(parent_selector, colorScale){
             RadarChart.draw(parent_selector+" svg.monthDates_"+(i), dataDummieOuterDates, radarConfigOuterDatesM);//styler
         }
         //paint month labels..
-        var objDumMonth={group:'dumm'};
+        var objDumMonth={group:''};
         objDumMonth.axes=[];
         for(var j= 0; j<12;j++)
         {
