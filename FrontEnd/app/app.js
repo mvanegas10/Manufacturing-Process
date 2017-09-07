@@ -307,8 +307,8 @@ function changeInDates( from, to ) {
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
 		
-		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
-		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
+		// timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
+		// timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
 		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
 		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
 	
@@ -335,8 +335,8 @@ function changeInToD( from, to ) {
 
 		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
 		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
-		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
-		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
+		// timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
+		// timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
 	
 	} );
 
