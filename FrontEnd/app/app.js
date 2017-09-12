@@ -25,7 +25,6 @@ var timewheel = {
 	'general': undefined
 };
 var colorArray = ['#fff', '#31D66C', '#FF5E57'];
-// var colorArray = '#000';
 
 /*
 	Crossfilter variables
