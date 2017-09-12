@@ -12,7 +12,7 @@ import MySQLdb
 import ast
 
 # Json objects
-import json
+import simplejson as json
 
 db = MySQLdb.connect(
 	host	= "localhost", 
@@ -48,7 +48,7 @@ def get_raw_data( ):
 	cur = get_cursor( )
 
 	# Builds query
-	query = 'SELECT id, results, timestamp, %s FROM table_secom' % ( ', '.join( str( x ) for x in data)  )
+	query = 'SELECT id, results, ( UNIX_TIMESTAMP( timestamp ) * 1000 ) AS timevalue, %s FROM table_secom' % ( ', '.join( str( x ) for x in data)  )
 
 	# Executes query
 	cur.execute( query )
@@ -76,9 +76,9 @@ def get_count_date( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -105,9 +105,9 @@ def get_count_hour( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -135,9 +135,9 @@ def get_count_date_tod( status ):
 		status_value = 1
 
 	if int( data['from'] ) < int( data['to'] ):
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
 
 	# Executes query
 	cur.execute( query )
@@ -162,7 +162,7 @@ def get_count_date_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( status_value, ', '.join( str( x ) for x in data ) )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( status_value, ', '.join( str( x ) for x in data ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -187,7 +187,7 @@ def get_count_hour_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( status_value, ', '.join( str( x ) for x in data ) )
+	query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( status_value, ', '.join( str( x ) for x in data ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -212,7 +212,7 @@ def get_avg_date( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, AVG( %s ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['var'], status_value, data['from'], data['to'] )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, AVG( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['var'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -236,7 +236,7 @@ def get_avg_hour( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) as h, AVG( %s ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['var'], status_value, data['from'], data['to'] )
+	query = 'SELECT HOUR( timestamp ) AS h, AVG( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['var'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
