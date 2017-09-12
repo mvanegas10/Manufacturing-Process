@@ -65,6 +65,15 @@ function formatDate( date ) {
 */
 function reset() {
 
+	changeView( currentNav );
+
+}
+
+/*
+	Changes view
+*/
+function changeView( view ) {
+
 	dateDim.passed.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
@@ -75,15 +84,6 @@ function reset() {
 
 	dc.filterAll(); 
 	dc.redrawAll();
-
-	changeView( currentNav );
-
-}
-
-/*
-	Changes view
-*/
-function changeView( view ) {
 
 	d3.select( '#timewheel' )
 		.html( '' );
