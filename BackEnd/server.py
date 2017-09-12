@@ -4,6 +4,7 @@ from flask import request
 from flask import jsonify
 from flask_cors import CORS
 import MySQLdb
+import ast
 
 db = MySQLdb.connect(
 	host	= "localhost", 
@@ -33,12 +34,18 @@ def get_count_date( status ):
 	cur = get_cursor( )
 
 	# Builds query
+	query = None
 	status_value = None
+	
 	if status == 'passed':
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+
+	if data['from'] < data['to']:
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+	else:
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -58,12 +65,17 @@ def get_count_hour( status ):
 	cur = get_cursor( )
 
 	# Builds query
+	query = None
 	status_value = None
 	if status == 'passed':
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
+
+	if data['from'] < data['to']:
+		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
+	else:
+		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -91,45 +103,11 @@ def get_count_date_tod( status ):
 	elif status == 'failed':
 		status_value = 1
 
-	print data
-
 	if int( data['from'] ) < int( data['to'] ):
 		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
 	else:
 		query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
-	print query
 
-	# Executes query
-	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
-
-	# Returns result
-	return jsonify( result )
-
-# Gets the hour count for a specific status
-@app.route( '/get_count_hour_tod/<status>', methods = [ 'POST' ] )
-def get_count_hour_tod( status ):
-
-	data = request.form
-
-	# Creates cursor
-	cur = get_cursor( )
-
-	# Builds query
-	query = None
-	status_value = None
-	
-	if status == 'passed':
-		status_value = -1
-	elif status == 'failed':
-		status_value = 1
-	
-	if int( data['from'] ) < int( data['to'] ):
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY h' % ( status_value, int( data['from'] ), int( data['to'] ) )
-	else:
-		query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY h' % ( status_value, int( data['from'] ), int( data['to'] ) )
-	
 	# Executes query
 	cur.execute( query )
 	result = [ dict( ( cur.description[i][0], value ) \
@@ -142,7 +120,7 @@ def get_count_hour_tod( status ):
 @app.route( '/get_count_date_dow/<status>', methods = [ 'POST' ] )
 def get_count_date_dow( status ):
 
-	data = request.form
+	data  = ast.literal_eval( request.form[ 'dows' ] )
 
 	# Creates cursor
 	cur = get_cursor( )
@@ -153,7 +131,7 @@ def get_count_date_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( WEEKDAY, timestamp ) >= %d AND DATEPART( WEEKDAY, timestamp ) <= %d GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) as m, ( DAYOFWEEK( timestamp ) - 1 ) as d, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( status_value, ', '.join( str( x ) for x in data ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -167,7 +145,7 @@ def get_count_date_dow( status ):
 @app.route( '/get_count_hour_dow/<status>', methods = [ 'POST' ] )
 def get_count_hour_dow( status ):
 
-	data = request.form
+	data  = ast.literal_eval( request.form[ 'dows' ] )
 
 	# Creates cursor
 	cur = get_cursor( )
@@ -178,7 +156,7 @@ def get_count_hour_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND DATEPART( WEEKDAY, timestamp ) >= %d AND DATEPART( WEEKDAY, timestamp ) <= %d GROUP BY h' % ( status_value, data['from'], data['to'] )
+	query = 'SELECT HOUR( timestamp ) as h, COUNT( * ) as v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( status_value, ', '.join( str( x ) for x in data ) )
 	
 	# Executes query
 	cur.execute( query )
