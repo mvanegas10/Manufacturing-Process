@@ -110,9 +110,7 @@ function changeView( view ) {
 	if( !timewheel[view] )
 	timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
 	
-	addPlotLine( );
-	addPlotLine( );
-	addPlotLine( );
+	updatePlotLine( );
 	
 }
 
@@ -136,9 +134,11 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		changeInDates( formatDate( newDatesRange[0] ), formatDate( newDatesRange[1] ) );
 		
 		var filter = function( d ) { 
-			if( newDatesRange[0].valueOf( ) >= newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0] || d <= newDatesRange[1] ); 
-			else return ( d >= newDatesRange[0] && d <= newDatesRange[1] ); 
+			if( newDatesRange[0].valueOf( ) >= newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0].valueOf( ) || d <= newDatesRange[1].valueOf( ) ); 
+			else return ( d >= newDatesRange[0].valueOf( ) && d <= newDatesRange[1].valueOf( ) ); 
 		};
+		dateDim.passed[0].filter( filter );
+		dateDim.failed[0].filter( filter );
 		dc.redrawAll( );
 
 	});
@@ -161,8 +161,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 
 	tempTimewheel.onDowsChange( function( newDows ) {
 		
-		console.log(newDows)
-		// changeInDoW( newDows );
+		changeInDoW( newDows );
 		
 		var filter = function( d ) { 
 			var dow = new Date( d ).getDay();
@@ -185,6 +184,24 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 
 }
 
+
+/*
+	Creates the a number display
+*/
+function createNumberDisplay( selector, valueAccesor, formatNumber, group, string ) {
+
+	dc.numberDisplay( selector )
+		.valueAccessor( valueAccesor )
+		.formatNumber( formatNumber )
+		.group( group )
+		.html( {
+			one:'<p class="numberDisplay ' +  string + '"> %number ' +  string + ' <br>piece </p>',
+			some:'<p class="numberDisplay ' +  string + '"> %number ' +  string + ' <br>pieces </p>',
+			none:'<p class="numberDisplay ' +  string + '"> No ' +  string + ' <br>pieces</p>'
+		} );
+
+}
+
 /*
 	Creates the charts
 */
@@ -198,13 +215,13 @@ function createCharts( importantVars, data ) {
 	var initial = function (p, v) { return 0; };
 
 	var valueAccesor = function(d) { return d; };
-	var dateAccesor = function( d ) { return new Date( d.TIMESTAMP ).valueOf(); };
+	var dateAccesor = function( d ) { return +d.timevalue };
 	var formatNumber = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
 
-	dimPassed = cfPassed.dimension( function( d ) { return d.INDEX; } );
+	dimPassed = cfPassed.dimension( function( d ) { return d.id; } );
 	groupPassed = dimPassed.groupAll( ).reduce( add, remove, initial );
 
-	dimFailed = cfFailed.dimension( function( d ) { return d.INDEX; } );
+	dimFailed = cfFailed.dimension( function( d ) { return d.id; } );
 	groupFailed = dimFailed.groupAll( ).reduce( add, remove, initial );
 
 	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
@@ -214,30 +231,13 @@ function createCharts( importantVars, data ) {
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 
-	dc.numberDisplay( '#num_passed_pieces' )
-		.valueAccessor( valueAccesor )
-		.formatNumber( formatNumber )
-		.group(groupPassed)
-		.html({
-			one:'<p class="numberDisplay passed"> %number passed <br>piece </p>',
-			some:'<p class="numberDisplay passed"> %number passed <br>pieces </p>',
-			none:'<p class="numberDisplay passed"> No passed <br>pieces</p>'
-		});
-
-	dc.numberDisplay( '#num_failed_pieces' )
-		.valueAccessor( valueAccesor )
-		.formatNumber( formatNumber )
-		.group(groupFailed)
-		.html({
-			one:'<p class="numberDisplay failed"> %number failed <br>piece </p>',
-			some:'<p class="numberDisplay failed"> %number failed <br>pieces </p>',
-			none:'<p class="numberDisplay failed"> No failed <br>pieces</p>'
-		});
+	createNumberDisplay( '#num_passed_pieces', valueAccesor, formatNumber, groupPassed, 'passed' );
+	createNumberDisplay( '#num_failed_pieces', valueAccesor, formatNumber, groupFailed, 'failed' );
 
 	for ( var i = 0; i < importantVars.length; i++ ) {
 
 		var dimensionCreator = function( d ) { return +d3.round(d[importantVars[i]], rounds[i]); };
-		var filterDimensionCreator = function( d ) { return d.RESULTS? String( d.RESULTS ): 0; };
+		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
 
 		dimensions.passed.push( cfPassed.dimension( dimensionCreator ) );
 		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
@@ -252,17 +252,20 @@ function createCharts( importantVars, data ) {
 		var namePassed = 'passed_variable' + i;
 		var widthPassed = document.getElementById( namePassed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + namePassed )
+		var chartPassed = dc.barChart( '#' + namePassed )
 			.width(widthPassed)
 			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.elasticX(true)
 			.elasticY(true)
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
 			.xUnits(function(d){ return 40; });
 
-		charts.passed.push( chart );
+		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
+
+		charts.passed.push( chartPassed );
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
@@ -273,17 +276,20 @@ function createCharts( importantVars, data ) {
 		var nameFailed = 'failed_variable' + i;
 		var widthFailed = document.getElementById( nameFailed ).offsetWidth * 0.98;
 
-		var chart = dc.barChart( '#' + nameFailed )
+		var chartFailed = dc.barChart( '#' + nameFailed )
 			.width(widthFailed)
 			.height(120)
 			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.elasticX(true)
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
 			.xUnits(function(d){ return 40; });
 
-		charts.failed.push( chart );
+		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
+
+		charts.failed.push( chartFailed );
 
 	}
 
@@ -300,17 +306,16 @@ function changeInDates( from, to ) {
 		'from': from,
 		'to': to
 	};
-	var passedDate = post( 'get_count_date/passed', tempData );
-	var failedDate = post( 'get_count_date/failed', tempData );
 	var passedHour = post( 'get_count_hour/passed', tempData );
 	var failedHour = post( 'get_count_hour/failed', tempData );
 
-	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
-		
-		// timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
-		// timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
-		timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
-		timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
+	Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+
+		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
+
+		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
 	
 	} );
 
@@ -324,30 +329,41 @@ function changeInToD( from, to ) {
 	};
 	var passedDate = post( 'get_count_date_tod/passed', tempData );
 	var failedDate = post( 'get_count_date_tod/failed', tempData );
-	var passedHour = post( 'get_count_hour_tod/passed', tempData );
-	var failedHour = post( 'get_count_hour_tod/failed', tempData );
 
-	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+	Promise.all( [ passedDate, failedDate ] ).then( function( values ){
 		
-		console.log('-------------------------------------------------')
-		console.log('values',values)
-		console.log('tempData',tempData)
-
-		timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
-		timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
-		// timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[2] );
-		// timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[3] );
+		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
+		
+		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
 	
 	} );
 
 }
 
 function changeInDoW( dows ) {
-	
-	tw.addDayPlotline( 'Passed Pieces per Hour', passed );
-	
-	tw.addDayPlotline( 'Failed Pieces per Hour', failed );
 
+	var tempData = {
+		'dows': JSON.stringify(dows)
+	};
+	if( dows.length > 0 ) {
+
+		var passedHour = post( 'get_count_hour_dow/passed', tempData );
+		var failedHour = post( 'get_count_hour_dow/failed', tempData );
+
+	}
+
+	Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+		
+		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
+		
+		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+			timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
+
+	} );	
+	
 }
 
 /*
@@ -382,38 +398,32 @@ function initialize() {
 		'from': '2008-01-01 00:00:00',
 		'to': '2008-12-31 00:00:00'
 	};
+	var varData = {
+		'variables': JSON.stringify( manifactoringProcessConfig.IMPORTANT_VARIABLES )
+	};
 	var passedDate = post( 'get_count_date/passed', tempData );
 	var failedDate = post( 'get_count_date/failed', tempData );
 	var passedHour = post( 'get_count_hour/passed', tempData );
 	var failedHour = post( 'get_count_hour/failed', tempData );
+	var rawDataImpVariables = post( 'get_raw_data/', varData );
 
-	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+	Promise.all( [ passedDate, failedDate, passedHour, failedHour, rawDataImpVariables ] ).then( function( values ){
 		
+		// Import from ./assets/ManufactoringProcessModule/manufactoringProcess-config.js.
+		// This component is necessary to avoid white spaces between undefined points in the STRAD-Wheel.
+		impVariables.empty = manifactoringProcessConfig.EMPTY_DATASET;
+		
+		// Database information for general view.
 		impVariables.general.passedDoW = values[0];
 		impVariables.general.failedDoW = values[1];
 		impVariables.general.passedToD = values[2];
 		impVariables.general.failedToD = values[3];
+
+		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 	
-		d3.json( './data/date_important_variables.json', function( dict ) {
-
-			impVariables.empty = dict.empty;
-			timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
-
-		} );
-	
-	} );
-
-
-	d3.csv( './data/data_join_imp_variables.csv', function( data ) {
-
-		d3.csv( './data/var_importance.csv', function( importantVars ) {
-
-			createCharts( importantVars.map( function( d ) { return d.Variables; } ), data );
-
-		} );
+		createCharts( manifactoringProcessConfig.IMPORTANT_VARIABLES, values[4] );
 
 	} );
-
 	
 }
 

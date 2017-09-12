@@ -443,7 +443,6 @@ var StradWheel=function(parent_selector, colorScale){
             var r=d[i];
             returned[r.h].v=r.v;
         }
-        console.log('!!!!!!!!!!RETURNED!!!!!!!!!!',returned)
         return returned;
     }
 
