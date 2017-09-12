@@ -107,7 +107,6 @@ function changeView( view ) {
 		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
 
-	if( !timewheel[view] )
 	timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
 	
 	updatePlotLine( );
