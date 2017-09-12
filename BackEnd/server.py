@@ -42,13 +42,14 @@ def create_dictionary( query_description, query_result ):
 def get_raw_data( ):
 
 	# Create array from jsonified string
-	data = ast.literal_eval( request.form[ 'variables' ] )
+	data = request.form
+	variables = ast.literal_eval( data[ 'variables' ] )
 
 	# Creates cursor
 	cur = get_cursor( )
 
 	# Builds query
-	query = 'SELECT id, results, ( UNIX_TIMESTAMP( timestamp ) * 1000 ) AS timevalue, %s FROM table_secom' % ( ', '.join( str( x ) for x in data)  )
+	query = 'SELECT id, results, ( UNIX_TIMESTAMP( timestamp ) * 1000 ) AS timevalue, %s FROM table_secom' % ( ', '.join( str( x ) for x in variables )  )
 
 	# Executes query
 	cur.execute( query )
@@ -57,9 +58,9 @@ def get_raw_data( ):
 	# Returns result
 	return json.dumps( result )
 
-# Gets the date count for a specific status
-@app.route( '/get_count_date/<status>', methods = [ 'POST' ] )
-def get_count_date( status ):
+# Gets the date count/avg for a specific status
+@app.route( '/get_date/<status>', methods = [ 'POST' ] )
+def get_date( status ):
 
 	data = request.form
 
@@ -76,9 +77,9 @@ def get_count_date( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -87,9 +88,9 @@ def get_count_date( status ):
 	# Returns result
 	return json.dumps( result )
 
-# Gets the hour count for a specific status
-@app.route( '/get_count_hour/<status>', methods = [ 'POST' ] )
-def get_count_hour( status ):
+# Gets the hour count/avg for a specific status
+@app.route( '/get_hour/<status>', methods = [ 'POST' ] )
+def get_hour( status ):
 
 	data = request.form
 
@@ -105,9 +106,9 @@ def get_count_hour( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( status_value, data['from'], data['to'] )
+		query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )
@@ -116,9 +117,9 @@ def get_count_hour( status ):
 	# Returns result
 	return json.dumps( result )
 
-# Gets the date count for a specific status
-@app.route( '/get_count_date_tod/<status>', methods = [ 'POST' ] )
-def get_count_date_tod( status ):
+# Gets the date count/avg for a specific status
+@app.route( '/get_date_tod/<status>', methods = [ 'POST' ] )
+def get_date_tod( status ):
 
 	data = request.form
 
@@ -135,9 +136,9 @@ def get_count_date_tod( status ):
 		status_value = 1
 
 	if int( data['from'] ) < int( data['to'] ):
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
 
 	# Executes query
 	cur.execute( query )
@@ -146,12 +147,13 @@ def get_count_date_tod( status ):
 	# Returns result
 	return json.dumps( result )
 
-# Gets the date count for a specific status
-@app.route( '/get_count_date_dow/<status>', methods = [ 'POST' ] )
-def get_count_date_dow( status ):
+# Gets the date count/avg for a specific status
+@app.route( '/get_date_dow/<status>', methods = [ 'POST' ] )
+def get_date_dow( status ):
 
 	# Create array from jsonified string
-	data  = ast.literal_eval( request.form[ 'dows' ] )
+	data = request.form
+	dows  = ast.literal_eval( data[ 'dows' ] )
 
 	# Creates cursor
 	cur = get_cursor( )
@@ -162,7 +164,7 @@ def get_count_date_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( status_value, ', '.join( str( x ) for x in data ) )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -171,37 +173,13 @@ def get_count_date_dow( status ):
 	# Returns result
 	return json.dumps( result )
 
-# Gets the hour count for a specific status
-@app.route( '/get_count_hour_dow/<status>', methods = [ 'POST' ] )
-def get_count_hour_dow( status ):
+# Gets the hour count/avg for a specific status
+@app.route( '/get_hour_dow/<status>', methods = [ 'POST' ] )
+def get_hour_dow( status ):
 
 	# Create array from jsonified string
-	data  = ast.literal_eval( request.form[ 'dows' ] )
-
-	# Creates cursor
-	cur = get_cursor( )
-
-	# Builds query
-	status_value = None
-	if status == 'passed':
-		status_value = -1
-	elif status == 'failed':
-		status_value = 1
-	query = 'SELECT HOUR( timestamp ) AS h, COUNT( * ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( status_value, ', '.join( str( x ) for x in data ) )
-	
-	# Executes query
-	cur.execute( query )
-	result = create_dictionary( cur.description, cur.fetchall( ) )
-
-	# Returns result
-	return json.dumps( result )
-
-
-# Gets the date average for a specific status
-@app.route( '/get_avg_date/<status>', methods = [ 'POST' ] )
-def get_avg_date( status ):
-
 	data = request.form
+	dows  = ast.literal_eval( data[ 'dows' ] )
 
 	# Creates cursor
 	cur = get_cursor( )
@@ -212,7 +190,7 @@ def get_avg_date( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, AVG( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['var'], status_value, data['from'], data['to'] )
+	query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -220,31 +198,6 @@ def get_avg_date( status ):
 
 	# Returns result
 	return json.dumps( result )
-
-# Gets the hour average for a specific status
-@app.route( '/get_avg_hour/<status>', methods = [ 'POST' ] )
-def get_avg_hour( status ):
-
-	data = request.form
-
-	# Creates cursor
-	cur = get_cursor( )
-
-	# Builds query
-	status_value = None
-	if status == 'passed':
-		status_value = -1
-	elif status == 'failed':
-		status_value = 1
-	query = 'SELECT HOUR( timestamp ) AS h, AVG( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['var'], status_value, data['from'], data['to'] )
-	
-	# Executes query
-	cur.execute( query )
-	result = create_dictionary( cur.description, cur.fetchall( ) )
-
-	# Returns result
-	return json.dumps( result )
-
 
 if __name__ == '__main__':
     app.run( host= '0.0.0.0', port=5000, debug=True )

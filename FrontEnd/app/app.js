@@ -19,20 +19,10 @@ var todFailed;
 */ 
 var impVariables = { 
 	'empty': {},
-	'general': {},
-	'v0': {},
-	'v1': {},
-	'v2': {},
-	'v3': {},
-	'v4': {}
+	'general': {}
 };
 var timewheel = { 
-	'general': undefined,
-	'v0': undefined,
-	'v1': undefined,
-	'v2': undefined,
-	'v3': undefined,
-	'v4': undefined
+	'general': undefined
 };
 var colorArray = ['#fff', '#31D66C', '#FF5E57'];
 // var colorArray = '#000';
@@ -107,9 +97,43 @@ function changeView( view ) {
 		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
 
-	timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
+	if( !impVariables[view] ) {
+
+		var tempData = {
+			'from': '2008-01-01 00:00:00',
+			'to': '2008-12-31 00:00:00',
+			'reducer': 'AVG',
+			'reducer_variable': currentNav
+		};
+
+		var passedDate = post( 'get_date/passed', tempData );
+		var failedDate = post( 'get_date/failed', tempData );
+		var passedHour = post( 'get_hour/passed', tempData );
+		var failedHour = post( 'get_hour/failed', tempData );
+
+		Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+
+			impVariables[view] = {};
+			
+			// Database information for current view.
+			impVariables[view].passedDoW = values[0];
+			impVariables[view].failedDoW = values[1];
+			impVariables[view].passedToD = values[2];
+			impVariables[view].failedToD = values[3];
+
+			timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
+			updatePlotLine( );
+		
+		} );
+
+	}
+	else {
+		
+		timewheel[view] = createSTRAD( '#timewheel', impVariables[view].passedDoW, impVariables[view].failedDoW, impVariables[view].passedToD, impVariables[view].failedToD );
+		updatePlotLine( );
 	
-	updatePlotLine( );
+	}
+	
 	
 }
 
@@ -301,12 +325,24 @@ function createCharts( importantVars, data ) {
 */
 function changeInDates( from, to ) {
 
+	var reducer = 'AVG';
+	var reducer_variable = currentNav;
+
+	if( currentNav === 'general' ) {
+
+		reducer = 'COUNT';
+		reducer_variable = 'id';
+
+	}
+
 	var tempData = {
 		'from': from,
-		'to': to
+		'to': to,
+		'reducer': reducer,
+		'reducer_variable': reducer_variable
 	};
-	var passedHour = post( 'get_count_hour/passed', tempData );
-	var failedHour = post( 'get_count_hour/failed', tempData );
+	var passedHour = post( 'get_hour/passed', tempData );
+	var failedHour = post( 'get_hour/failed', tempData );
 
 	Promise.all( [ passedHour, failedHour ] ).then( function( values ){
 
@@ -322,12 +358,24 @@ function changeInDates( from, to ) {
 
 function changeInToD( from, to ) {
 
+	var reducer = 'AVG';
+	var reducer_variable = currentNav;
+
+	if( currentNav === 'general' ) {
+
+		reducer = 'COUNT';
+		reducer_variable = 'id';
+
+	}
+
 	var tempData = {
 		'from': from,
-		'to': to
+		'to': to,
+		'reducer': reducer,
+		'reducer_variable': reducer_variable
 	};
-	var passedDate = post( 'get_count_date_tod/passed', tempData );
-	var failedDate = post( 'get_count_date_tod/failed', tempData );
+	var passedDate = post( 'get_date_tod/passed', tempData );
+	var failedDate = post( 'get_date_tod/failed', tempData );
 
 	Promise.all( [ passedDate, failedDate ] ).then( function( values ){
 		
@@ -343,13 +391,25 @@ function changeInToD( from, to ) {
 
 function changeInDoW( dows ) {
 
+	var reducer = 'AVG';
+	var reducer_variable = currentNav;
+
+	if( currentNav === 'general' ) {
+
+		reducer = 'COUNT';
+		reducer_variable = 'id';
+
+	}
+
 	var tempData = {
-		'dows': JSON.stringify(dows)
+		'dows': JSON.stringify(dows),
+		'reducer': reducer,
+		'reducer_variable': reducer_variable
 	};
 	if( dows.length > 0 ) {
 
-		var passedHour = post( 'get_count_hour_dow/passed', tempData );
-		var failedHour = post( 'get_count_hour_dow/failed', tempData );
+		var passedHour = post( 'get_hour_dow/passed', tempData );
+		var failedHour = post( 'get_hour_dow/failed', tempData );
 
 	}
 
@@ -395,15 +455,18 @@ function initialize() {
 
 	var tempData = {
 		'from': '2008-01-01 00:00:00',
-		'to': '2008-12-31 00:00:00'
+		'to': '2008-12-31 00:00:00',
+		'reducer': 'COUNT',
+		'reducer_variable': 'id'
 	};
+
 	var varData = {
 		'variables': JSON.stringify( manifactoringProcessConfig.IMPORTANT_VARIABLES )
 	};
-	var passedDate = post( 'get_count_date/passed', tempData );
-	var failedDate = post( 'get_count_date/failed', tempData );
-	var passedHour = post( 'get_count_hour/passed', tempData );
-	var failedHour = post( 'get_count_hour/failed', tempData );
+	var passedDate = post( 'get_date/passed', tempData );
+	var failedDate = post( 'get_date/failed', tempData );
+	var passedHour = post( 'get_hour/passed', tempData );
+	var failedHour = post( 'get_hour/failed', tempData );
 	var rawDataImpVariables = post( 'get_raw_data/', varData );
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour, rawDataImpVariables ] ).then( function( values ){
