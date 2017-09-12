@@ -1,10 +1,18 @@
 #!venv/bin/python
+
+# Flask
 from flask import Flask
 from flask import request
-from flask import jsonify
 from flask_cors import CORS
+
+# ORM 
 import MySQLdb
+
+# Process tree construction
 import ast
+
+# Json objects
+import json
 
 db = MySQLdb.connect(
 	host	= "localhost", 
@@ -23,6 +31,31 @@ def get_cursor( ):
 # Closes a connection
 def close_connection( cursor ):
 	cursor.connection.close( )
+
+# Creates a dictionary from a query result
+def create_dictionary( query_description, query_result ):
+	return [ dict( ( query_description[i][0], value ) \
+		for i, value in enumerate( row ) ) for row in query_result ]
+
+# Gets the raw data for a specific variable
+@app.route( '/get_raw_data/', methods = [ 'POST' ] )
+def get_raw_data( ):
+
+	# Create array from jsonified string
+	data = ast.literal_eval( request.form[ 'variables' ] )
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	query = 'SELECT id, results, timestamp, %s FROM table_secom' % ( ', '.join( str( x ) for x in data)  )
+
+	# Executes query
+	cur.execute( query )
+	result = create_dictionary( cur.description, cur.fetchall( ) )
+
+	# Returns result
+	return json.dumps( result )
 
 # Gets the date count for a specific status
 @app.route( '/get_count_date/<status>', methods = [ 'POST' ] )
@@ -49,11 +82,10 @@ def get_count_date( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 # Gets the hour count for a specific status
 @app.route( '/get_count_hour/<status>', methods = [ 'POST' ] )
@@ -79,11 +111,10 @@ def get_count_hour( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 # Gets the date count for a specific status
 @app.route( '/get_count_date_tod/<status>', methods = [ 'POST' ] )
@@ -110,16 +141,16 @@ def get_count_date_tod( status ):
 
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 # Gets the date count for a specific status
 @app.route( '/get_count_date_dow/<status>', methods = [ 'POST' ] )
 def get_count_date_dow( status ):
 
+	# Create array from jsonified string
 	data  = ast.literal_eval( request.form[ 'dows' ] )
 
 	# Creates cursor
@@ -135,16 +166,16 @@ def get_count_date_dow( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 # Gets the hour count for a specific status
 @app.route( '/get_count_hour_dow/<status>', methods = [ 'POST' ] )
 def get_count_hour_dow( status ):
 
+	# Create array from jsonified string
 	data  = ast.literal_eval( request.form[ 'dows' ] )
 
 	# Creates cursor
@@ -160,11 +191,10 @@ def get_count_hour_dow( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 
 # Gets the date average for a specific status
@@ -186,11 +216,10 @@ def get_avg_date( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 # Gets the hour average for a specific status
 @app.route( '/get_avg_hour/<status>', methods = [ 'POST' ] )
@@ -211,12 +240,11 @@ def get_avg_hour( status ):
 	
 	# Executes query
 	cur.execute( query )
-	result = [ dict( ( cur.description[i][0], value ) \
-		for i, value in enumerate( row ) ) for row in cur.fetchall( ) ]
+	result = create_dictionary( cur.description, cur.fetchall( ) )
 
 	# Returns result
-	return jsonify( result )
+	return json.dumps( result )
 
 
 if __name__ == '__main__':
-    app.run(host= '0.0.0.0',port=5000,debug=True)
+    app.run( host= '0.0.0.0', port=5000, debug=True )
