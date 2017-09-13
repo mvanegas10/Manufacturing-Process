@@ -14,7 +14,7 @@ function get( path ) {
 					resolve( result );
 				},
 				error: function( status, err ) {
-					reject( error )
+					reject( err )
 				}
 
 			} );
@@ -37,7 +37,7 @@ function post( path, data ) {
 					resolve( result );
 				},
 				error: function( status, err ) {
-					reject( error )
+					reject( err )
 				}
 
 			});
