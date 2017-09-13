@@ -284,7 +284,7 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.gap(10);
+			.gap(1);
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -293,7 +293,7 @@ function createCharts( importantVars, rawData ) {
 		chartPassed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 2*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 2*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
 			charts.passed.push( chartPassed );
 		});
 
@@ -316,7 +316,7 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
-			.gap(10);
+			.gap(1);
 
 		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
@@ -325,7 +325,7 @@ function createCharts( importantVars, rawData ) {
 		chartFailed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_failed - 2*rawData.stats[chart._groupName].std_failed ) || d.x >= ( rawData.stats[chart._groupName].mean_failed + 2*rawData.stats[chart._groupName].std_failed ) ) )? '#FFF873': ''; } );
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_failed - 1.5*rawData.stats[chart._groupName].std_failed ) || d.x >= ( rawData.stats[chart._groupName].mean_failed + 1.5*rawData.stats[chart._groupName].std_failed ) ) )? '#FFF873': ''; } );
 		});
 
 		charts.failed.push( chartFailed );
