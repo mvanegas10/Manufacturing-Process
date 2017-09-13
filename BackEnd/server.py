@@ -11,6 +11,10 @@ import MySQLdb
 # Process tree construction
 import ast
 
+# Pandas
+import pandas as pd
+import numpy as np
+
 # Json objects
 import simplejson as json
 
@@ -55,8 +59,27 @@ def get_raw_data( ):
 	cur.execute( query )
 	result = create_dictionary( cur.description, cur.fetchall( ) )
 
+	# Creates dataframes
+	df_raw_data = pd.DataFrame.from_dict( result )
+	df_variables = np.array( variables )
+	df_raw_data_variables = df_raw_data[ df_variables ]
+
+	# Parses important variables to numeric
+	for col in df_raw_data_variables.columns:
+		df_raw_data_variables[ col ] = pd.to_numeric( df_raw_data_variables[ col ], errors='coerce' )
+	
+	# Calculates mean and standard deviation for each variable 
+	mean = pd.Series(pd.DataFrame.mean( df_raw_data_variables ), name='mean')
+	std = pd.Series(pd.DataFrame.std( df_raw_data_variables ), name='std')
+	
+	# Creates return dictionary
+	dictionary = {
+		'result': result,
+		'stats': pd.concat( [ mean, std ], axis=1 ).to_dict( orient='index' )
+	}
+
 	# Returns result
-	return json.dumps( result )
+	return json.dumps( dictionary )
 
 # Gets the date count/avg for a specific status
 @app.route( '/get_date/<status>', methods = [ 'POST' ] )

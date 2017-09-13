@@ -39,8 +39,8 @@ var dimFailed;
 var dateDim = { 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
 var rounds = [ 0, 0, 0, 1, 2 ];
-var minimum = [];
-var maximum = [];
+var minimum = { 'passed':[], 'failed':[] };
+var maximum = { 'passed':[], 'failed':[] };
 
 // Groupings
 var groups = { 'passed':[], 'failed':[] };
@@ -227,7 +227,9 @@ function createNumberDisplay( selector, valueAccesor, formatNumber, group, strin
 /*
 	Creates the charts
 */
-function createCharts( importantVars, data ) {
+function createCharts( importantVars, rawData ) {
+
+	var data = rawData.result;
 
 	cfPassed = crossfilter( data );
 	cfFailed = crossfilter( data );
@@ -258,15 +260,17 @@ function createCharts( importantVars, data ) {
 
 	for ( var i = 0; i < importantVars.length; i++ ) {
 
-		var dimensionCreator = function( d ) { return +d3.round(d[importantVars[i]], rounds[i]); };
+		var currentImpVar = importantVars[i];
+
+		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
 
 		dimensions.passed.push( cfPassed.dimension( dimensionCreator ) );
 		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		minimum.push( dimensions.passed[i].bottom(1)[0][importantVars[i]] );
-		maximum.push( dimensions.passed[i].top(1)[0][importantVars[i]] );		
+		minimum.passed.push( d3.min( d3.values( dimensions.passed[i].top( Infinity ).map( function( d ) { return d[currentImpVar]; } ) ) ) );
+		maximum.passed.push( d3.max( d3.values( dimensions.passed[i].top( Infinity ).map( function( d ) { return d[currentImpVar]; } ) ) ) );		
 
 		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
 
@@ -277,7 +281,7 @@ function createCharts( importantVars, data ) {
 		var chartPassed = dc.barChart( '#' + namePassed )
 			.width(widthPassed)
 			.height(120)
-			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.x( d3.scale.linear( ).domain( [ minimum.passed[i], maximum.passed[i] ] ) )
 			.elasticX(true)
 			.elasticY(true)
 			.dimension( dimensions.passed[i] )
@@ -287,11 +291,20 @@ function createCharts( importantVars, data ) {
 
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
+		chartPassed.on( 'renderlet', function( chart ){
+			chart.selectAll( 'rect' )
+				.style( 'fill', function( d ) { return ( d && d.data && ( d.data.key <= ( parseFloat(rawData.stats[currentImpVar].mean) - 2*parseFloat(rawData.stats[currentImpVar].std) ) || d.data.key >= ( parseFloat(rawData.stats[currentImpVar].mean) + 2*parseFloat(rawData.stats[currentImpVar].std) ) ) )? '#ddd': ''; } );
+
+		});
+
 		charts.passed.push( chartPassed );
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
+
+		minimum.failed.push( d3.min( d3.values( dimensions.failed[i].top( Infinity ).map( function( d ) { return d[currentImpVar]; } ) ) ) );
+		maximum.failed.push( d3.max( d3.values( dimensions.failed[i].top( Infinity ).map( function( d ) { return d[currentImpVar]; } ) ) ) );		
 
 		filterDimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
 
@@ -301,7 +314,7 @@ function createCharts( importantVars, data ) {
 		var chartFailed = dc.barChart( '#' + nameFailed )
 			.width(widthFailed)
 			.height(120)
-			.x( d3.scale.linear( ).domain( [ minimum[i], maximum[i] ] ) )
+			.x( d3.scale.linear( ).domain( [ minimum.failed[i], maximum.failed[i] ] ) )
 			.elasticX(true)
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
@@ -311,9 +324,18 @@ function createCharts( importantVars, data ) {
 
 		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
+		chartFailed.on( 'renderlet', function( chart ){
+			chart.selectAll( 'rect' )
+				.style( 'fill', function( d ) { return ( d && d.data && ( d.data.key <= ( parseFloat(rawData.stats[currentImpVar].mean) - 2*parseFloat(rawData.stats[currentImpVar].std) ) || d.data.key >= ( parseFloat(rawData.stats[currentImpVar].mean) + 2*parseFloat(rawData.stats[currentImpVar].std) ) ) )? '#ddd': ''; } );
+
+		});
+
 		charts.failed.push( chartFailed );
 
 	}
+
+	console.log(minimum)
+	console.log(maximum)
 
 	dc.renderAll( );
 
@@ -481,7 +503,7 @@ function initialize() {
 		impVariables.general.failedToD = values[3];
 
 		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
-	
+
 		createCharts( manifactoringProcessConfig.IMPORTANT_VARIABLES, values[4] );
 
 	} );
