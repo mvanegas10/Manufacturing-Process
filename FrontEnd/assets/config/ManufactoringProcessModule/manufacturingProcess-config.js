@@ -6,9 +6,9 @@ var manifactoringProcessConfig = {
 	},
 
 	'IMPORTANT_VARIABLES': [
-		'v60',
 		'v65',
 		'v66',
+		'v60',
 		'v206',
 		'v342'
 	]

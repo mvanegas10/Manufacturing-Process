@@ -263,8 +263,8 @@ function createCharts( importantVars, rawData ) {
 		var currentImpVar = importantVars[i];
 
 		var title = d3.select( '#title_variable' + i );
-		title.append( 'p' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
-		title.append( 'p' ).text( '86.6% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
+		title.append( 'p' ).attr( 'class', 'small' ).text( '86.6% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
 
 		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
@@ -273,8 +273,10 @@ function createCharts( importantVars, rawData ) {
 		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
+		minimum.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
+		maximum.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
 
+		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
 
 		var namePassed = 'passed_variable' + i;
 		var widthPassed = document.getElementById( namePassed ).offsetWidth * 0.98;
@@ -282,8 +284,8 @@ function createCharts( importantVars, rawData ) {
 		var chartPassed = dc.barChart( '#' + namePassed )
 			.width(widthPassed)
 			.height(120)
-			.x( d3.scale.linear( ) )
-			.elasticX(true)
+			.x( d3.scale.linear( ).domain( [ minimum.passed[i], maximum.passed[i] ] ) )
+			.elasticX(false)
 			.elasticY(true)
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
@@ -294,16 +296,12 @@ function createCharts( importantVars, rawData ) {
 		
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
-		// chartPassed.on( 'renderlet', function( chart ){
-		// 	chart.selectAll( 'rect' )
-		// 		.style( 'fill', function( d ) { 
-		// 			return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
-		// 	charts.passed.push( chartPassed );
-		// });
-
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
+
+		minimum.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
+		maximum.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
 
 		filterDimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
 
@@ -313,8 +311,8 @@ function createCharts( importantVars, rawData ) {
 		var chartFailed = dc.barChart( '#' + nameFailed )
 			.width(widthFailed)
 			.height(120)
-			.x( d3.scale.linear( ) )
-			.elasticX(true)
+			.x( d3.scale.linear( ).domain( [ minimum.failed[i], maximum.failed[i] ] ) )
+			.elasticX(false)
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#DDD' ] )
