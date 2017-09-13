@@ -262,6 +262,10 @@ function createCharts( importantVars, rawData ) {
 
 		var currentImpVar = importantVars[i];
 
+		var title = d3.select( '#title_variable' + i );
+		title.append( 'p' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
+		title.append( 'p' ).text( '68.3% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
+
 		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
 
