@@ -9,7 +9,12 @@ h4 {
 	font-weight: lighter;
 }
 div.timewheel {
-	padding-left: 0.7cm;
+	padding-left: 2cm;
+}
+div.plotlines {
+	position: absolute;
+	right: 1cm;
+	top: 5cm;
 }
 div.background {
 	margin-right: 3cm;
@@ -31,10 +36,12 @@ g.radarBrush .extent {
 	fill: #1f77b4 !important;
 }
 p {
+	font-size: 8px;
+	font-weight: lighter;
 	text-align: center;
 }
 p.numberDisplay {
-	font-size: 22px;
+	font-size: 17px;
 	text-align: center;
 }
 circle.invisible {

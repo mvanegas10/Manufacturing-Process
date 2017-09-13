@@ -264,7 +264,7 @@ function createCharts( importantVars, rawData ) {
 
 		var title = d3.select( '#title_variable' + i );
 		title.append( 'p' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
-		title.append( 'p' ).text( '68.3% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
+		title.append( 'p' ).text( '86.6% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
 
 		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
@@ -294,13 +294,12 @@ function createCharts( importantVars, rawData ) {
 		
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
-		chartPassed.on( 'renderlet', function( chart ){
-			chart.selectAll( 'rect' )
-				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
-			charts.passed.push( chartPassed );
-		});
-
+		// chartPassed.on( 'renderlet', function( chart ){
+		// 	chart.selectAll( 'rect' )
+		// 		.style( 'fill', function( d ) { 
+		// 			return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
+		// 	charts.passed.push( chartPassed );
+		// });
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
@@ -318,7 +317,7 @@ function createCharts( importantVars, rawData ) {
 			.elasticX(true)
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
-			.ordinalColors( [ '#FF5E57' ] )
+			.ordinalColors( [ '#DDD' ] )
 			.group( groups.failed[i] )
 			.gap(1);
 
@@ -329,7 +328,7 @@ function createCharts( importantVars, rawData ) {
 		chartFailed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_failed - 1.5*rawData.stats[chart._groupName].std_failed ) || d.x >= ( rawData.stats[chart._groupName].mean_failed + 1.5*rawData.stats[chart._groupName].std_failed ) ) )? '#FFF873': ''; } );
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FF5E57': ''; } );
 		});
 
 		charts.failed.push( chartFailed );
