@@ -284,17 +284,19 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.xUnits(function(d){ return 40; });
+			.gap(10);
 
+		chartPassed._groupName = currentImpVar;
+		
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
 		chartPassed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
-				.style( 'fill', function( d ) { return ( d && d.data && ( d.data.key <= ( parseFloat( rawData.stats[currentImpVar].mean_passed ) - 2*parseFloat( rawData.stats[currentImpVar].std_passed ) ) || d.data.key >= ( parseFloat( rawData.stats[currentImpVar].mean_passed ) + 2*parseFloat( rawData.stats[currentImpVar].std_passed ) ) ) )? '#ddd': ''; } );
-
+				.style( 'fill', function( d ) { 
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 2*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 2*rawData.stats[chart._groupName].std_passed ) ) )? '#FFF873': ''; } );
+			charts.passed.push( chartPassed );
 		});
 
-		charts.passed.push( chartPassed );
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
@@ -314,14 +316,16 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#FF5E57' ] )
 			.group( groups.failed[i] )
-			.xUnits(function(d){ return 40; });
+			.gap(10);
 
 		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
+		chartFailed._groupName = currentImpVar;
+
 		chartFailed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
-				.style( 'fill', function( d ) { return ( d && d.data && ( d.data.key <= ( parseFloat( rawData.stats[currentImpVar].mean_failed ) - 2*parseFloat( rawData.stats[currentImpVar].std_failed ) ) || d.data.key >= ( parseFloat( rawData.stats[currentImpVar].mean_failed ) + 2*parseFloat( rawData.stats[currentImpVar].std_failed ) ) ) )? '#ddd': ''; } );
-
+				.style( 'fill', function( d ) { 
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_failed - 2*rawData.stats[chart._groupName].std_failed ) || d.x >= ( rawData.stats[chart._groupName].mean_failed + 2*rawData.stats[chart._groupName].std_failed ) ) )? '#FFF873': ''; } );
 		});
 
 		charts.failed.push( chartFailed );
@@ -495,7 +499,6 @@ function initialize() {
 
 		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 
-		console.log(values[4].stats)
 		createCharts( manifactoringProcessConfig.IMPORTANT_VARIABLES, values[4] );
 
 	} );
