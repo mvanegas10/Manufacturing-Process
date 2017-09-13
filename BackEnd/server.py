@@ -62,20 +62,28 @@ def get_raw_data( ):
 	# Creates dataframes
 	df_raw_data = pd.DataFrame.from_dict( result )
 	df_variables = np.array( variables )
-	df_raw_data_variables = df_raw_data[ df_variables ]
+	df_raw_data_variables_passed = df_raw_data[ df_raw_data[ 'results'] == -1 ][ df_variables ]
+	df_raw_data_variables_failed = df_raw_data[ df_raw_data[ 'results'] == 1 ][ df_variables ]
+
+	print df_raw_data_variables_passed
+	print df_raw_data_variables_failed
 
 	# Parses important variables to numeric
-	for col in df_raw_data_variables.columns:
-		df_raw_data_variables[ col ] = pd.to_numeric( df_raw_data_variables[ col ], errors='coerce' )
+	for col in df_raw_data_variables_passed.columns:
+		df_raw_data_variables_passed[ col ] = pd.to_numeric( df_raw_data_variables_passed[ col ], errors='coerce' )
+		df_raw_data_variables_failed[ col ] = pd.to_numeric( df_raw_data_variables_failed[ col ], errors='coerce' )
 	
 	# Calculates mean and standard deviation for each variable 
-	mean = pd.Series(pd.DataFrame.mean( df_raw_data_variables ), name='mean')
-	std = pd.Series(pd.DataFrame.std( df_raw_data_variables ), name='std')
+	mean_passed = pd.Series(pd.DataFrame.mean( df_raw_data_variables_passed ), name='mean_passed')
+	std_passed = pd.Series(pd.DataFrame.std( df_raw_data_variables_passed ), name='std_passed')
+	
+	mean_failed = pd.Series(pd.DataFrame.mean( df_raw_data_variables_failed ), name='mean_failed')
+	std_failed = pd.Series(pd.DataFrame.std( df_raw_data_variables_failed ), name='std_failed')
 	
 	# Creates return dictionary
 	dictionary = {
 		'result': result,
-		'stats': pd.concat( [ mean, std ], axis=1 ).to_dict( orient='index' )
+		'stats': pd.concat( [ mean_passed, std_passed, mean_failed, std_failed ], axis=1 ).to_dict( orient='index' )
 	}
 
 	# Returns result
