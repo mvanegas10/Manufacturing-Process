@@ -516,7 +516,7 @@ var RadarChart = {
             series="";
         }
         if(series){
-          var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ d.value + "<br />" +
+          var str=series +"<strong>"+ d.axis+"</strong>: " +(d.value==config.maxValue?"&ge;":"")+ (d3.round(d.value,2)) + "<br />" +
             (d.description==undefined?"":"<strong>Description</strong>: " + d.description );
           vis.verticesTooltip.style("opacity", 0.8)
             .html(str)

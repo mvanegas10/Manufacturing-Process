@@ -1,6 +1,18 @@
 html {
 	width: 98%;
 }
+div.panel, .panel-default {
+	border: none;
+	margin: 0cm;
+}
+div.panel-body {
+	padding-top: -0.5px !important;
+	padding-bottom: 2.9px !important;
+}
+div.panel-heading {
+	border: 1px solid #ddd !important;
+	border-radius: 3px !important;
+}
 h2.title {
 	text-align: center;
 	padding: 0px;

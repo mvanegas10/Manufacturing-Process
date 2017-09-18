@@ -263,8 +263,9 @@ function createCharts( importantVars, rawData ) {
 		var currentImpVar = importantVars[i];
 
 		var title = d3.select( '#title_variable' + i );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
-		title.append( 'p' ).attr( 'class', 'small' ).text( '86.6% of passed: [ ' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ' ] failed: [ ' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ' ]' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) +  ' (86.6%)' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ']' );
 
 		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };

@@ -1,7 +1,7 @@
 var config = {
 
 	'REST': {
-		'URL': 'http://localhost:5000/'
+		'URL': 'http://192.168.0.16:5000/'
 	}
 
 }
