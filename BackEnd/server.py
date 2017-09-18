@@ -166,9 +166,9 @@ def get_date_tod( status ):
 		status_value = 1
 
 	if int( data['from'] ) < int( data['to'] ):
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
+		query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, int( data['from'] ), int( data['to'] ) )
 
 	# Executes query
 	cur.execute( query )
@@ -194,7 +194,7 @@ def get_date_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
+	query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) as v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS day, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -220,7 +220,7 @@ def get_hour_dow( status ):
 		status_value = -1
 	elif status == 'failed':
 		status_value = 1
-	query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
+	query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
 	
 	# Executes query
 	cur.execute( query )
