@@ -381,6 +381,7 @@ var RadarChart = {
       data.forEach(function(group) {
         // group.axes = group.axes.filter( function( d ) { return d.value && !isNaN(d.value); } )
         group.axes.forEach(function(d, i) {
+          if(d.value && !isNaN(d.value)) {
             var origVal=parseFloat(d.value) / config.maxValue;
             var adjVal=(1-config.innerRadius)*origVal+config.innerRadius;
               d.coordinates = { // [x, y] coordinates
@@ -388,6 +389,16 @@ var RadarChart = {
                 x:  config.w / 2 * (1 - adjVal* Math.sin(i * config.radians / vis.totalAxes +config.rotate)),
                 y: config.h / 2 * (1 - adjVal  * Math.cos(i * config.radians / vis.totalAxes +config.rotate))
               };
+          }
+          else {
+            var origVal=0;
+            var adjVal=(1-config.innerRadius)*origVal+config.innerRadius;
+              d.coordinates = { // [x, y] coordinates
+                  //changed here to include inner radius (4)
+                x:  config.w / 2 * (1 - adjVal* Math.sin(i * config.radians / vis.totalAxes +config.rotate)),
+                y: config.h / 2 * (1 - adjVal  * Math.cos(i * config.radians / vis.totalAxes +config.rotate))
+              };
+          }
         });
       });
     }
@@ -396,11 +407,11 @@ var RadarChart = {
     // builds out the polygon vertices of the dataset
     function buildVertices(data) {
       data.forEach(function(group, g) {
-        // group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
         vis.vertices
           .data(group.axes).enter()
           .append("svg:circle")
-            .attr("class",function(d) { return (group.group && group.group !== "")? "polygon-vertices " + group.group.split(' ')[0].toLowerCase(): "polygon-vertices invisible";})
+            .attr("class",function(d) { 
+              return ((group.group && group.group !== "") && !isNaN(d.value))? "polygon-vertices " + group.group.split(' ')[0].toLowerCase(): "polygon-vertices invisible";})
             .attr("textContent",""+g)
             .attr("fill-opacity",function(d,i) {
               if(!group || group === "")
@@ -423,9 +434,9 @@ var RadarChart = {
         .append("svg:polygon")
         .attr("points", function(group) { // build verticesString for each group
           var verticesString = "";
-          group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
-          group.axes.forEach(function(d) { 
-              verticesString += d.coordinates.x + "," + d.coordinates.y + " "; 
+          // group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
+          group.axes.forEach(function(d) {
+            if(d.value) verticesString += d.coordinates.x + "," + d.coordinates.y + " "; 
           });
           return verticesString;
         })
@@ -465,7 +476,7 @@ var RadarChart = {
               .attr("d", function(group) { // build verticesString for each group
                   var verticesString = "";
                   var values=[];
-                  group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
+                  // group.axes = group.axes.filter( function( d ) { return d.coordinates.x !== undefined && !isNaN(d.coordinates.x) && d.coordinates.y !== undefined && !isNaN(d.coordinates.y); } )
                   group.axes.forEach(function(d) { values.push(d.coordinates); });
                   //group.axes.forEach(function(d) { verticesString += d.coordinates.x + "," + d.coordinates.y + " "; });
                   //return verticesString;

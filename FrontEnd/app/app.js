@@ -196,11 +196,11 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 	});
 
 	tempTimewheel.addYearPlotline( '', impVariables.empty.date );
-	tempTimewheel.addYearPlotline( 'Passed Pieces per Day', yearPassed );
 	tempTimewheel.addYearPlotline( 'Failed Pieces per Day', yearFailed );
+	tempTimewheel.addYearPlotline( 'Passed Pieces per Day', yearPassed );
 	tempTimewheel.addDayPlotline( '', impVariables.empty.tod );
-	tempTimewheel.addDayPlotline( 'Passed Pieces per Hour',todPassed );
 	tempTimewheel.addDayPlotline( 'Failed Pieces per Hour', todFailed );
+	tempTimewheel.addDayPlotline( 'Passed Pieces per Hour',todPassed );
 
 	return tempTimewheel;
 

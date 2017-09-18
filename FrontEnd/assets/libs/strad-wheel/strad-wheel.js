@@ -235,7 +235,7 @@ var StradWheel=function(parent_selector, colorScale){
                 {
                     axesm.push({axis:weekdays[d],value:thisday[0].v});
                 }
-                else axesm.push({axis:weekdays[d],value:undefined});//autocomplete (with 0 for now) fixme in radar.js to accept undefined values
+                else axesm.push({axis:weekdays[d],value:NaN});//autocomplete (with 0 for now) fixme in radar.js to accept undefined values
 
             }
             axesm=axesm.reverse();
