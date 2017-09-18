@@ -65,13 +65,10 @@ def get_raw_data( ):
 	df_raw_data_variables_passed = df_raw_data[ df_raw_data[ 'results'] == -1 ][ df_variables ]
 	df_raw_data_variables_failed = df_raw_data[ df_raw_data[ 'results'] == 1 ][ df_variables ]
 
-	print df_raw_data_variables_passed
-	print df_raw_data_variables_failed
-
 	# Parses important variables to numeric
 	for col in df_raw_data_variables_passed.columns:
-		df_raw_data_variables_passed[ col ] = pd.to_numeric( df_raw_data_variables_passed[ col ], errors='coerce' )
-		df_raw_data_variables_failed[ col ] = pd.to_numeric( df_raw_data_variables_failed[ col ], errors='coerce' )
+		df_raw_data_variables_passed[ col ] = pd.to_numeric( df_raw_data_variables_passed[ col ], errors='coerce' ).abs( )
+		df_raw_data_variables_failed[ col ] = pd.to_numeric( df_raw_data_variables_failed[ col ], errors='coerce' ).abs( )
 	
 	# Calculates mean and standard deviation for each variable 
 	mean_passed = pd.Series(pd.DataFrame.mean( df_raw_data_variables_passed ), name='mean_passed')
@@ -108,10 +105,12 @@ def get_date( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
+		query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\') temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
+		query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	
+	print query
+
 	# Executes query
 	cur.execute( query )
 	result = create_dictionary( cur.description, cur.fetchall( ) )
@@ -137,9 +136,9 @@ def get_hour( status ):
 		status_value = 1
 
 	if data['from'] < data['to']:
-		query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
+		query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND timestamp BETWEEN \'%s\' AND \'%s\' ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	else:
-		query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
+		query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	
 	# Executes query
 	cur.execute( query )

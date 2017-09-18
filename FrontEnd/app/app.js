@@ -499,6 +499,8 @@ function initialize() {
 		impVariables.general.passedToD = values[2];
 		impVariables.general.failedToD = values[3];
 
+		console.log( impVariables.general );
+
 		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 
 		createCharts( manifactoringProcessConfig.IMPORTANT_VARIABLES, values[4] );

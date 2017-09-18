@@ -152,9 +152,9 @@ var RadarChart = {
 
     //build visualization using the other build helper functions
     function buildVis(data) {
-      data.forEach( function(d) {
-        d.axes = d.axes.filter( function(d) { return d.value && !isNaN( d.value ); } );
-      } );
+      // data.forEach( function(d) {
+      //   d.axes = d.axes.filter( function(d) { return d.value && !isNaN( d.value ); } );
+      // } );
       buildVisComponents();
       buildCoordinates(data);
       if (config.showLevels) buildLevels();
