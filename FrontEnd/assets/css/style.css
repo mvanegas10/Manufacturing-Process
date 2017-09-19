@@ -3,7 +3,7 @@ html {
 }
 div.panel, .panel-default {
 	border: none;
-	margin: 0cm;
+	margin: 0.5cm;
 }
 div.panel-body {
 	padding-top: -0.5px !important;
@@ -38,7 +38,7 @@ div.box {
 	margin: 0.2cm;
 }
 div.check-container {
-	margin-top: -0.05cm;
+	/*margin-top: -0.05cm;*/
 	padding-right: 1cm;
 	border: 0.2px solid grey;
 	background-color: #fff;
@@ -64,6 +64,9 @@ circle.passed {
 }
 circle.failed {
 	fill: #FF5E57 !important;
+}
+circle.selected {
+	fill: #000 !important;
 }
 .checkbox label {
 	display: inline-block;
@@ -108,6 +111,10 @@ circle.failed {
 .failed {
 	stroke: #FF5E57 !important;
 	color: #FF5E57 !important;
+}
+.selected {
+	stroke: #000 !important;
+	color: #000 !important;
 }
 button.rigth {
 	float:right;

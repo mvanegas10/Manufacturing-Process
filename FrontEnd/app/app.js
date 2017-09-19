@@ -24,7 +24,7 @@ var impVariables = {
 var timewheel = { 
 	'general': undefined
 };
-var colorArray = ['#fff', '#31D66C', '#FF5E57'];
+var colorArray = [ '#FFF', '#31D66C', '#FF5E57' ];
 
 /*
 	Crossfilter variables
@@ -38,7 +38,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 0, 0, 1, 2 ];
+var rounds = [ 0, 0, 0, 0.2, 0.8 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -195,6 +195,12 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 
 	});
 
+	// try {
+	// 	tempTimewheel.removeYearPlotline( 'Selected Pieces per Year' );
+	// 	tempTimewheel.removeDayPlotline( 'Selected Pieces per Day' );
+	// }
+	// catch( e ) { /* Do nothing*/ }
+	
 	tempTimewheel.addYearPlotline( '', impVariables.empty.date );
 	tempTimewheel.addYearPlotline( 'Failed Pieces per Day', yearFailed );
 	tempTimewheel.addYearPlotline( 'Passed Pieces per Day', yearPassed );
@@ -267,7 +273,7 @@ function createCharts( importantVars, rawData ) {
 		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
 		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ']' );
 
-		var dimensionCreator = function( d ) { return +d3.round(d[currentImpVar], rounds[i]); };
+		var dimensionCreator = function( d ) { return +d3.round( d[ currentImpVar ], rounds[ i ] ); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
 
 		dimensions.passed.push( cfPassed.dimension( dimensionCreator ) );
@@ -292,6 +298,11 @@ function createCharts( importantVars, rawData ) {
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
 			.gap(1);
+
+		chartPassed.on( 'filtered' , function( chart, filter ){
+			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
+			if( idSet.length < 1463 ) changeInIds( idSet );
+		} );
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -320,6 +331,11 @@ function createCharts( importantVars, rawData ) {
 			.group( groups.failed[i] )
 			.gap(1);
 
+		chartFailed.on( 'filtered' , function( chart, filter ){
+			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
+			if( idSet.length < 104 ) changeInIds( idSet );
+		} );
+
 		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
 
 		chartFailed._groupName = currentImpVar;
@@ -341,15 +357,52 @@ function createCharts( importantVars, rawData ) {
 /*
 	Update plotlines
 */
-function changeInDates( from, to ) {
+function changeInIds( idSet ) {
 
 	var reducer = 'AVG';
-	var reducer_variable = currentNav;
+	var reducerVariable = currentNav;
 
 	if( currentNav === 'general' ) {
 
 		reducer = 'COUNT';
-		reducer_variable = 'id';
+		reducerVariable = 'id';
+
+	}
+
+	var tempData = {
+		'reducer': reducer,
+		'reducer_variable': reducerVariable,
+		'id_set' : JSON.stringify( idSet )
+	};
+	var passedDate = post( 'get_date_id/passed', tempData );
+	var failedDate = post( 'get_date_id/failed', tempData );
+	var passedHour = post( 'get_hour_id/passed', tempData );
+	var failedHour = post( 'get_hour_id/failed', tempData );
+
+	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+
+		if( values[0].length > 0 )
+			timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[0] );
+		if( values[1].length > 0 )
+			timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[1] );
+		if( values[2].length > 0 )
+			timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[2] );
+		if( values[3].length > 0 )
+			timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[3] );
+	
+	} );
+
+}
+
+function changeInDates( from, to ) {
+
+	var reducer = 'AVG';
+	var reducerVariable = currentNav;
+
+	if( currentNav === 'general' ) {
+
+		reducer = 'COUNT';
+		reducerVariable = 'id';
 
 	}
 
@@ -357,7 +410,7 @@ function changeInDates( from, to ) {
 		'from': from,
 		'to': to,
 		'reducer': reducer,
-		'reducer_variable': reducer_variable
+		'reducer_variable': reducerVariable
 	};
 	var passedHour = post( 'get_hour/passed', tempData );
 	var failedHour = post( 'get_hour/failed', tempData );
@@ -377,12 +430,12 @@ function changeInDates( from, to ) {
 function changeInToD( from, to ) {
 
 	var reducer = 'AVG';
-	var reducer_variable = currentNav;
+	var reducerVariable = currentNav;
 
 	if( currentNav === 'general' ) {
 
 		reducer = 'COUNT';
-		reducer_variable = 'id';
+		reducerVariable = 'id';
 
 	}
 
@@ -390,7 +443,7 @@ function changeInToD( from, to ) {
 		'from': from,
 		'to': to,
 		'reducer': reducer,
-		'reducer_variable': reducer_variable
+		'reducer_variable': reducerVariable
 	};
 	var passedDate = post( 'get_date_tod/passed', tempData );
 	var failedDate = post( 'get_date_tod/failed', tempData );
@@ -410,19 +463,19 @@ function changeInToD( from, to ) {
 function changeInDoW( dows ) {
 
 	var reducer = 'AVG';
-	var reducer_variable = currentNav;
+	var reducerVariable = currentNav;
 
 	if( currentNav === 'general' ) {
 
 		reducer = 'COUNT';
-		reducer_variable = 'id';
+		reducerVariable = 'id';
 
 	}
 
 	var tempData = {
-		'dows': JSON.stringify(dows),
+		'dows': JSON.stringify( dows ),
 		'reducer': reducer,
-		'reducer_variable': reducer_variable
+		'reducer_variable': reducerVariable
 	};
 	if( dows.length > 0 ) {
 
@@ -498,8 +551,6 @@ function initialize() {
 		impVariables.general.failedDoW = values[1];
 		impVariables.general.passedToD = values[2];
 		impVariables.general.failedToD = values[3];
-
-		console.log( impVariables.general );
 
 		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
 

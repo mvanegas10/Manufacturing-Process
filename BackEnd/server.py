@@ -109,8 +109,6 @@ def get_date( status ):
 	else:
 		query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, data['from'], data['to'] )
 	
-	print query
-
 	# Executes query
 	cur.execute( query )
 	result = create_dictionary( cur.description, cur.fetchall( ) )
@@ -221,6 +219,59 @@ def get_hour_dow( status ):
 	elif status == 'failed':
 		status_value = 1
 	query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s ) ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in dows ) )
+	
+	# Executes query
+	cur.execute( query )
+	result = create_dictionary( cur.description, cur.fetchall( ) )
+
+	# Returns result
+	return json.dumps( result )
+
+# Gets the date count/avg for a specific status and a set of ids
+@app.route( '/get_date_id/<status>', methods = [ 'POST' ] )
+def get_date_id( status ):
+	data = request.form
+	id_set = ast.literal_eval( data[ 'id_set' ] )
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	query = None
+	status_value = None
+	
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+
+	query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND id IN ( %s ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
+	
+	# Executes query
+	cur.execute( query )
+	result = create_dictionary( cur.description, cur.fetchall( ) )
+
+	# Returns result
+	return json.dumps( result )
+
+# Gets the hour count/avg for a specific status and a set of ids
+@app.route( '/get_hour_id/<status>', methods = [ 'POST' ] )
+def get_hour_id( status ):
+	data = request.form
+	id_set = ast.literal_eval( data[ 'id_set' ] )
+
+	# Creates cursor
+	cur = get_cursor( )
+
+	# Builds query
+	query = None
+	status_value = None
+	if status == 'passed':
+		status_value = -1
+	elif status == 'failed':
+		status_value = 1
+
+	query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND id IN ( %s ) ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
 	
 	# Executes query
 	cur.execute( query )
