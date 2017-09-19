@@ -38,7 +38,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 0, 0, 0.2, 0.8 ];
+var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -80,9 +80,6 @@ function changeView( view ) {
 	dateDim.failed.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
-
-	dc.filterAll(); 
-	dc.redrawAll();
 
 	d3.select( '#timewheel' )
 		.html( '' );
@@ -133,7 +130,10 @@ function changeView( view ) {
 	
 	}
 	
-	
+	elasticXAxis( );
+	dc.filterAll(); 
+	dc.redrawAll();
+
 }
 
 /*
@@ -163,6 +163,8 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.failed[0].filter( filter );
 		dc.redrawAll( );
 
+		elasticXAxis( );
+
 	});
 
 	tempTimewheel.onTodChange( function( newTodrange ) {
@@ -177,6 +179,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[1].filter( filter );
 		dateDim.failed[1].filter( filter );
 		dc.redrawAll( );
+		elasticXAxis( );
 
 	});
 
@@ -192,21 +195,16 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[2].filter( filter );
 		dateDim.failed[2].filter( filter );
 		dc.redrawAll( );
+		elasticXAxis( );
 
 	});
-
-	// try {
-	// 	tempTimewheel.removeYearPlotline( 'Selected Pieces per Year' );
-	// 	tempTimewheel.removeDayPlotline( 'Selected Pieces per Day' );
-	// }
-	// catch( e ) { /* Do nothing*/ }
 	
 	tempTimewheel.addYearPlotline( '', impVariables.empty.date );
-	tempTimewheel.addYearPlotline( 'Failed Pieces per Day', yearFailed );
 	tempTimewheel.addYearPlotline( 'Passed Pieces per Day', yearPassed );
+	tempTimewheel.addYearPlotline( 'Failed Pieces per Day', yearFailed );
 	tempTimewheel.addDayPlotline( '', impVariables.empty.tod );
-	tempTimewheel.addDayPlotline( 'Failed Pieces per Hour', todFailed );
 	tempTimewheel.addDayPlotline( 'Passed Pieces per Hour',todPassed );
+	tempTimewheel.addDayPlotline( 'Failed Pieces per Hour', todFailed );
 
 	return tempTimewheel;
 
@@ -227,6 +225,28 @@ function createNumberDisplay( selector, valueAccesor, formatNumber, group, strin
 			some:'<p class="numberDisplay ' +  string + '"> %number ' +  string + ' <br>pieces </p>',
 			none:'<p class="numberDisplay ' +  string + '"> No ' +  string + ' <br>pieces</p>'
 		} );
+
+}
+
+function elasticXAxis( ) {
+	var importantVars = manifactoringProcessConfig.IMPORTANT_VARIABLES
+
+	var minTemp = { 'passed':[], 'failed':[] };
+	var maxTemp = { 'passed':[], 'failed':[] }; 
+
+	for ( var i = 0; i < importantVars.length; i++ ) {
+
+		var currentImpVar = importantVars[i];
+		
+		minTemp.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
+		maxTemp.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
+
+		minTemp.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
+		maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
+
+		charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
+		charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
+	}
 
 }
 
@@ -297,7 +317,8 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.gap(1);
+			.gap(1)
+			// .xUnits(function(d) {return 80;})
 
 		chartPassed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
@@ -307,6 +328,8 @@ function createCharts( importantVars, rawData ) {
 		chartPassed._groupName = currentImpVar;
 		
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
+
+		charts.passed.push( chartPassed );
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
@@ -329,7 +352,8 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#DDD' ] )
 			.group( groups.failed[i] )
-			.gap(1);
+			.gap(1)
+			// .xUnits(function(d) {return 80;})
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );

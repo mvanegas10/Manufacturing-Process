@@ -113,7 +113,7 @@ circle.selected {
 	color: #FF5E57 !important;
 }
 .selected {
-	stroke: #000 !important;
+	/*stroke: #000 !important;*/
 	color: #000 !important;
 }
 button.rigth {
