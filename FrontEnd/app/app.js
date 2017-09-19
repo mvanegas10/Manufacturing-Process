@@ -81,6 +81,8 @@ function changeView( view ) {
 		filter.filterAll( );
 	} );
 
+	elasticXAxis( );
+
 	d3.select( '#timewheel' )
 		.html( '' );
 
@@ -130,7 +132,6 @@ function changeView( view ) {
 	
 	}
 	
-	elasticXAxis( );
 	dc.filterAll(); 
 	dc.redrawAll();
 
@@ -238,11 +239,14 @@ function elasticXAxis( ) {
 
 		var currentImpVar = importantVars[i];
 		
-		minTemp.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
-		maxTemp.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
-
-		minTemp.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
-		maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
+		if( dimensions.passed[i].bottom(1)[0] ) minTemp.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
+ 		else minTemp.passed.push( minimum.passed[i] );
+		if( dimensions.passed[i].top(1)[0] ) maxTemp.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
+ 		else maxTemp.passed.push( maximum.passed[i] );
+		if( dimensions.failed[i].bottom(1)[0] ) minTemp.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
+ 		else minTemp.failed.push( minimum.failed[i] );
+		if( dimensions.failed[i].top(1)[0] ) maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
+ 		else maxTemp.failed.push( maximum.failed[i] );
 
 		charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
 		charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
