@@ -130,11 +130,7 @@ function changeView( view ) {
 	
 	}
 
-	try {
-		timewheel[currentNav].removeYearPlotline( 'Selected Pieces per Date' );
-		timewheel[currentNav].removeDayPlotline( 'Selected Pieces per Date' );
-	}
-	catch( e ) { /*Do nothing*/ }
+	removeSelectedPlotline( );
 
 	dc.filterAll(); 
 	elasticXAxis();
@@ -232,7 +228,8 @@ function createNumberDisplay( selector, valueAccesor, formatNumber, group, strin
 
 }
 
-function elasticXAxis( ) {
+function elasticXAxis( emiter ) {
+	
 	var importantVars = manifactoringProcessConfig.IMPORTANT_VARIABLES
 
 	var minTemp = { 'passed':[], 'failed':[] };
@@ -241,18 +238,32 @@ function elasticXAxis( ) {
 	for ( var i = 0; i < importantVars.length; i++ ) {
 
 		var currentImpVar = importantVars[i];
-		
-		if( dimensions.passed[i].bottom(1)[0] ) minTemp.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
- 		else minTemp.passed.push( minimum.passed[i] );
-		if( dimensions.passed[i].top(1)[0] ) maxTemp.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
- 		else maxTemp.passed.push( maximum.passed[i] );
-		if( dimensions.failed[i].bottom(1)[0] ) minTemp.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
- 		else minTemp.failed.push( minimum.failed[i] );
-		if( dimensions.failed[i].top(1)[0] ) maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
- 		else maxTemp.failed.push( maximum.failed[i] );
 
-		charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
-		charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
+		if( !emiter || ( emiter && currentImpVar !== emiter ) ) {
+
+			if( dimensions.passed[i].bottom(1)[0] ) minTemp.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
+	 		else minTemp.passed.push( minimum.passed[i] );
+			if( dimensions.passed[i].top(1)[0] ) maxTemp.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
+	 		else maxTemp.passed.push( maximum.passed[i] );
+			if( dimensions.failed[i].bottom(1)[0] ) minTemp.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
+	 		else minTemp.failed.push( minimum.failed[i] );
+			if( dimensions.failed[i].top(1)[0] ) maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
+	 		else maxTemp.failed.push( maximum.failed[i] );
+
+	 		console.log(minTemp)
+	 		console.log(maxTemp)
+
+			charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
+			charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
+			
+		}
+		else {
+			minTemp.passed.push( NaN );
+			maxTemp.passed.push( NaN );
+			minTemp.failed.push( NaN );
+			maxTemp.failed.push( NaN );
+		}
+
 	}
 
 	dc.redrawAll();
@@ -329,14 +340,18 @@ function createCharts( importantVars, rawData ) {
 			.gap(1)
 			// .xUnits(function(d) {return 80;})
 
-		chartPassed.on( 'filtered' , function( chart, filter ){
-			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
-			if( idSet.length < 1463 ) changeInIds( idSet );
-		} );
-
 		chartPassed._groupName = currentImpVar;
 		
 		chartPassed.yAxis( ).tickFormat( d3.format( 'd' ) );
+
+		chartPassed.on( 'filtered' , function( chart, filter ){
+			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
+			if( idSet.length < 1463 ){
+				changeInIds( idSet );
+				elasticXAxis( chart._groupName );	
+			} 
+			else removeSelectedPlotline( );			
+		} );
 
 		charts.passed.push( chartPassed );
 
@@ -366,7 +381,11 @@ function createCharts( importantVars, rawData ) {
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
-			if( idSet.length < 104 ) changeInIds( idSet );
+			if( idSet.length < 104 ) {
+				changeInIds( idSet );
+				elasticXAxis( chart._groupName );	
+			}
+			else removeSelectedPlotline( );			
 		} );
 
 		chartFailed.yAxis( ).tickFormat( d3.format( 'd' ) );
@@ -388,145 +407,177 @@ function createCharts( importantVars, rawData ) {
 }
 
 /*
+	Remove the plotline for a selected id set
+*/
+function removeSelectedPlotline( ) {
+
+	try {
+		timewheel[currentNav].removeYearPlotline( 'Selected Pieces per Date' );
+	}
+	catch( e ) { /*Do nothing*/ }
+	try {
+		timewheel[currentNav].removeDayPlotline( 'Selected Pieces per Date' );
+	}
+	catch( e ) { /*Do nothing*/ }
+
+}
+
+/*
 	Update plotlines
 */
 function changeInIds( idSet ) {
 
-	var reducer = 'AVG';
-	var reducerVariable = currentNav;
+	if( idSet.length > 0 ) {
 
-	if( currentNav === 'general' ) {
+		var reducer = 'AVG';
+		var reducerVariable = currentNav;
 
-		reducer = 'COUNT';
-		reducerVariable = 'id';
+		if( currentNav === 'general' ) {
+
+			reducer = 'COUNT';
+			reducerVariable = 'id';
+
+		}
+
+		var tempData = {
+			'reducer': reducer,
+			'reducer_variable': reducerVariable,
+			'id_set' : JSON.stringify( idSet )
+		};
+		var passedDate = post( 'get_date_id/passed', tempData );
+		var failedDate = post( 'get_date_id/failed', tempData );
+		var passedHour = post( 'get_hour_id/passed', tempData );
+		var failedHour = post( 'get_hour_id/failed', tempData );
+
+		Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
+
+			if( values[0].length > 0 )
+				timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[0] );
+			if( values[1].length > 0 )
+				timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[1] );
+			if( values[2].length > 0 )
+				timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[2] );
+			if( values[3].length > 0 )
+				timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[3] );
+		
+		} );
 
 	}
-
-	var tempData = {
-		'reducer': reducer,
-		'reducer_variable': reducerVariable,
-		'id_set' : JSON.stringify( idSet )
-	};
-	var passedDate = post( 'get_date_id/passed', tempData );
-	var failedDate = post( 'get_date_id/failed', tempData );
-	var passedHour = post( 'get_hour_id/passed', tempData );
-	var failedHour = post( 'get_hour_id/failed', tempData );
-
-	Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
-
-		if( values[0].length > 0 )
-			timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[0] );
-		if( values[1].length > 0 )
-			timewheel[currentNav].addYearPlotline( 'Selected Pieces per Date', values[1] );
-		if( values[2].length > 0 )
-			timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[2] );
-		if( values[3].length > 0 )
-			timewheel[currentNav].addDayPlotline( 'Selected Pieces per Hour', values[3] );
-	
-	} );
 
 }
 
 function changeInDates( from, to ) {
 
-	var reducer = 'AVG';
-	var reducerVariable = currentNav;
+	if( from && to ) {
 
-	if( currentNav === 'general' ) {
+		var reducer = 'AVG';
+		var reducerVariable = currentNav;
 
-		reducer = 'COUNT';
-		reducerVariable = 'id';
+		if( currentNav === 'general' ) {
+
+			reducer = 'COUNT';
+			reducerVariable = 'id';
+
+		}
+
+		var tempData = {
+			'from': from,
+			'to': to,
+			'reducer': reducer,
+			'reducer_variable': reducerVariable
+		};
+		var passedHour = post( 'get_hour/passed', tempData );
+		var failedHour = post( 'get_hour/failed', tempData );
+
+		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+
+			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
+
+			if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
+		
+		} );
 
 	}
-
-	var tempData = {
-		'from': from,
-		'to': to,
-		'reducer': reducer,
-		'reducer_variable': reducerVariable
-	};
-	var passedHour = post( 'get_hour/passed', tempData );
-	var failedHour = post( 'get_hour/failed', tempData );
-
-	Promise.all( [ passedHour, failedHour ] ).then( function( values ){
-
-		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
-
-		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
-	
-	} );
 
 }
 
 function changeInToD( from, to ) {
 
-	var reducer = 'AVG';
-	var reducerVariable = currentNav;
+	if( from && to ) {
 
-	if( currentNav === 'general' ) {
+		var reducer = 'AVG';
+		var reducerVariable = currentNav;
 
-		reducer = 'COUNT';
-		reducerVariable = 'id';
+		if( currentNav === 'general' ) {
+
+			reducer = 'COUNT';
+			reducerVariable = 'id';
+
+		}
+
+		var tempData = {
+			'from': from,
+			'to': to,
+			'reducer': reducer,
+			'reducer_variable': reducerVariable
+		};
+		var passedDate = post( 'get_date_tod/passed', tempData );
+		var failedDate = post( 'get_date_tod/failed', tempData );
+
+		Promise.all( [ passedDate, failedDate ] ).then( function( values ){
+			
+			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
+			
+			if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
+		
+		} );
 
 	}
-
-	var tempData = {
-		'from': from,
-		'to': to,
-		'reducer': reducer,
-		'reducer_variable': reducerVariable
-	};
-	var passedDate = post( 'get_date_tod/passed', tempData );
-	var failedDate = post( 'get_date_tod/failed', tempData );
-
-	Promise.all( [ passedDate, failedDate ] ).then( function( values ){
-		
-		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
-		
-		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addYearPlotline( 'Failed Pieces per Day', values[1] );
-	
-	} );
 
 }
 
 function changeInDoW( dows ) {
 
-	var reducer = 'AVG';
-	var reducerVariable = currentNav;
-
-	if( currentNav === 'general' ) {
-
-		reducer = 'COUNT';
-		reducerVariable = 'id';
-
-	}
-
-	var tempData = {
-		'dows': JSON.stringify( dows ),
-		'reducer': reducer,
-		'reducer_variable': reducerVariable
-	};
 	if( dows.length > 0 ) {
 
-		var passedHour = post( 'get_hour_dow/passed', tempData );
-		var failedHour = post( 'get_hour_dow/failed', tempData );
+		var reducer = 'AVG';
+		var reducerVariable = currentNav;
+
+		if( currentNav === 'general' ) {
+
+			reducer = 'COUNT';
+			reducerVariable = 'id';
+
+		}
+
+		var tempData = {
+			'dows': JSON.stringify( dows ),
+			'reducer': reducer,
+			'reducer_variable': reducerVariable
+		};
+		if( dows.length > 0 ) {
+
+			var passedHour = post( 'get_hour_dow/passed', tempData );
+			var failedHour = post( 'get_hour_dow/failed', tempData );
+
+		}
+
+		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+			
+			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
+			
+			if( $( '#failed_checkbox' ).is( ':checked' ) ) 
+				timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
+
+		} );	
 
 	}
-
-	Promise.all( [ passedHour, failedHour ] ).then( function( values ){
 		
-		if( $( '#passed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
-		
-		if( $( '#failed_checkbox' ).is( ':checked' ) ) 
-			timewheel[currentNav].addDayPlotline( 'Failed Pieces per Hour', values[1] );
-
-	} );	
-	
 }
 
 /*
