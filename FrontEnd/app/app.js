@@ -133,7 +133,7 @@ function changeView( view ) {
 	removeSelectedPlotline( );
 
 	dc.filterAll(); 
-	elasticXAxis();
+	dc.redrawAll();
 
 }
 
@@ -163,7 +163,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[0].filter( filter );
 		dateDim.failed[0].filter( filter );
 
-		elasticXAxis( );
+		dc.redrawAll( );
 
 	});
 
@@ -179,7 +179,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[1].filter( filter );
 		dateDim.failed[1].filter( filter );
 
-		elasticXAxis( );
+		dc.redrawAll( );
 
 	});
 
@@ -195,7 +195,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		dateDim.passed[2].filter( filter );
 		dateDim.failed[2].filter( filter );
 
-		elasticXAxis( );
+		dc.redrawAll( );
 
 	});
 	
@@ -228,6 +228,9 @@ function createNumberDisplay( selector, valueAccesor, formatNumber, group, strin
 
 }
 
+/*
+	Recalculates x axis ranges for the charts
+*/
 function elasticXAxis( emiter ) {
 	
 	var importantVars = manifactoringProcessConfig.IMPORTANT_VARIABLES
@@ -251,11 +254,9 @@ function elasticXAxis( emiter ) {
 	 		else maxTemp.failed.push( maximum.failed[i] );
 
 			charts.passed[i]
-				.x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) )
-				.xUnits(function(d) {return 40;});
+				.x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
 			charts.failed[i]
-				.x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) )
-				.xUnits(function(d) {return 40;});
+				.x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
 
 		}
 		else {
@@ -338,7 +339,7 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.xUnits(function(d) {return 60;});
+			.gap( 1 );
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -348,7 +349,7 @@ function createCharts( importantVars, rawData ) {
 			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
 			if( idSet.length < 1463 ){
 				changeInIds( idSet );
-				elasticXAxis( chart._groupName );	
+				dc.redrawAll( );	
 			} 
 			else removeSelectedPlotline( );			
 		} );
@@ -376,13 +377,13 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#DDD' ] )
 			.group( groups.failed[i] )
-			.xUnits(function(d) {return 60;});
+			.gap( 1 );
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
 			if( idSet.length < 104 ) {
 				changeInIds( idSet );
-				elasticXAxis( chart._groupName );	
+				dc.redrawAll( );	
 			}
 			else removeSelectedPlotline( );			
 		} );
