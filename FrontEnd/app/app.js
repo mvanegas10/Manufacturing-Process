@@ -79,9 +79,7 @@ function changeView( view ) {
 
 	dateDim.failed.forEach( function( filter ) {
 		filter.filterAll( );
-	} );
-
-	elasticXAxis( );
+	} );	
 
 	d3.select( '#timewheel' )
 		.html( '' );
@@ -131,9 +129,15 @@ function changeView( view ) {
 		updatePlotLine( );
 	
 	}
-	
+
+	try {
+		timewheel[currentNav].removeYearPlotline( 'Selected Pieces per Date' );
+		timewheel[currentNav].removeDayPlotline( 'Selected Pieces per Date' );
+	}
+	catch( e ) { /*Do nothing*/ }
+
 	dc.filterAll(); 
-	dc.redrawAll();
+	elasticXAxis();
 
 }
 
@@ -162,7 +166,6 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		};
 		dateDim.passed[0].filter( filter );
 		dateDim.failed[0].filter( filter );
-		dc.redrawAll( );
 
 		elasticXAxis( );
 
@@ -179,7 +182,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		};
 		dateDim.passed[1].filter( filter );
 		dateDim.failed[1].filter( filter );
-		dc.redrawAll( );
+
 		elasticXAxis( );
 
 	});
@@ -195,7 +198,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		};
 		dateDim.passed[2].filter( filter );
 		dateDim.failed[2].filter( filter );
-		dc.redrawAll( );
+
 		elasticXAxis( );
 
 	});
@@ -251,6 +254,8 @@ function elasticXAxis( ) {
 		charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
 		charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
 	}
+
+	dc.redrawAll();
 
 }
 
