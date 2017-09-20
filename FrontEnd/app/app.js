@@ -250,12 +250,13 @@ function elasticXAxis( emiter ) {
 			if( dimensions.failed[i].top(1)[0] ) maxTemp.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
 	 		else maxTemp.failed.push( maximum.failed[i] );
 
-	 		console.log(minTemp)
-	 		console.log(maxTemp)
+			charts.passed[i]
+				.x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) )
+				.xUnits(function(d) {return 40;});
+			charts.failed[i]
+				.x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) )
+				.xUnits(function(d) {return 40;});
 
-			charts.passed[i].x( d3.scale.linear( ).domain( [ minTemp.passed[i], maxTemp.passed[i] ] ) );
-			charts.failed[i].x( d3.scale.linear( ).domain( [ minTemp.failed[i], maxTemp.failed[i] ] ) );
-			
 		}
 		else {
 			minTemp.passed.push( NaN );
@@ -337,8 +338,7 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.gap(1)
-			// .xUnits(function(d) {return 80;})
+			.xUnits(function(d) {return 60;});
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -366,7 +366,7 @@ function createCharts( importantVars, rawData ) {
 
 		var nameFailed = 'failed_variable' + i;
 		var widthFailed = document.getElementById( nameFailed ).offsetWidth * 0.98;
-
+		
 		var chartFailed = dc.barChart( '#' + nameFailed )
 			.width(widthFailed)
 			.height(120)
@@ -376,8 +376,7 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#DDD' ] )
 			.group( groups.failed[i] )
-			.gap(1)
-			// .xUnits(function(d) {return 80;})
+			.xUnits(function(d) {return 60;});
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
