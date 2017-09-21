@@ -81,7 +81,6 @@ function formatDate( date ) {
 */
 function reset() {
 
-	currentFilter = jQuery.extend(true, {}, originalFilter);
 	changeView( currentNav );
 
 }
@@ -90,6 +89,10 @@ function reset() {
 	Changes view
 */
 function changeView( view ) {
+
+	dateDim.all.forEach( function( filter ) {
+		filter.filterAll( );
+	} );
 
 	dateDim.passed.forEach( function( filter ) {
 		filter.filterAll( );
@@ -280,7 +283,7 @@ function createNumberDisplay( selector, valueAccesor, formatNumber, group, class
 		.html( {
 			one:'<p class="numberDisplay ' +  classed + '">%number ' +  string + '</p>',
 			some:'<p class="numberDisplay ' +  classed + '">%number ' +  string + '</p>',
-			none:'<p class="numberDisplay ' +  classed + '">No ' +  string + '</p>'
+			none:'<p class="numberDisplay ' +  classed + '">-</p>'
 		} );
 
 }
@@ -303,10 +306,12 @@ function createCharts( importantVars, rawData ) {
 	var dateAccesor = function( d ) { return +d.timevalue };
 	var valueAccesor = function(d) { return d; };
 	var formatNumber = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
-	var valueAccesorPercentage = function(d) { return d / groupAll.value( ); };
+	var valueAccesorPercentage = function(d) { return groupAll.value( )? d / groupAll.value( ): 0; };
 	var formatNumberPercentage = function(d) { return d3.format( '%' )( d3.round( d, 2 ) ); };
+	var valueAccesorPercentageFromTotal = function(d) { return groupAllTotal.size( )? d / groupAllTotal.size( ): 0; };
 
 	dimAll = cfAll.dimension( function( d ) { return d.id; } );
+	groupAllTotal = dimAll.group( ).reduce( add, remove, initial );
 	groupAll = dimAll.groupAll( ).reduce( add, remove, initial );
 
 	dimPassed = cfPassed.dimension( function( d ) { return d.id; } );
@@ -324,8 +329,9 @@ function createCharts( importantVars, rawData ) {
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
-
-	createNumberDisplay( '#general_title', valueAccesor, formatNumber, groupAll, '', 'total pieces' );
+			
+	createNumberDisplay( '#num_all', valueAccesor, formatNumber, groupAll, '', 'pieces' );
+	createNumberDisplay( '#percentage_all', valueAccesorPercentageFromTotal, formatNumberPercentage, groupAll, '', ' of total' );
 	createNumberDisplay( '#num_passed_pieces', valueAccesor, formatNumber, groupPassed, 'passed', 'passed pieces' );
 	createNumberDisplay( '#num_failed_pieces', valueAccesor, formatNumber, groupFailed, 'failed', 'failed pieces' );
 	createNumberDisplay( '#percentage_passed_pieces', valueAccesorPercentage, formatNumberPercentage, groupPassed, 'passed', '' );
