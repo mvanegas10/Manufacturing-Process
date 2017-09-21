@@ -64,6 +64,7 @@ var currentFilter = {
 	'hour2': '23',
 	'dows': JSON.stringify( [ 0, 1, 2, 3, 4, 5, 6 ] )
 }
+var originalFilter = jQuery.extend(true, {}, currentFilter);
 
 /*
 	Functional methods
@@ -498,13 +499,15 @@ function changeInDates( from, to ) {
 		currentFilter.reducer = reducer;
 		currentFilter.reducer_variable = reducerVariable;
 
-		var passedHour = post( 'get_hour/passed', currentFilter );
-		var failedHour = post( 'get_hour/failed', currentFilter );
+		var tempData = jQuery.extend(true, {}, currentFilter);
+
+		tempData.hour1 = originalFilter.hour1;
+		tempData.hour2 = originalFilter.hour2;
+
+		var passedHour = post( 'get_hour/passed', tempData );
+		var failedHour = post( 'get_hour/failed', tempData );
 
 		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
-
-			console.log(values[0])
-			console.log(values[1])
 
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
@@ -537,14 +540,16 @@ function changeInToD( from, to ) {
 		currentFilter.reducer = reducer;
 		currentFilter.reducer_variable = reducerVariable;
 
-		var passedDate = post( 'get_date/passed', currentFilter );
-		var failedDate = post( 'get_date/failed', currentFilter );
+		var tempData = jQuery.extend(true, {}, currentFilter);
+
+		tempData.date1 = originalFilter.date1;
+		tempData.date2 = originalFilter.date2;
+
+		var passedDate = post( 'get_date/passed', tempData );
+		var failedDate = post( 'get_date/failed', tempData );
 
 		Promise.all( [ passedDate, failedDate ] ).then( function( values ){
 	
-			console.log(values[0])
-			console.log(values[1])
-
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
 			
@@ -583,9 +588,6 @@ function changeInDoW( dows ) {
 		}
 
 		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
-
-			console.log(values[0])
-			console.log(values[1])
 			
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
@@ -637,8 +639,6 @@ function initialize() {
 	var rawDataImpVariables = post( 'get_raw_data/', varData );
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour, rawDataImpVariables ] ).then( function( values ){
-
-		console.log(values)
 
 		// Import from ./assets/ManufactoringProcessModule/manufactoringProcess-config.js.
 		// This component is necessary to avoid white spaces between undefined points in the STRAD-Wheel.
