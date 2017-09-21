@@ -81,7 +81,6 @@ function formatDate( date ) {
 */
 function reset() {
 	changeView( currentNav );
-
 }
 
 /*
@@ -90,6 +89,7 @@ function reset() {
 function changeView( view ) {
 
 	currentFilter = jQuery.extend(true, {}, originalFilter);
+
 	dateDim.all.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
@@ -110,6 +110,19 @@ function changeView( view ) {
 
 	currentNav = view;
 
+	var reducer = 'AVG';
+	var reducerVariable = currentNav;
+
+	if( currentNav === 'general' ) {
+
+		reducer = 'COUNT';
+		reducerVariable = 'id';
+
+	}
+
+	currentFilter.reducer = reducer;
+	currentFilter.reducer_variable = reducerVariable;
+	
 	d3.select( '#button-' + currentNav )
 		.attr( 'class', 'btn btn-warning rigth no-radius' );
 
