@@ -80,7 +80,6 @@ function formatDate( date ) {
 	Reset view
 */
 function reset() {
-
 	changeView( currentNav );
 
 }
@@ -90,6 +89,7 @@ function reset() {
 */
 function changeView( view ) {
 
+	currentFilter = jQuery.extend(true, {}, originalFilter);
 	dateDim.all.forEach( function( filter ) {
 		filter.filterAll( );
 	} );
@@ -307,7 +307,7 @@ function createCharts( importantVars, rawData ) {
 	var valueAccesor = function(d) { return d; };
 	var formatNumber = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
 	var valueAccesorPercentage = function(d) { return groupAll.value( )? d / groupAll.value( ): 0; };
-	var formatNumberPercentage = function(d) { return d3.format( '%' )( d3.round( d, 2 ) ); };
+	var formatNumberPercentage = function(d) { return d3.format( ',.2%' )( d ); };
 	var valueAccesorPercentageFromTotal = function(d) { return groupAllTotal.size( )? d / groupAllTotal.size( ): 0; };
 
 	dimAll = cfAll.dimension( function( d ) { return d.id; } );
@@ -334,6 +334,8 @@ function createCharts( importantVars, rawData ) {
 	createNumberDisplay( '#percentage_all', valueAccesorPercentageFromTotal, formatNumberPercentage, groupAll, '', ' of total' );
 	createNumberDisplay( '#num_passed_pieces', valueAccesor, formatNumber, groupPassed, 'passed', 'passed pieces' );
 	createNumberDisplay( '#num_failed_pieces', valueAccesor, formatNumber, groupFailed, 'failed', 'failed pieces' );
+	createNumberDisplay( '#percentage_total_passed_pieces', valueAccesorPercentageFromTotal, formatNumberPercentage, groupPassed, 'passed', ' of total' );
+	createNumberDisplay( '#percentage_total_failed_pieces', valueAccesorPercentageFromTotal, formatNumberPercentage, groupFailed, 'failed', ' of total' );
 	createNumberDisplay( '#percentage_passed_pieces', valueAccesorPercentage, formatNumberPercentage, groupPassed, 'passed', '' );
 	createNumberDisplay( '#percentage_failed_pieces', valueAccesorPercentage, formatNumberPercentage, groupFailed, 'failed', '' );
 
@@ -342,8 +344,8 @@ function createCharts( importantVars, rawData ) {
 		var currentImpVar = importantVars[i];
 
 		var title = d3.select( '#title_variable' + i );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) +  ' (86.6%)' );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + 1.5*rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) +  ' (68.26%)' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
 		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ']' );
 
 		var dimensionCreator = function( d ) { return +d3.round( d[ currentImpVar ], rounds[ i ] ); };
@@ -385,6 +387,12 @@ function createCharts( importantVars, rawData ) {
 			else removeSelectedPlotline( );			
 		} );
 
+		chartPassed.on( 'renderlet', function( chart ){
+			chart.selectAll( 'rect' )
+				.style( 'fill', function( d ) { 
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + rawData.stats[chart._groupName].std_passed ) ) )? '#BBB': ''; } );
+		});
+
 		charts.passed.push( chartPassed );
 
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
@@ -406,7 +414,7 @@ function createCharts( importantVars, rawData ) {
 			.elasticX(false)
 			.elasticY(true)
 			.dimension( dimensions.failed[i] )
-			.ordinalColors( [ '#DDD' ] )
+			.ordinalColors( [ '#BBB' ] )
 			.group( groups.failed[i] )
 			.gap( 1 );
 
@@ -426,7 +434,7 @@ function createCharts( importantVars, rawData ) {
 		chartFailed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - 1.5*rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + 1.5*rawData.stats[chart._groupName].std_passed ) ) )? '#FF5E57': ''; } );
+					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + rawData.stats[chart._groupName].std_passed ) ) )? '#FF5E57': ''; } );
 		});
 
 		charts.failed.push( chartFailed );

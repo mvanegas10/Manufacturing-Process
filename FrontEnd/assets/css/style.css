@@ -48,7 +48,7 @@ g.radarBrush .extent {
 	fill: #1f77b4 !important;
 }
 p.small {
-	font-size: 8px;
+	font-size: 10px;
 	font-weight: normal;
 	text-align: center;
 }
