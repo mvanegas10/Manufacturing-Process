@@ -108,12 +108,12 @@ def get_date( status ):
 	elif status == 'failed':
 		status_value = 1
 
-	if data['date1'] < data['date2']:
+	if data['date1'] <= data['date2']:
 		query_date = 'SELECT * FROM table_secom WHERE timestamp BETWEEN \'%s\' AND \'%s\'' % ( data['date1'], data['date2'] )
 	else:
 		query_date = 'SELECT * FROM table_secom WHERE ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) ' % ( data['date1'], data['date2'] )
 
-	if int( data['hour1'] ) < int( data['hour2'] ):
+	if int( data['hour1'] ) <= int( data['hour2'] ):
 		query_tod = 'SELECT * FROM ( %s ) filteredDates WHERE HOUR( timestamp ) >= %d AND HOUR( timestamp ) <= %d ' % ( query_date, int( data['hour1'] ), int( data['hour2'] ) )
 	else:
 		query_tod = 'SELECT * FROM ( %s ) filteredDates WHERE ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) ' % ( query_date, int( data['hour1'] ), int( data['hour2'] ) )
@@ -121,6 +121,8 @@ def get_date( status ):
 	query_dow = 'SELECT * FROM ( %s ) filteredDatesDows WHERE ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s )' % ( query_tod, ', '.join( str( x ) for x in dows ) )
 
 	query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM ( %s ) filteredDatesDowsTods WHERE results = %d ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
+
+	print query
 
 	# Executes query
 	cur.execute( query )
@@ -151,12 +153,12 @@ def get_hour( status ):
 	elif status == 'failed':
 		status_value = 1
 
-	if data['date1'] < data['date2']:
+	if data['date1'] <= data['date2']:
 		query_date = 'SELECT * FROM table_secom WHERE timestamp BETWEEN \'%s\' AND \'%s\'' % ( data['date1'], data['date2'] )
 	else:
 		query_date = 'SELECT * FROM table_secom WHERE ( timestamp >= \'%s\' OR timestamp <= \'%s\' ) ' % ( data['date1'], data['date2'] )
 
-	if int( data['hour1'] ) < int( data['hour2'] ):
+	if int( data['hour1'] ) <= int( data['hour2'] ):
 		query_tod = 'SELECT * FROM ( %s ) filteredDates WHERE HOUR( timestamp ) BETWEEN %d AND %d ' % ( query_date, int( data['hour1'] ), int( data['hour2'] ) )
 	else:
 		query_tod = 'SELECT * FROM ( %s ) filteredDates WHERE ( HOUR( timestamp ) >= %d OR HOUR( timestamp ) <= %d ) ' % ( query_date, int( data['hour1'] ), int( data['hour2'] ) )
@@ -164,6 +166,8 @@ def get_hour( status ):
 	query_dow = 'SELECT * FROM ( %s ) filteredDatesDows WHERE ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s )' % ( query_tod, ', '.join( str( x ) for x in dows ) )
 
 	query = 'SELECT temp.hour as h, %s( temp.value ) AS v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM ( %s ) filteredDatesDowsTods WHERE results = %d ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
+
+	print query
 
 	# Executes query
 	cur.execute( query )

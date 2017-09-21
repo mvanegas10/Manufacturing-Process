@@ -29,21 +29,23 @@ var colorArray = [ '#FFF', '#31D66C', '#FF5E57' ];
 /*
 	Crossfilter variables
 */
+var cfAll;
 var cfPassed;
 var cfFailed;
 
 // Dimensions
 var dimensions = { 'passed':[], 'failed':[] };
+var dimAll;
 var dimPassed;
 var dimFailed;
-var dateDim = { 'passed':[], 'failed':[] };
+var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
 var rounds = [ 0, 0, 0, 1, 2 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
 // Groupings
-var groups = { 'passed':[], 'failed':[] };
+var groups = { 'all':[], 'passed':[], 'failed':[] };
 var groupPassed;
 var groupFailed;
 
@@ -55,7 +57,7 @@ var charts = { 'passed':[], 'failed':[] };
 /*
 	Global Filter State
 */
-var currentFilter = {
+var originalFilter = {
 	'reducer': 'COUNT',
 	'reducer_variable': 'id',
 	'date1': '2008-01-01 00:00:00',
@@ -64,7 +66,8 @@ var currentFilter = {
 	'hour2': '23',
 	'dows': JSON.stringify( [ 0, 1, 2, 3, 4, 5, 6 ] )
 }
-var originalFilter = jQuery.extend(true, {}, currentFilter);
+
+var currentFilter = jQuery.extend(true, {}, originalFilter);
 
 /*
 	Functional methods
@@ -78,6 +81,7 @@ function formatDate( date ) {
 */
 function reset() {
 
+	currentFilter = jQuery.extend(true, {}, originalFilter);
 	changeView( currentNav );
 
 }
@@ -109,17 +113,10 @@ function changeView( view ) {
 
 	if( !impVariables[view] ) {
 
-		var tempData = {
-			'from': '2008-01-01 00:00:00',
-			'to': '2008-12-31 00:00:00',
-			'reducer': 'AVG',
-			'reducer_variable': currentNav
-		};
-
-		var passedDate = post( 'get_date/passed', tempData );
-		var failedDate = post( 'get_date/failed', tempData );
-		var passedHour = post( 'get_hour/passed', tempData );
-		var failedHour = post( 'get_hour/failed', tempData );
+		var passedDate = post( 'get_date/passed', currentFilter );
+		var failedDate = post( 'get_date/failed', currentFilter );
+		var passedHour = post( 'get_hour/passed', currentFilter );
+		var failedHour = post( 'get_hour/failed', currentFilter );
 
 		Promise.all( [ passedDate, failedDate, passedHour, failedHour ] ).then( function( values ){
 
@@ -171,9 +168,10 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		changeInDates( formatDate( newDatesRange[0] ), formatDate( newDatesRange[1] ) );
 		
 		var filter = function( d ) { 
-			if( newDatesRange[0].valueOf( ) >= newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0].valueOf( ) || d <= newDatesRange[1].valueOf( ) ); 
+			if( newDatesRange[0].valueOf( ) > newDatesRange[1].valueOf( ) ) return ( d >= newDatesRange[0].valueOf( ) || d <= newDatesRange[1].valueOf( ) ); 
 			else return ( d >= newDatesRange[0].valueOf( ) && d <= newDatesRange[1].valueOf( ) ); 
 		};
+		dateDim.all[0].filter( filter );
 		dateDim.passed[0].filter( filter );
 		dateDim.failed[0].filter( filter );
 
@@ -187,9 +185,10 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 		
 		var filter = function( d ) { 
 			var hour = new Date( d ).getHours();
-			if( newTodrange[0] >= newTodrange[1] ) return ( hour >= newTodrange[0] || hour <= newTodrange[1] ); 
+			if( newTodrange[0] > newTodrange[1] ) return ( hour >= newTodrange[0] || hour <= newTodrange[1] ); 
 			else return ( hour >= newTodrange[0] && hour <= newTodrange[1] ); 
 		};
+		dateDim.all[1].filter( filter );
 		dateDim.passed[1].filter( filter );
 		dateDim.failed[1].filter( filter );
 
@@ -206,6 +205,7 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 			var dow = new Date( d ).getDay();
 			return newDows.indexOf( dow ) !== -1 ; 
 		};
+		dateDim.all[2].filter( filter );
 		dateDim.passed[2].filter( filter );
 		dateDim.failed[2].filter( filter );
 
@@ -221,24 +221,6 @@ function createSTRAD( selector, yearPassed, yearFailed, todPassed, todFailed ) {
 	tempTimewheel.addDayPlotline( 'Failed Pieces per Hour', todFailed );
 
 	return tempTimewheel;
-
-}
-
-
-/*
-	Creates the a number display
-*/
-function createNumberDisplay( selector, valueAccesor, formatNumber, group, string ) {
-
-	dc.numberDisplay( selector )
-		.valueAccessor( valueAccesor )
-		.formatNumber( formatNumber )
-		.group( group )
-		.html( {
-			one:'<p class="numberDisplay ' +  string + '"> %number ' +  string + ' <br>piece </p>',
-			some:'<p class="numberDisplay ' +  string + '"> %number ' +  string + ' <br>pieces </p>',
-			none:'<p class="numberDisplay ' +  string + '"> No ' +  string + ' <br>pieces</p>'
-		} );
 
 }
 
@@ -287,12 +269,30 @@ function elasticXAxis( emiter ) {
 }
 
 /*
+	Creates the a number display
+*/
+function createNumberDisplay( selector, valueAccesor, formatNumber, group, classed, string ) {
+
+	dc.numberDisplay( selector )
+		.valueAccessor( valueAccesor )
+		.formatNumber( formatNumber )
+		.group( group )
+		.html( {
+			one:'<p class="numberDisplay ' +  classed + '">%number ' +  string + '</p>',
+			some:'<p class="numberDisplay ' +  classed + '">%number ' +  string + '</p>',
+			none:'<p class="numberDisplay ' +  classed + '">No ' +  string + '</p>'
+		} );
+
+}
+
+/*
 	Creates the charts
 */
 function createCharts( importantVars, rawData ) {
 
 	var data = rawData.result;
 
+	cfAll = crossfilter( data );
 	cfPassed = crossfilter( data );
 	cfFailed = crossfilter( data );
 
@@ -300,9 +300,14 @@ function createCharts( importantVars, rawData ) {
 	var remove = function (p, v) { return p - 1; };
 	var initial = function (p, v) { return 0; };
 
-	var valueAccesor = function(d) { return d; };
 	var dateAccesor = function( d ) { return +d.timevalue };
+	var valueAccesor = function(d) { return d; };
 	var formatNumber = function(d) { return d3.format( ',' )( d3.round( d, 0 ) ); };
+	var valueAccesorPercentage = function(d) { return d / groupAll.value( ); };
+	var formatNumberPercentage = function(d) { return d3.format( '%' )( d3.round( d, 2 ) ); };
+
+	dimAll = cfAll.dimension( function( d ) { return d.id; } );
+	groupAll = dimAll.groupAll( ).reduce( add, remove, initial );
 
 	dimPassed = cfPassed.dimension( function( d ) { return d.id; } );
 	groupPassed = dimPassed.groupAll( ).reduce( add, remove, initial );
@@ -310,6 +315,9 @@ function createCharts( importantVars, rawData ) {
 	dimFailed = cfFailed.dimension( function( d ) { return d.id; } );
 	groupFailed = dimFailed.groupAll( ).reduce( add, remove, initial );
 
+	dateDim.all.push( cfAll.dimension( dateAccesor ) );
+	dateDim.all.push( cfAll.dimension( dateAccesor ) );
+	dateDim.all.push( cfAll.dimension( dateAccesor ) );
 	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
 	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
 	dateDim.passed.push( cfPassed.dimension( dateAccesor ) );
@@ -317,8 +325,11 @@ function createCharts( importantVars, rawData ) {
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 	dateDim.failed.push( cfFailed.dimension( dateAccesor ) );
 
-	createNumberDisplay( '#num_passed_pieces', valueAccesor, formatNumber, groupPassed, 'passed' );
-	createNumberDisplay( '#num_failed_pieces', valueAccesor, formatNumber, groupFailed, 'failed' );
+	createNumberDisplay( '#general_title', valueAccesor, formatNumber, groupAll, '', 'total pieces' );
+	createNumberDisplay( '#num_passed_pieces', valueAccesor, formatNumber, groupPassed, 'passed', 'passed pieces' );
+	createNumberDisplay( '#num_failed_pieces', valueAccesor, formatNumber, groupFailed, 'failed', 'failed pieces' );
+	createNumberDisplay( '#percentage_passed_pieces', valueAccesorPercentage, formatNumberPercentage, groupPassed, 'passed', '' );
+	createNumberDisplay( '#percentage_failed_pieces', valueAccesorPercentage, formatNumberPercentage, groupFailed, 'failed', '' );
 
 	for ( var i = 0; i < importantVars.length; i++ ) {
 
@@ -549,7 +560,7 @@ function changeInToD( from, to ) {
 		var failedDate = post( 'get_date/failed', tempData );
 
 		Promise.all( [ passedDate, failedDate ] ).then( function( values ){
-	
+
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
 			
