@@ -53,6 +53,19 @@ var groupFailed;
 var charts = { 'passed':[], 'failed':[] };
 
 /*
+	Global Filter State
+*/
+var currentFilter = {
+	'reducer': 'COUNT',
+	'reducer_variable': 'id',
+	'date1': '2008-01-01 00:00:00',
+	'date2': '2008-12-31 00:00:00',
+	'hour1': '0',
+	'hour2': '23',
+	'dows': JSON.stringify( [ 0, 1, 2, 3, 4, 5, 6 ] )
+}
+
+/*
 	Functional methods
 */
 function formatDate( date ) {
@@ -480,16 +493,18 @@ function changeInDates( from, to ) {
 
 		}
 
-		var tempData = {
-			'from': from,
-			'to': to,
-			'reducer': reducer,
-			'reducer_variable': reducerVariable
-		};
-		var passedHour = post( 'get_hour/passed', tempData );
-		var failedHour = post( 'get_hour/failed', tempData );
+		currentFilter.date1 = from;
+		currentFilter.date2 = to;
+		currentFilter.reducer = reducer;
+		currentFilter.reducer_variable = reducerVariable;
+
+		var passedHour = post( 'get_hour/passed', currentFilter );
+		var failedHour = post( 'get_hour/failed', currentFilter );
 
 		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+
+			console.log(values[0])
+			console.log(values[1])
 
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
@@ -517,17 +532,19 @@ function changeInToD( from, to ) {
 
 		}
 
-		var tempData = {
-			'from': from,
-			'to': to,
-			'reducer': reducer,
-			'reducer_variable': reducerVariable
-		};
-		var passedDate = post( 'get_date_tod/passed', tempData );
-		var failedDate = post( 'get_date_tod/failed', tempData );
+		currentFilter.hour1 = from;
+		currentFilter.hour2 = to;
+		currentFilter.reducer = reducer;
+		currentFilter.reducer_variable = reducerVariable;
+
+		var passedDate = post( 'get_date/passed', currentFilter );
+		var failedDate = post( 'get_date/failed', currentFilter );
 
 		Promise.all( [ passedDate, failedDate ] ).then( function( values ){
-			
+	
+			console.log(values[0])
+			console.log(values[1])
+
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addYearPlotline( 'Passed Pieces per Day', values[0] );
 			
@@ -554,19 +571,21 @@ function changeInDoW( dows ) {
 
 		}
 
-		var tempData = {
-			'dows': JSON.stringify( dows ),
-			'reducer': reducer,
-			'reducer_variable': reducerVariable
-		};
+		currentFilter.dows = JSON.stringify( dows );
+		currentFilter.reducer = reducer;
+		currentFilter.reducer_variable = reducerVariable;
+
 		if( dows.length > 0 ) {
 
-			var passedHour = post( 'get_hour_dow/passed', tempData );
-			var failedHour = post( 'get_hour_dow/failed', tempData );
+			var passedHour = post( 'get_hour/passed', currentFilter );
+			var failedHour = post( 'get_hour/failed', currentFilter );
 
 		}
 
 		Promise.all( [ passedHour, failedHour ] ).then( function( values ){
+
+			console.log(values[0])
+			console.log(values[1])
 			
 			if( $( '#passed_checkbox' ).is( ':checked' ) ) 
 				timewheel[currentNav].addDayPlotline( 'Passed Pieces per Hour', values[0] );
@@ -608,24 +627,19 @@ function updatePlotLine( ) {
 */
 function initialize() {
 
-	var tempData = {
-		'from': '2008-01-01 00:00:00',
-		'to': '2008-12-31 00:00:00',
-		'reducer': 'COUNT',
-		'reducer_variable': 'id'
-	};
-
 	var varData = {
 		'variables': JSON.stringify( manifactoringProcessConfig.IMPORTANT_VARIABLES )
 	};
-	var passedDate = post( 'get_date/passed', tempData );
-	var failedDate = post( 'get_date/failed', tempData );
-	var passedHour = post( 'get_hour/passed', tempData );
-	var failedHour = post( 'get_hour/failed', tempData );
+	var passedDate = post( 'get_date/passed', currentFilter );
+	var failedDate = post( 'get_date/failed', currentFilter );
+	var passedHour = post( 'get_hour/passed', currentFilter );
+	var failedHour = post( 'get_hour/failed', currentFilter );
 	var rawDataImpVariables = post( 'get_raw_data/', varData );
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour, rawDataImpVariables ] ).then( function( values ){
-		
+
+		console.log(values)
+
 		// Import from ./assets/ManufactoringProcessModule/manufactoringProcess-config.js.
 		// This component is necessary to avoid white spaces between undefined points in the STRAD-Wheel.
 		impVariables.empty = manifactoringProcessConfig.EMPTY_DATASET;
