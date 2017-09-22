@@ -40,7 +40,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 0, 0, 1, 2 ];
+var rounds = [ 0, 50, 0, 1, 2 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -385,7 +385,8 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.passed[i] )
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
-			.gap( 1 );
+			.gap( 1 )
+			.xUnits( function(d) {return 90;} )
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -429,7 +430,9 @@ function createCharts( importantVars, rawData ) {
 			.dimension( dimensions.failed[i] )
 			.ordinalColors( [ '#BBB' ] )
 			.group( groups.failed[i] )
-			.gap( 1 );
+			.gap( 1 )
+			.xUnits( function(d) {return 90;} )
+			
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
