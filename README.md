@@ -11,7 +11,6 @@ npm install live-server
 virtualenv venv
 source venv/bin/activate
 pip install -r requirements.txt
-
 ```
 
 ### DataQuality
