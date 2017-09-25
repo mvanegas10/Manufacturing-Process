@@ -120,7 +120,7 @@ def get_date( status ):
 	
 	query_dow = 'SELECT * FROM ( %s ) filteredDatesDows WHERE ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s )' % ( query_tod, ', '.join( str( x ) for x in dows ) )
 
-	query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM ( %s ) filteredDatesDowsTods WHERE results = %d ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM ( %s ) filteredDatesDowsTods WHERE results = %d GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
 
 	print query
 
@@ -165,7 +165,7 @@ def get_hour( status ):
 	
 	query_dow = 'SELECT * FROM ( %s ) filteredDatesDows WHERE ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s )' % ( query_tod, ', '.join( str( x ) for x in dows ) )
 
-	query = 'SELECT temp.hour as h, %s( temp.value ) AS v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM ( %s ) filteredDatesDowsTods WHERE results = %d ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
+	query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM ( %s ) filteredDatesDowsTods WHERE results = %d GROUP BY h' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
 
 	print query
 
@@ -194,7 +194,7 @@ def get_date_id( status ):
 	elif status == 'failed':
 		status_value = 1
 
-	query = 'SELECT temp.month as m, temp.dow as d, %s( temp.value ) AS v FROM ( SELECT ( MONTH( timestamp ) - 1 ) AS month, ( DAYOFWEEK( timestamp ) - 1 ) AS dow, ABS( %s ) AS value FROM table_secom WHERE results = %d AND id IN ( %s ) ) temp GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
+	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM table_secom WHERE results = %d AND id IN ( %s ) GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
 	
 	# Executes query
 	cur.execute( query )
@@ -220,7 +220,7 @@ def get_hour_id( status ):
 	elif status == 'failed':
 		status_value = 1
 
-	query = 'SELECT temp.hour as h, %s( temp.value ) as v FROM ( SELECT HOUR( timestamp ) AS hour, ABS( %s ) AS value FROM table_secom WHERE results = %d AND id IN ( %s ) ) temp GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
+	query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM table_secom WHERE results = %d AND id IN ( %s ) GROUP BY h' % ( data['reducer'], data['reducer_variable'], status_value, ', '.join( str( x ) for x in id_set ) )
 	
 	# Executes query
 	cur.execute( query )
