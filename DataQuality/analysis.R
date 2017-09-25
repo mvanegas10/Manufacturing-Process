@@ -1,41 +1,19 @@
+# Global Configurations
 Sys.setenv(LANG = "en")
-setwd("/Users/meili/Documents/TUK/Manufacturing-Process/CalidadDatos/")
+setwd("/home/meili/Documents/TUK/Projekt/Manufacturing-Process/DataQuality")
 
-data <- read.table("data/secom.data")
-
-print('------------------------- data -------------------------')
-print(data)
-
-names(data)
-
-labels <- read.table("data/secom_labels.data")
-
-print('------------------------- labels -------------------------')
-print(labels)
-
-label <- labels$V1
-
-print('------------------------- label -------------------------')
-print(label)
-
-head(label)
-
-secom <- cbind(data,label)
-
-head(secom)
-
-#Replace the missing values of NaN with 0.
-secom[secom == "NaN"] <- 0
-
-########################################################################
-
-install.packages("caret", repos="http://cran.rstudio.com/")
-install.packages('e1071', dependencies=TRUE)
+# Requirements
 library(caret)
 
+# Read data from CSV file
+data <- read.csv(file="data/cleansed/table_secom.csv",head=FALSE,sep=";")
+print(data)
+
+# Creates control group for Reverse Feature Elimination
 control <- rfeControl(functions=rfFuncs)
 
-results <- rfe(secom[,1:590], as.factor(secom[,591]), sizes=c(100), rfeControl=control)
+# Reverse Feature Elimination
+results <- rfe(data[,1:590], as.factor(data[,591]), sizes=c(5), rfeControl=control)
 
 predictors(results)
 

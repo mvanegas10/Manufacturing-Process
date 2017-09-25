@@ -1,0 +1,1 @@
+SELECT * FROM table_secom INTO OUTFILE '/home/meili/Documents/TUK/Projekt/Manufacturing-Process/DataQuality/table_secom.csv' FIELDS ENCLOSED BY '"' TERMINATED BY ';' ESCAPED BY '"' LINES TERMINATED BY '\r\n';
