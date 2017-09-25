@@ -1,5 +1,6 @@
 # Virtual environment
 BackEnd/venv
+CalidadDatos/venv
 
 # Configuration files
 FrontEnd/assets/config/config.js
