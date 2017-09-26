@@ -6,11 +6,11 @@ var manifactoringProcessConfig = {
 	},
 
 	'IMPORTANT_VARIABLES': [
-		'v60',
-		'v65',
+		'v61',
 		'v66',
-		'v206',
-		'v342'
+		'v411',
+		'v100',
+		'v114',
 	]
 
 };

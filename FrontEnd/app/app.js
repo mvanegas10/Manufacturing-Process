@@ -40,7 +40,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 0, 0, 1, 1 ];
+var rounds = [ 0, 0, 1, 0.9, 3 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -361,15 +361,16 @@ function createCharts( importantVars, rawData ) {
 		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
 		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ']' );
 
-		var dimensionCreator = function( d ) { return +d3.round( d[ currentImpVar ], rounds[ i ] ); };
+		var roundFunction = d3.format('.' + rounds[ i ] + 'f');
+		var dimensionCreator = function( d ) { return parseFloat(roundFunction( +d[currentImpVar] )); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
 
 		dimensions.passed.push( cfPassed.dimension( dimensionCreator ) );
 		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		minimum.passed.push( dimensions.passed[i].bottom(1)[0][currentImpVar] - 1 );
-		maximum.passed.push( dimensions.passed[i].top(1)[0][currentImpVar] + 1 );
+		minimum.passed.push( parseFloat(roundFunction(dimensions.passed[i].bottom(1)[0][currentImpVar] - 0.01)) );
+		maximum.passed.push( parseFloat(roundFunction(dimensions.passed[i].top(1)[0][currentImpVar] + 0.01)) );
 
 		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
 
@@ -413,8 +414,8 @@ function createCharts( importantVars, rawData ) {
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
 
-		minimum.failed.push( dimensions.failed[i].bottom(1)[0][currentImpVar] - 1 );
-		maximum.failed.push( dimensions.failed[i].top(1)[0][currentImpVar] + 1 );
+		minimum.failed.push( parseFloat(roundFunction(dimensions.failed[i].bottom(1)[0][currentImpVar] - 0.01)) );
+		maximum.failed.push( parseFloat(roundFunction(dimensions.failed[i].top(1)[0][currentImpVar] + 0.01)) );
 
 		filterDimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
 
@@ -432,7 +433,6 @@ function createCharts( importantVars, rawData ) {
 			.group( groups.failed[i] )
 			.gap( 1 )
 			.xUnits( function(d) {return 90;} )
-			
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
