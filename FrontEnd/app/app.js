@@ -40,7 +40,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 0, 0.1, 2, 0.01 ];
+var rounds = [ 0, 3, 3, 0, 0 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -369,10 +369,16 @@ function createCharts( importantVars, rawData ) {
 		filterDimensions.passed.push( cfPassed.dimension( filterDimensionCreator ) );
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
-		minimum.passed.push( parseFloat(roundFunction(dimensions.passed[i].bottom(1)[0][currentImpVar] - 0.01)) );
-		maximum.passed.push( parseFloat(roundFunction(dimensions.passed[i].top(1)[0][currentImpVar] + 0.01)) );
-
 		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
+		
+		if(rounds[i] === 0) {
+			minimum.passed.push( parseFloat(roundFunction(dimensions.passed[i].bottom(1)[0][currentImpVar] - 1)) );
+			maximum.passed.push( parseFloat(roundFunction(dimensions.passed[i].top(1)[0][currentImpVar] + 1)) );
+		}
+		else {
+			minimum.passed.push( parseFloat(roundFunction(dimensions.passed[i].bottom(1)[0][currentImpVar] - 1/Math.pow(10,rounds[i])) ));
+			maximum.passed.push( parseFloat(roundFunction(dimensions.passed[i].top(1)[0][currentImpVar] + 1/Math.pow(10,rounds[i])) ));
+		}
 
 		var namePassed = 'passed_variable' + i;
 		var widthPassed = document.getElementById( namePassed ).offsetWidth * 0.98;
@@ -405,7 +411,7 @@ function createCharts( importantVars, rawData ) {
 		chartPassed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + rawData.stats[chart._groupName].std_passed ) ) )? '#BBB': ''; } );
+					return ( d && d.x && ( parseFloat(d.x) <= ( parseFloat(rawData.stats[chart._groupName].mean_passed) - parseFloat(rawData.stats[chart._groupName].std_passed) ) || parseFloat(d.x) >= ( parseFloat(rawData.stats[chart._groupName].mean_passed) + parseFloat(rawData.stats[chart._groupName].std_passed) ) ) )? '#BBB': ''; } );
 		});
 
 		charts.passed.push( chartPassed );
@@ -413,11 +419,17 @@ function createCharts( importantVars, rawData ) {
 		dimensions.failed.push( cfFailed.dimension( dimensionCreator ) );
 		filterDimensions.failed.push( cfFailed.dimension( filterDimensionCreator ) );
 		groups.failed.push( dimensions.failed[i].group( ).reduceCount( ) );	
-
-		minimum.failed.push( parseFloat(roundFunction(dimensions.failed[i].bottom(1)[0][currentImpVar] - 0.01)) );
-		maximum.failed.push( parseFloat(roundFunction(dimensions.failed[i].top(1)[0][currentImpVar] + 0.01)) );
-
+		
 		filterDimensions.failed[0].filter( function( d ) { return String( d ) === String( 1 ); } )
+
+		if(rounds[i] === 0) {
+			minimum.failed.push( parseFloat(roundFunction(dimensions.failed[i].bottom(1)[0][currentImpVar] - 1)) );
+			maximum.failed.push( parseFloat(roundFunction(dimensions.failed[i].top(1)[0][currentImpVar] + 1)) );
+		}
+		else {
+			minimum.failed.push( parseFloat(roundFunction(dimensions.failed[i].bottom(1)[0][currentImpVar] - 1/Math.pow(10,rounds[i])) ));
+			maximum.failed.push( parseFloat(roundFunction(dimensions.failed[i].top(1)[0][currentImpVar] + 1/Math.pow(10,rounds[i])) ));
+		}
 
 		var nameFailed = 'failed_variable' + i;
 		var widthFailed = document.getElementById( nameFailed ).offsetWidth * 0.98;
@@ -450,7 +462,7 @@ function createCharts( importantVars, rawData ) {
 		chartFailed.on( 'renderlet', function( chart ){
 			chart.selectAll( 'rect' )
 				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( d.x <= ( rawData.stats[chart._groupName].mean_passed - rawData.stats[chart._groupName].std_passed ) || d.x >= ( rawData.stats[chart._groupName].mean_passed + rawData.stats[chart._groupName].std_passed ) ) )? '#FF5E57': ''; } );
+					return ( d && d.x && ( parseFloat(d.x) <= ( parseFloat(rawData.stats[chart._groupName].mean_passed) - parseFloat(rawData.stats[chart._groupName].std_passed) ) || parseFloat(d.x) >= ( parseFloat(rawData.stats[chart._groupName].mean_passed) + parseFloat(rawData.stats[chart._groupName].std_passed) ) ) )? '#FF5E57': ''; } );
 		});
 
 		charts.failed.push( chartFailed );
@@ -692,7 +704,6 @@ function initialize() {
 		impVariables.general.failedToD = values[3];
 
 		timewheel.general = createSTRAD( '#timewheel', impVariables.general.passedDoW, impVariables.general.failedDoW, impVariables.general.passedToD, impVariables.general.failedToD );
-
 		createCharts( manifactoringProcessConfig.IMPORTANT_VARIABLES, values[4] );
 
 	} );

@@ -67,8 +67,8 @@ def get_raw_data( ):
 
 	# Parses important variables to numeric
 	for col in df_raw_data_variables_passed.columns:
-		df_raw_data_variables_passed[ col ] = pd.to_numeric( df_raw_data_variables_passed[ col ], errors='coerce' ).abs( )
-		df_raw_data_variables_failed[ col ] = pd.to_numeric( df_raw_data_variables_failed[ col ], errors='coerce' ).abs( )
+		df_raw_data_variables_passed[ col ] = pd.to_numeric( df_raw_data_variables_passed[ col ], errors='coerce' )
+		df_raw_data_variables_failed[ col ] = pd.to_numeric( df_raw_data_variables_failed[ col ], errors='coerce' )
 	
 	# Calculates mean and standard deviation for each variable 
 	mean_passed = pd.Series(pd.DataFrame.mean( df_raw_data_variables_passed ), name='mean_passed')
@@ -122,8 +122,6 @@ def get_date( status ):
 
 	query = 'SELECT ( MONTH( timestamp ) - 1 ) AS m, ( DAYOFWEEK( timestamp ) - 1 ) AS d, %s( %s ) AS v FROM ( %s ) filteredDatesDowsTods WHERE results = %d GROUP BY m, d' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
 
-	print query
-
 	# Executes query
 	cur.execute( query )
 	result = create_dictionary( cur.description, cur.fetchall( ) )
@@ -166,8 +164,6 @@ def get_hour( status ):
 	query_dow = 'SELECT * FROM ( %s ) filteredDatesDows WHERE ( DAYOFWEEK( timestamp ) - 1 ) IN ( %s )' % ( query_tod, ', '.join( str( x ) for x in dows ) )
 
 	query = 'SELECT HOUR( timestamp ) AS h, %s( %s ) AS v FROM ( %s ) filteredDatesDowsTods WHERE results = %d GROUP BY h' % ( data['reducer'], data['reducer_variable'], query_dow, status_value )
-
-	print query
 
 	# Executes query
 	cur.execute( query )
