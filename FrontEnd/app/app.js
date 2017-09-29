@@ -40,7 +40,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 3, 3, 0, 0 ];
+var rounds = [ 0, 1, 1, 0, 0 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -393,7 +393,7 @@ function createCharts( importantVars, rawData ) {
 			.ordinalColors( [ '#31D66C' ] )
 			.group( groups.passed[i] )
 			.gap( 1 )
-			.xUnits( function(d) {return 90;} )
+			.xUnits( function(d) {return 75;} )
 
 		chartPassed._groupName = currentImpVar;
 		
@@ -401,7 +401,7 @@ function createCharts( importantVars, rawData ) {
 
 		chartPassed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.passed[0].top( Infinity ).map( function( d ) { return d.id; } );
-			if( idSet.length < 1463 ){
+			if( idSet.length < 1125 ){
 				changeInIds( idSet );
 				dc.redrawAll( );	
 			} 
@@ -444,11 +444,11 @@ function createCharts( importantVars, rawData ) {
 			.ordinalColors( [ '#BBB' ] )
 			.group( groups.failed[i] )
 			.gap( 1 )
-			.xUnits( function(d) {return 90;} )
+			.xUnits( function(d) {return 75;} )
 
 		chartFailed.on( 'filtered' , function( chart, filter ){
 			var idSet = dimensions.failed[0].top( Infinity ).map( function( d ) { return d.id; } );
-			if( idSet.length < 104 ) {
+			if( idSet.length < 84 ) {
 				changeInIds( idSet );
 				dc.redrawAll( );	
 			}
