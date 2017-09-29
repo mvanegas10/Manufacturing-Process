@@ -40,7 +40,7 @@ var dimPassed;
 var dimFailed;
 var dateDim = { 'all':[], 'passed':[], 'failed':[] };
 var filterDimensions = { 'passed':[], 'failed':[] };
-var rounds = [ 0, 1, 1, 0, 0 ];
+var rounds = [ 0, 0, 1, 1, 0 ];
 var minimum = { 'passed':[], 'failed':[] };
 var maximum = { 'passed':[], 'failed':[] };
 
@@ -356,11 +356,6 @@ function createCharts( importantVars, rawData ) {
 
 		var currentImpVar = importantVars[i];
 
-		var title = d3.select( '#title_variable' + i );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) +  ' (68.26%)' );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( rawData.stats[currentImpVar].mean_passed - rawData.stats[currentImpVar].std_passed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_passed + rawData.stats[currentImpVar].std_passed, 2 ) + ']' );
-		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( rawData.stats[currentImpVar].mean_failed - rawData.stats[currentImpVar].std_failed, 2 ) + ', ' +  d3.round( rawData.stats[currentImpVar].mean_failed + rawData.stats[currentImpVar].std_failed, 2 ) + ']' );
-
 		var roundFunction = d3.format('.' + rounds[ i ] + 'f');
 		var dimensionCreator = function( d ) { return parseFloat(roundFunction( +d[currentImpVar] )); };
 		var filterDimensionCreator = function( d ) { return d.results? String( d.results ): 0; };
@@ -370,7 +365,7 @@ function createCharts( importantVars, rawData ) {
 		groups.passed.push( dimensions.passed[i].group( ).reduceCount( ) );
 
 		filterDimensions.passed[i].filter( function( d ) { return String( d ) === String( -1 ); } )
-		
+
 		if(rounds[i] === 0) {
 			minimum.passed.push( parseFloat(roundFunction(dimensions.passed[i].bottom(1)[0][currentImpVar] - 1)) );
 			maximum.passed.push( parseFloat(roundFunction(dimensions.passed[i].top(1)[0][currentImpVar] + 1)) );
@@ -408,11 +403,11 @@ function createCharts( importantVars, rawData ) {
 			else removeSelectedPlotline( );			
 		} );
 
-		chartPassed.on( 'renderlet', function( chart ){
-			chart.selectAll( 'rect' )
-				.style( 'fill', function( d ) { 
-					return ( d && d.x && ( parseFloat(d.x) <= ( parseFloat(rawData.stats[chart._groupName].mean_passed) - parseFloat(rawData.stats[chart._groupName].std_passed) ) || parseFloat(d.x) >= ( parseFloat(rawData.stats[chart._groupName].mean_passed) + parseFloat(rawData.stats[chart._groupName].std_passed) ) ) )? '#BBB': ''; } );
-		});
+		// chartPassed.on( 'renderlet', function( chart ){
+		// 	chart.selectAll( 'rect' )
+		// 		.style( 'fill', function( d ) { 
+		// 			return ( d && d.x && ( parseFloat(d.x) <= ( parseFloat(rawData.stats[chart._groupName].mean_passed) - parseFloat(rawData.stats[chart._groupName].std_passed) ) || parseFloat(d.x) >= ( parseFloat(rawData.stats[chart._groupName].mean_passed) + parseFloat(rawData.stats[chart._groupName].std_passed) ) ) )? '#BBB': ''; } );
+		// });
 
 		charts.passed.push( chartPassed );
 
@@ -466,6 +461,12 @@ function createCharts( importantVars, rawData ) {
 		});
 
 		charts.failed.push( chartFailed );
+
+		var title = d3.select( '#title_variable' + i );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'FEATURE ' + currentImpVar.toUpperCase( ) );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'passed: [' + d3.round( dimensions.passed[i].bottom(1)[0][currentImpVar], 2 ) + ', ' +  d3.round( dimensions.passed[i].top(1)[0][currentImpVar], 2 ) + ']' );
+		title.append( 'p' ).attr( 'class', 'small' ).text( 'failed: [' + d3.round( dimensions.failed[i].bottom(1)[0][currentImpVar], 2 ) + ', ' +  d3.round( dimensions.failed[i].top(1)[0][currentImpVar], 2 ) + ']' );
+
 
 	}
 
