@@ -1,3 +1,6 @@
+# Database
+*.sqlite
+
 # Virtual environment
 BackEnd/venv
 DataQuality/venv
@@ -5,3 +8,5 @@ DataQuality/venv
 # Configuration files
 FrontEnd/assets/config/config.js
 # BackEnd/config.config
+
+*__pycache__

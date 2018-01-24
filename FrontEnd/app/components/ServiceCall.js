@@ -33,7 +33,8 @@ function post( path, data ) {
 				dataType: 'json',
 				url: config.REST.URL + path,
 				data: data,
-				success: function( result ){        
+				success: function( result ){
+					console.log(result)
 					resolve( result );
 				},
 				error: function( status, err ) {

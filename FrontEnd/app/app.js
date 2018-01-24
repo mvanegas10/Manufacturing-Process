@@ -694,6 +694,8 @@ function initialize() {
 
 	Promise.all( [ passedDate, failedDate, passedHour, failedHour, rawDataImpVariables ] ).then( function( values ){
 
+		console.log(values[4])
+
 		// Import from ./assets/ManufactoringProcessModule/manufactoringProcess-config.js.
 		// This component is necessary to avoid white spaces between undefined points in the STRAD-Wheel.
 		impVariables.empty = manifactoringProcessConfig.EMPTY_DATASET;
